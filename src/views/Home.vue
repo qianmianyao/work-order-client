@@ -35,7 +35,7 @@
         />
       </a-breadcrumb>
 
-      <div :style="{ background: '#fff', padding: '24px', minHeight: '280px' }">
+      <div :style="{ background: '#fff', padding: '12px', minHeight: '320px' }">
         <router-view />
       </div>
     </a-layout-content>
