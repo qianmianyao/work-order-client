@@ -23,7 +23,7 @@
       </a-menu>
     </a-layout-header>
 
-    <a-layout-content style="padding: 0 50px">
+    <a-layout-content style="padding: 0 10px">
 
       <a-breadcrumb style="margin: 16px 0">
         <a-alert
