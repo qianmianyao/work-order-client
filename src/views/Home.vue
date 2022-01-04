@@ -40,7 +40,7 @@
     </a-layout-content>
 
     <a-layout-footer style="text-align: center">
-      Ant Design ©2018 Created by Ant UED
+      hne-eye ©2021 Created by hne-eye
     </a-layout-footer>
   </a-layout>
 </template>
