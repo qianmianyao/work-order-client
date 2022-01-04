@@ -41,7 +41,7 @@
   </a-layout>
 </template>
 <script>
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, getCurrentInstance } from 'vue'
 
 export default defineComponent({
   setup () {
@@ -49,9 +49,22 @@ export default defineComponent({
     const handleClose = () => {
       visible.value = false
     }
+
+    // 页面刷新时顶部的标签会根据当前的路由确定位置，不会在刷新之后回到第一个
+    const selectedKeys = ref(['logins'])
+    const { proxy } = getCurrentInstance()
+    const get = () => {
+      if (proxy.$root.$route.path === '/logins') {
+        selectedKeys.value[0] = 'logins'
+      } else {
+        selectedKeys.value[0] = 'register'
+      }
+    }
+    get()
+
     const message = ref('测试横幅')
     return {
-      selectedKeys: ref(['logins']),
+      selectedKeys,
       visible,
       handleClose,
       message

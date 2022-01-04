@@ -47,16 +47,32 @@
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, getCurrentInstance } from 'vue'
 export default defineComponent({
   setup () {
     const visible = ref(true)
     const handleClose = () => {
       visible.value = false
     }
+
+    // 页面刷新时顶部的标签会根据当前的路由确定位置，不会在刷新之后回到第一个
+    const selectedKeys = ref(['1'])
+    const { proxy } = getCurrentInstance()
+    const path = proxy.$root.$route.path
+    const get = () => {
+      if (path === '/orderList') {
+        selectedKeys.value[0] = '1'
+      } else if (path === '/maintain') {
+        selectedKeys.value[0] = '2'
+      } else {
+        selectedKeys.value[0] = '3'
+      }
+    }
+    get()
+
     const message = ref('主页测试信息')
     return {
-      selectedKeys: ref(['1']),
+      selectedKeys,
       visible,
       handleClose,
       message
