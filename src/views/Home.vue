@@ -25,15 +25,14 @@
 
     <a-layout-content style="padding: 0 10px">
 
-      <a-breadcrumb style="margin: 16px 0">
-        <a-alert
-          v-if="visible"
-          :message="message"
-          type="success"
-          closable
-          :after-close="handleClose"
-        />
-      </a-breadcrumb>
+      <a-alert
+        v-if="visible"
+        :message="message"
+        type="success"
+        closable
+        :after-close="handleClose"
+        style="margin: 16px 0"
+      />
 
       <div :style="{ background: '#fff', padding: '12px', minHeight: '320px' }">
         <router-view />
@@ -81,3 +80,12 @@ export default defineComponent({
 
 })
 </script>
+<style>
+.logo {
+  float: left;
+  width: 120px;
+  height: 31px;
+  margin: 16px 24px 16px 0;
+  background: rgba(255, 255, 255, 0.3);
+}
+</style>

@@ -1,6 +1,7 @@
 <template>
   <div :style="{ background: '#fff', padding: '25px', minHeight: '280px'}">
     <a-form
+      style="margin: 0 auto"
       :model="formState"
       name="normal_login"
       class="login-form"
@@ -139,7 +140,3 @@ export default defineComponent({
 
 })
 </script>
-
-<style scoped>
-
-</style>

@@ -20,18 +20,17 @@
     </a-layout-header>
     <a-layout-content style="padding: 0 10px">
 
-      <a-breadcrumb style="margin: 16px 0" >
         <a-alert
           v-if="visible"
           :message="message"
           type="success"
           closable
           :after-close="handleClose"
+          style="margin: 16px 0"
         />
-      </a-breadcrumb>
 
       <!-- 动态组件-->
-      <div :style="{ background: '#fff', padding: '12px', minHeight: '320px' }">
+      <div :style="{ background: '#fff', padding: '18%', minHeight: '320px' }">
         <router-view />
       </div>
     </a-layout-content>
@@ -72,3 +71,23 @@ export default defineComponent({
   }
 })
 </script>
+<style>
+.login-form {
+  max-width: 300px;
+}
+.login-form-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.login-form-button {
+  width: 100%;
+}
+.logo {
+  float: left;
+  width: 120px;
+  height: 31px;
+  margin: 16px 24px 16px 0;
+  background: rgba(255, 255, 255, 0.3);
+}
+</style>
