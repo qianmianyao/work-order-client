@@ -41,9 +41,13 @@
 </template>
 
 <script>
-import { defineComponent, reactive, computed, ref } from 'vue'
+import { defineComponent, reactive, computed } from 'vue'
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
-import { useRouter } from 'vue-router'
+// import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
+import axios from 'axios'
+import qs from 'qs'
+import { notification } from 'ant-design-vue'
 export default defineComponent({
   components: {
     UserOutlined,
@@ -53,8 +57,7 @@ export default defineComponent({
   setup () {
     const formState = reactive({
       username: '',
-      password: '',
-      remember: true
+      password: ''
     })
 
     const onFinish = values => {
@@ -68,19 +71,50 @@ export default defineComponent({
     const disabled = computed(() => {
       return !(formState.username && formState.password)
     })
+
+    // 跳转
+    // const router = useRouter()
+    // const push = () => {
+    //   router.push({ path: '/maintain' })
+    // }
+
+    const state = useStore()
+
+    // 气泡通知
+    const bubbleNotice = (message) => {
+      notification.open({
+        message: '通知',
+        description: message
+      })
+    }
+
     // 登录事件
-    const router = useRouter()
     const login = () => {
-      localStorage.isLogin = true
-      router.push({ path: '/maintain' })
+      axios({
+        method: 'post',
+        url: 'api/user/login/',
+        headers: { 'content-type': 'application/x-www-form-urlencoded' },
+        data: qs.stringify({
+          username: formState.username,
+          password: formState.password
+        })
+      })
+        .then((res) => {
+          bubbleNotice(res.data.message)
+          if (res.data.code === 1) {
+            // eslint-disable-next-line camelcase
+            const { access_token } = res.data.data
+            console.log(access_token)
+            state.dispatch('demo')
+          }
+        })
     }
     return {
       formState,
       onFinish,
       onFinishFailed,
       disabled,
-      login,
-      selectedKeys: ref(['1'])
+      login
     }
   }
 

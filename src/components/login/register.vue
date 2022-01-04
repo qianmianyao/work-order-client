@@ -104,6 +104,7 @@ export default defineComponent({
       router.push({ path: '/login' })
     }
 
+    // 沟通后端登录
     const register = () => {
       axios({
         method: 'post',
@@ -118,7 +119,7 @@ export default defineComponent({
         .then(
           res => {
             bubbleNotice(res.data.message)
-            if (res.data.message === '注册成功') {
+            if (res.data.code === 1) {
               push()
             }
           }
