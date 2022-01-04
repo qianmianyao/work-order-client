@@ -1,5 +1,5 @@
 <template>
-  <a-layout class="layout">
+  <a-layout style="min-height: 100vh">
     <a-layout-header>
       <div class="logo" />
       <a-menu
