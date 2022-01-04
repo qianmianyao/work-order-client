@@ -44,7 +44,7 @@
       </a-form-item>
 
       <a-form-item>
-        <a-button :disabled="disabled" type="primary" html-type="submit" class="login-form-button">
+        <a-button @click="register" :disabled="disabled" type="primary" html-type="submit" class="login-form-button">
           提交
         </a-button>
       </a-form-item>
@@ -55,6 +55,8 @@
 <script>
 import { computed, defineComponent, reactive, ref } from 'vue'
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
+import axios from 'axios'
+import qs from 'qs'
 export default defineComponent({
 
   components: {
@@ -82,12 +84,26 @@ export default defineComponent({
       return !(formState.username && formState.password && formState.cpassword)
     })
 
+    const register = () => {
+      axios({
+        method: 'post',
+        url: 'api/user/register/',
+        headers: { 'content-type': 'application/x-www-form-urlencoded' },
+        data: qs.stringify({
+          username: formState.username,
+          password: formState.password,
+          group: 1
+        })
+      })
+    }
+
     return {
       formState,
       onFinish,
       onFinishFailed,
       disabled,
-      selectedKeys: ref(['1'])
+      selectedKeys: ref(['1']),
+      register
     }
   }
 
