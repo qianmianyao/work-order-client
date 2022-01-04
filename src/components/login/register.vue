@@ -43,8 +43,13 @@
         </a-input-password>
       </a-form-item>
 
+      <a-radio-group v-model:value="groupValue" style="margin-bottom: 24px;">
+        <a-radio  value="1">客服人员</a-radio>
+        <a-radio  value="2">维修人员</a-radio>
+      </a-radio-group>
+
       <a-form-item>
-        <a-button @click="register" :disabled="disabled" type="primary" html-type="submit" class="login-form-button">
+        <a-button @click="register"  :disabled="disabled" type="primary" html-type="submit" class="login-form-button">
           提交
         </a-button>
       </a-form-item>
@@ -55,8 +60,10 @@
 <script>
 import { computed, defineComponent, reactive, ref } from 'vue'
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
+import { notification } from 'ant-design-vue'
 import axios from 'axios'
 import qs from 'qs'
+import { useRouter } from 'vue-router'
 export default defineComponent({
 
   components: {
@@ -71,6 +78,7 @@ export default defineComponent({
       cpassword: ''
     })
 
+    const groupValue = ref('1')
     const onFinish = values => {
       console.log('Success:', values)
     }
@@ -84,6 +92,20 @@ export default defineComponent({
       return !(formState.username && formState.password && formState.cpassword)
     })
 
+    // 气泡通知
+    const bubbleNotice = (message) => {
+      notification.open({
+        message: '通知',
+        description: message
+      })
+    }
+
+    // 跳转
+    const router = useRouter()
+    const push = () => {
+      router.push({ path: '/login' })
+    }
+
     const register = () => {
       axios({
         method: 'post',
@@ -92,9 +114,17 @@ export default defineComponent({
         data: qs.stringify({
           username: formState.username,
           password: formState.password,
-          group: 1
+          group: groupValue.value
         })
       })
+        .then(
+          res => {
+            bubbleNotice(res.data.message)
+            if (res.data.message === '注册成功') {
+              push()
+            }
+          }
+        )
     }
 
     return {
@@ -102,8 +132,8 @@ export default defineComponent({
       onFinish,
       onFinishFailed,
       disabled,
-      selectedKeys: ref(['1']),
-      register
+      register,
+      groupValue
     }
   }
 
