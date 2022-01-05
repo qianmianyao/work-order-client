@@ -31,7 +31,9 @@
             />
           </a-space>
         </a-descriptions-item>
-        <a-descriptions-item label="报修详情描述"></a-descriptions-item>
+        <a-descriptions-item label="报修详情描述">
+          <a-textarea v-model:value="repairForm.describe" placeholder="输入内容" :rows="4" />
+        </a-descriptions-item>
       </a-descriptions>
     </a-modal>
   </div>
@@ -78,7 +80,6 @@ export default defineComponent({
     })
     // 提交的数据
     const repairForm = reactive({
-      plate: '',
       cause: '',
       describe: ''
     })
@@ -125,8 +126,30 @@ export default defineComponent({
       repairsVisible.value = true
     }
     const repairsOk = () => {
-      repairsVisible.value = false
+      // 报修单提交请求
+      axios({
+        method: 'post',
+        url: 'api/maintain/',
+        headers: {
+          Authorization: 'bearer ' + token
+        },
+        data: {
+          plate: infoList.plate,
+          cause: repairForm.cause,
+          describe: repairForm.describe
+        }
+      })
+        .then(res => {
+          confirmLoading.value = true
+          if (res.data.code === 200) {
+            confirmLoading.value = false
+            repairsVisible.value = false
+            bubbleNotice(res.data.message)
+          }
+        })
+      console.log(infoList.plate, repairForm.cause, repairForm.describe)
     }
+    const confirmLoading = ref(false)
     // 详情
     const infoVisible = ref(false)
     const info = () => {
@@ -135,7 +158,6 @@ export default defineComponent({
     const infoOk = () => {
       infoVisible.value = false
     }
-    const confirmLoading = ref(false)
 
     // 报修原因
     const cause = reactive([
@@ -187,7 +209,7 @@ export default defineComponent({
 
     // 获取选项的值
     const handleChange = value => {
-      // selectValue.value = value
+      repairForm.cause = value
     }
 
     return {
@@ -203,7 +225,8 @@ export default defineComponent({
       info,
       infoOk,
       cause,
-      handleChange
+      handleChange,
+      repairForm
     }
   }
 })
