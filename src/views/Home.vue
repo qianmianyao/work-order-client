@@ -55,7 +55,7 @@ export default defineComponent({
     }
 
     // 页面刷新时顶部的标签会根据当前的路由确定位置，不会在刷新之后回到第一个
-    const selectedKeys = ref(['1'])
+    const selectedKeys = ref([''])
     const { proxy } = getCurrentInstance()
     const path = proxy.$root.$route.path
     const get = () => {
@@ -63,8 +63,10 @@ export default defineComponent({
         selectedKeys.value[0] = '1'
       } else if (path === '/maintain') {
         selectedKeys.value[0] = '2'
-      } else {
+      } else if (path === '/my') {
         selectedKeys.value[0] = '3'
+      } else {
+        selectedKeys.value[0] = '1'
       }
     }
     get()

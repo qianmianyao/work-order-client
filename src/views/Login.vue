@@ -8,11 +8,11 @@
         mode="horizontal"
         :style="{ lineHeight: '64px' }"
       >
-        <a-menu-item key="logins">
+        <a-menu-item key="1">
           <router-link to="/logins" />
           登录
         </a-menu-item>
-        <a-menu-item key="register">
+        <a-menu-item key="2">
           <router-link to="/register" />
           注册
         </a-menu-item>
@@ -50,13 +50,16 @@ export default defineComponent({
     }
 
     // 页面刷新时顶部的标签会根据当前的路由确定位置，不会在刷新之后回到第一个
-    const selectedKeys = ref(['logins'])
+    const selectedKeys = ref(['1'])
     const { proxy } = getCurrentInstance()
+    const path = proxy.$root.$route.path
     const get = () => {
-      if (proxy.$root.$route.path === '/logins') {
-        selectedKeys.value[0] = 'logins'
+      if (path === '/logins') {
+        selectedKeys.value[0] = '1'
+      } else if (path === '/register') {
+        selectedKeys.value[0] = '2'
       } else {
-        selectedKeys.value[0] = 'register'
+        selectedKeys.value[0] = '1'
       }
     }
     get()

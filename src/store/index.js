@@ -4,15 +4,18 @@ import { createStore } from 'vuex'
 export default createStore({
   // 数据
   state: {
-    token: '1'
+    token: ''
   },
+  // 计算属性
   mutations: {
+    // 保存 token 到 state 和本地存储空间
+    setToken (state, data) {
+      state.token = data
+      localStorage.token = data
+    }
   },
   // 动作
   actions: {
-    demo () {
-      console.log('123')
-    }
   },
   modules: {
   }

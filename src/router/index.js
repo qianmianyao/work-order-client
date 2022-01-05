@@ -37,7 +37,7 @@ const routes = [
     component: Login,
     // 登录后无法进入登录页面
     beforeEnter (to, from, next) {
-      const isLogin = localStorage.isLogin
+      const isLogin = localStorage.token
       isLogin ? next({ path: '/maintain' }) : next()
     },
     children: [
@@ -63,9 +63,9 @@ const router = createRouter({
 })
 
 // 登录事件，如果没有登录只能访问注册和登录页面，这个函数在页面跳转的时候执行
-// router.beforeEach((to, from, next) => {
-//   const isLogin = localStorage.isLogin
-//   isLogin || to.path === '/login' || to.path === '/register' ? next() : next({ path: '/login' })
-// })
+router.beforeEach((to, from, next) => {
+  const isLogin = localStorage.token
+  isLogin || to.path === '/login' || to.path === '/register' ? next() : next({ path: '/login' })
+})
 
 export default router

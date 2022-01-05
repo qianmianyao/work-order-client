@@ -43,11 +43,11 @@
 <script>
 import { defineComponent, reactive, computed } from 'vue'
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
-// import { useRouter } from 'vue-router'
-import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 import axios from 'axios'
 import qs from 'qs'
 import { notification } from 'ant-design-vue'
+import { useStore } from 'vuex'
 export default defineComponent({
   components: {
     UserOutlined,
@@ -73,12 +73,10 @@ export default defineComponent({
     })
 
     // 跳转
-    // const router = useRouter()
-    // const push = () => {
-    //   router.push({ path: '/maintain' })
-    // }
-
-    const state = useStore()
+    const router = useRouter()
+    const push = () => {
+      router.push({ path: '/maintain' })
+    }
 
     // 气泡通知
     const bubbleNotice = (message) => {
@@ -87,6 +85,8 @@ export default defineComponent({
         description: message
       })
     }
+
+    const state = useStore()
 
     // 登录事件
     const login = () => {
@@ -104,9 +104,16 @@ export default defineComponent({
           if (res.data.code === 1) {
             // eslint-disable-next-line camelcase
             const { access_token } = res.data.data
-            console.log(access_token)
-            state.dispatch('demo')
+            // 保存 token
+            state.commit('setToken', access_token)
+            if (state.state.token) {
+              push()
+            }
           }
+        })
+        .catch(err => {
+          const message = err.response.statusText
+          bubbleNotice(message)
         })
     }
     return {

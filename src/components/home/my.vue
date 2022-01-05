@@ -1,4 +1,5 @@
 <template>
+  <a-divider orientation="left" plain="true">个人设置</a-divider>
   <a-card>
     <template #actions>
       <edit-outlined key="edit" @click="showModal" />
@@ -20,6 +21,7 @@
     <p style="margin-top: 24px;">修改描述</p>
     <a-textarea v-model:value="info.alterDescribe" placeholder="输入内容" :rows="4" />
   </a-modal>
+  <a-divider orientation="left" plain="true">接单列表</a-divider>
   <a-empty style="margin-top: 20px" description="暂无数据"/>
 </template>
 <script>

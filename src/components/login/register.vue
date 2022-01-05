@@ -124,6 +124,10 @@ export default defineComponent({
             }
           }
         )
+        .catch(err => {
+          const message = err.response.statusText
+          bubbleNotice(message)
+        })
     }
 
     return {
