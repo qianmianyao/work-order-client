@@ -2,8 +2,8 @@
   <a-input-search placeholder="输入车牌查找" v-model:value="search" enter-button @search="onSearch"/>
   <a-card v-if="cardShow" style="margin-top: 24px;">
     <template #actions>
-      <edit-outlined key="edit" @click="repairs"/>
-      <ellipsis-outlined key="ellipsis" @click="info" />
+      <edit-outlined key="edit" style="color: #1E90FF" @click="repairs"/>
+      <unordered-list-outlined key="info" style="color: #008000" @click="info" />
     </template>
     <a-card-meta :title="infoList.plate" description="点击下方按钮查看车辆详细或者报修">
     </a-card-meta>
@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import { EditOutlined, EllipsisOutlined } from '@ant-design/icons-vue'
+import { EditOutlined, UnorderedListOutlined } from '@ant-design/icons-vue'
 import { defineComponent, ref, reactive } from 'vue'
 import { useStore } from 'vuex'
 import axios from 'axios'
@@ -72,7 +72,7 @@ import { useRouter } from 'vue-router'
 export default defineComponent({
   components: {
     EditOutlined,
-    EllipsisOutlined
+    UnorderedListOutlined
   },
   setup () {
     const search = ref('')
