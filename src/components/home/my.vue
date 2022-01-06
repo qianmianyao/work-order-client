@@ -2,7 +2,8 @@
   <a-divider orientation="left">个人设置</a-divider>
   <a-card>
     <template #actions>
-      <edit-outlined key="edit" @click="showModal" />
+      <edit-outlined style="color: #1E90FF" key="edit" @click="showModal" />
+      <logout-outlined style="color: #DC143C" key="logout" @click="logout" />
     </template>
     <a-card-meta v-model:title="info.name" v-model:description="info.describe">
     </a-card-meta>
@@ -22,25 +23,29 @@
   <a-divider orientation="left">接单列表</a-divider>
 <!--  <a-empty style="margin-top: 20px" description="暂无数据"/>-->
 <!--  表格-->
+  <div>{{ dataSource.content }}</div>
   <a-table
     :columns="columns"
     :dataSource="dataSource"
     :pagination="pagination"
-    :scroll="{ x: 1500, y: 300 }"
+    :scroll="{ x: 1500 }"
+    @change="handleTableChange"
   >
   </a-table>
 </template>
 <script>
-import { EditOutlined } from '@ant-design/icons-vue'
+import { EditOutlined, LogoutOutlined } from '@ant-design/icons-vue'
 import { defineComponent, ref, reactive, computed } from 'vue'
 import axios from 'axios'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { notification } from 'ant-design-vue'
 import qs from 'qs'
+
 export default defineComponent({
   components: {
-    EditOutlined
+    EditOutlined,
+    LogoutOutlined
   },
   setup () {
     const info = reactive({
@@ -49,6 +54,7 @@ export default defineComponent({
       newPassword: ''
     })
     const pageTotal = ref(1)
+    const pagecurrent = ref(1)
     const state = useStore()
     const router = useRouter()
 
@@ -72,40 +78,62 @@ export default defineComponent({
       },
       {
         title: '报修时间',
-        dataIndex: 'SubmitTime'
+        dataIndex: 'SubmitTime',
+        width: '15%'
+      },
+      {
+        title: '维修人员',
+        dataIndex: 'OrderUser'
       }
     ]
-    // 测试数据
-    const dataSource = []
 
     // 分页
     const pagination = computed(() => ({
       total: pageTotal.value,
-      current: 1,
+      current: pagecurrent.value,
       pageSize: 10
     }))
 
-    // 请求历史记录
+    // 测试数据
+    const dataSource = ref([])
+
+    // 历史记录api
     axios({
       method: 'get',
       url: 'api/user/get_order/',
       headers: { Authorization: 'bearer ' + state.state.token },
       params: { index: 1 }
+    }).then((res) => {
+      const { orderList, orderCount } = res.data.data
+      pageTotal.value = orderCount
+      dataSource.value = orderList
     })
-      .then((res) => {
-        // eslint-disable-next-line camelcase
-        const { order_list, order_count } = res.data.data
-        // eslint-disable-next-line camelcase
-        pageTotal.value = order_count
-        // eslint-disable-next-line camelcase
-        console.log(order_list)
+
+    // 翻页方法
+    const handleTableChange = (pag) => {
+      const index = pag.current
+      axios({
+        method: 'get',
+        url: 'api/user/get_order/',
+        headers: { Authorization: 'bearer ' + state.state.token },
+        params: { index: index }
+      }).then((res) => {
+        const { orderList } = res.data.data
+        dataSource.value = orderList
+        pagecurrent.value = index
       })
+    }
 
     // 对话框属性
     const visible = ref(false)
     const confirmLoading = ref(false)
     const showModal = () => {
       visible.value = true
+    }
+    const logout = () => {
+      state.commit('removeToken')
+      router.push('/login')
+      bubbleNotice('退出成功')
     }
 
     // 修改密码
@@ -166,9 +194,11 @@ export default defineComponent({
       showModal,
       handleOk,
       info,
-      dataSource,
       columns,
-      pagination
+      dataSource,
+      pagination,
+      handleTableChange,
+      logout
     }
   }
 

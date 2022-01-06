@@ -1,39 +1,5 @@
 <template>
   <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
-  <div>接单</div>
 </template>
 
 <script>
