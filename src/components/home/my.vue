@@ -1,12 +1,20 @@
 <template>
   <a-divider orientation="left">个人设置</a-divider>
   <a-card>
+<!--    下部的图标-->
     <template #actions>
       <edit-outlined style="color: #1E90FF" key="edit" @click="showModal" />
       <logout-outlined style="color: #DC143C" key="logout" @click="logout" />
     </template>
-    <a-card-meta v-model:title="info.name" v-model:description="info.describe">
-    </a-card-meta>
+    <a-card-meta v-model:title="info.name" v-model:description="info.describe" />
+    <a-row style="margin-top: 20px ">
+      <a-col :span="12">
+        <a-statistic title="本年度接单总量" :value="100" style="margin-right: 50px" />
+      </a-col>
+      <a-col :span="12">
+        <a-statistic title="当月接单总量" :value="20" />
+      </a-col>
+    </a-row>
   </a-card>
 
   <a-modal
