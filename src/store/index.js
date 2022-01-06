@@ -4,7 +4,7 @@ import { createStore } from 'vuex'
 export default createStore({
   // 数据
   state: {
-    token: ''
+    token: localStorage.getItem('token') || ''
   },
   // 计算属性
   mutations: {
@@ -12,6 +12,9 @@ export default createStore({
     setToken (state, data) {
       state.token = data
       localStorage.token = data
+    },
+    removeToken (state) {
+      localStorage.removeItem('token')
     }
   },
   // 动作

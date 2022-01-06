@@ -61,9 +61,10 @@
 <script>
 import { EditOutlined, EllipsisOutlined } from '@ant-design/icons-vue'
 import { defineComponent, ref, reactive } from 'vue'
-// import { useStore } from 'vuex'
+import { useStore } from 'vuex'
 import axios from 'axios'
 import { notification } from 'ant-design-vue'
+import { useRouter } from 'vue-router'
 export default defineComponent({
   components: {
     EditOutlined,
@@ -85,7 +86,8 @@ export default defineComponent({
     })
 
     const cardShow = ref(false)
-    // const state = useStore()
+    const state = useStore()
+    const router = useRouter()
 
     // 气泡通知
     const bubbleNotice = (message) => {
@@ -95,13 +97,13 @@ export default defineComponent({
       })
     }
 
-    const token = localStorage.getItem('token')
+    // const token = localStorage.getItem('token')
 
     const onSearch = () => {
       axios({
         method: 'get',
         url: 'api/search/',
-        headers: { Authorization: 'bearer ' + token },
+        headers: { Authorization: 'bearer ' + state.state.token },
         params: { plate: search.value }
       })
         .then(res => {
@@ -115,6 +117,13 @@ export default defineComponent({
             infoList.group = data.group
             infoList.rowUpdateTime = data.rowUpdateTime
             cardShow.value = true
+          }
+        })
+        .catch(err => {
+          if (err.response.status === 401) {
+            state.commit('removeToken')
+            router.push('/login')
+            bubbleNotice('登录失效，请重新登录')
           }
         })
     }
@@ -131,7 +140,7 @@ export default defineComponent({
         method: 'post',
         url: 'api/maintain/',
         headers: {
-          Authorization: 'bearer ' + token
+          Authorization: 'bearer ' + state.state.token
         },
         data: {
           plate: infoList.plate,
@@ -147,7 +156,13 @@ export default defineComponent({
             bubbleNotice(res.data.message)
           }
         })
-      console.log(infoList.plate, repairForm.cause, repairForm.describe)
+        .catch(err => {
+          if (err.response.status === 401) {
+            state.commit('removeToken')
+            router.push('/login')
+            bubbleNotice('登录失效，请重新登录')
+          }
+        })
     }
     const confirmLoading = ref(false)
     // 详情
