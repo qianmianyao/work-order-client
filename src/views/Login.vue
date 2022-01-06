@@ -30,7 +30,7 @@
         />
 
       <!-- 动态组件-->
-      <div :style="{ background: '#fff', padding: '18%', minHeight: '320px' }">
+      <div :style="{ background: '#fff', padding: '18%', minHeight: '80vh' }">
         <router-view />
       </div>
     </a-layout-content>
@@ -88,7 +88,7 @@ export default defineComponent({
 }
 .logo {
   float: left;
-  width: 120px;
+  width: 31px;
   height: 31px;
   margin: 16px 24px 16px 0;
   background: rgba(255, 255, 255, 0.3);

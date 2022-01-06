@@ -22,6 +22,9 @@
       <a-descriptions title="车辆信息" layout="vertical" bordered>
         <a-descriptions-item label="车牌">{{ infoList.plate }}</a-descriptions-item>
         <a-descriptions-item label="单位名称">{{ infoList.group }}</a-descriptions-item>
+        <a-descriptions-item label="车辆设备">
+          <a-input v-model:value="repairForm.terminal_drive" placeholder="车辆的终端型号" />
+        </a-descriptions-item>
         <a-descriptions-item label="报修原因">
           <a-space>
             <a-select
@@ -80,10 +83,11 @@ export default defineComponent({
       group: '',
       rowUpdateTime: ''
     })
-    // 提交的数据
+    // 报修提交的数据
     const repairForm = reactive({
       cause: '',
-      describe: ''
+      describe: '',
+      terminal_drive: ''
     })
 
     const cardShow = ref(false)
@@ -98,8 +102,7 @@ export default defineComponent({
       })
     }
 
-    // const token = localStorage.getItem('token')
-
+    // 获取车辆详情
     const onSearch = () => {
       axios({
         method: 'get',
@@ -146,7 +149,8 @@ export default defineComponent({
         data: {
           plate: infoList.plate,
           cause: repairForm.cause,
-          describe: repairForm.describe
+          describe: repairForm.describe,
+          terminal_drive: repairForm.terminal_drive
         }
       })
         .then(res => {
