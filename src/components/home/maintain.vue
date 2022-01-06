@@ -25,6 +25,7 @@
         <a-descriptions-item label="报修原因">
           <a-space>
             <a-select
+              placeholder="选择报修原因"
               :options="cause"
               style="width: 200px"
               @change="handleChange"
