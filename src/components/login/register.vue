@@ -44,6 +44,7 @@
       <a-radio-group v-model:value="groupValue" style="margin-bottom: 24px;">
         <a-radio  value="1">客服人员</a-radio>
         <a-radio  value="2">维修人员</a-radio>
+        <a-radio  value="3">派单人员</a-radio>
       </a-radio-group>
 
       <a-form-item>
