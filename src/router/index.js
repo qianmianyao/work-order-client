@@ -38,7 +38,7 @@ const routes = [
     // 登录后无法进入登录页面
     beforeEnter (to, from, next) {
       const isLogin = localStorage.token
-      isLogin ? next({ path: '/maintain' }) : next()
+      isLogin ? next({ path: '/orderList' }) : next()
     },
     children: [
       {

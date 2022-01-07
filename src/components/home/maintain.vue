@@ -89,7 +89,7 @@ import { EditOutlined, UnorderedListOutlined, UploadOutlined } from '@ant-design
 import { defineComponent, ref, reactive } from 'vue'
 import { useStore } from 'vuex'
 import axios from 'axios'
-import { notification } from 'ant-design-vue'
+import { message } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
 export default defineComponent({
   components: {
@@ -117,14 +117,6 @@ export default defineComponent({
     const state = useStore()
     const router = useRouter()
 
-    // 气泡通知
-    const bubbleNotice = (message) => {
-      notification.open({
-        message: '通知',
-        description: message
-      })
-    }
-
     // 获取车辆详情
     const onSearch = () => {
       axios({
@@ -135,9 +127,9 @@ export default defineComponent({
       })
         .then(res => {
           if (res.data.code === 404) {
-            bubbleNotice(res.data.message)
+            message.warning(res.data.message)
           } else if (res.data.code === 401) {
-            bubbleNotice('抱歉，维修人员无法搜索车辆')
+            message.warning('抱歉，维修人员无法搜索车辆')
           } else {
             const { data } = res.data
             infoList.plate = data.plate
@@ -152,7 +144,7 @@ export default defineComponent({
           if (err.response.status === 401) {
             state.commit('removeToken')
             router.push('/login')
-            bubbleNotice('登录失效，请重新登录')
+            message.error('登录失效，请重新登录')
           }
         })
     }
@@ -183,14 +175,14 @@ export default defineComponent({
           if (res.data.code === 200) {
             confirmLoading.value = false
             repairsVisible.value = false
-            bubbleNotice(res.data.message)
+            message.success(res.data.message)
           }
         })
         .catch(err => {
           if (err.response.status === 401) {
             state.commit('removeToken')
             router.push('/login')
-            bubbleNotice('登录失效，请重新登录')
+            message.error('登录失效，请重新登录')
           }
         })
     }

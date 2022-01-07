@@ -31,8 +31,14 @@
       </a-form-item>
 
       <a-form-item>
-        <a-button :disabled="disabled" type="primary" html-type="submit" class="login-form-button"
-                  @click="login">
+        <a-button
+          :disabled="disabled"
+          type="primary"
+          html-type="submit"
+          class="login-form-button"
+          @click="login"
+          :loading="loading"
+        >
           登录
         </a-button>
       </a-form-item>
@@ -41,12 +47,12 @@
 </template>
 
 <script>
-import { defineComponent, reactive, computed } from 'vue'
+import { defineComponent, reactive, computed, ref } from 'vue'
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import qs from 'qs'
-import { notification } from 'ant-design-vue'
+import { notification, message } from 'ant-design-vue'
 import { useStore } from 'vuex'
 export default defineComponent({
   components: {
@@ -59,6 +65,7 @@ export default defineComponent({
       username: '',
       password: ''
     })
+    const loading = ref(false)
 
     const onFinish = values => {
       console.log('Success:', values)
@@ -75,7 +82,7 @@ export default defineComponent({
     // 跳转
     const router = useRouter()
     const push = () => {
-      router.push({ path: '/maintain' })
+      router.push({ path: '/orderList' })
     }
 
     // 气泡通知
@@ -90,6 +97,7 @@ export default defineComponent({
 
     // 登录事件
     const login = () => {
+      loading.value = true
       axios({
         method: 'post',
         url: 'api/user/login/',
@@ -100,8 +108,12 @@ export default defineComponent({
         })
       })
         .then((res) => {
-          bubbleNotice(res.data.message)
+          loading.value = false
+          if (res.data.code === 0) {
+            message.error('账号或者密码错误')
+          }
           if (res.data.code === 1) {
+            message.success('登录成功')
             // eslint-disable-next-line camelcase
             const { access_token } = res.data.data
             // 保存 token
@@ -121,7 +133,8 @@ export default defineComponent({
       onFinish,
       onFinishFailed,
       disabled,
-      login
+      login,
+      loading
     }
   }
 

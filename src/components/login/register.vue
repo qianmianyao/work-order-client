@@ -47,7 +47,14 @@
       </a-radio-group>
 
       <a-form-item>
-        <a-button @click="register"  :disabled="disabled" type="primary" html-type="submit" class="login-form-button">
+        <a-button
+          @click="register"
+          :disabled="disabled"
+          type="primary"
+          html-type="submit"
+          class="login-form-button"
+          :loading="loading"
+        >
           提交
         </a-button>
       </a-form-item>
@@ -58,7 +65,7 @@
 <script>
 import { computed, defineComponent, reactive, ref } from 'vue'
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
-import { notification } from 'ant-design-vue'
+import { notification, message } from 'ant-design-vue'
 import axios from 'axios'
 import qs from 'qs'
 import { useRouter } from 'vue-router'
@@ -75,7 +82,7 @@ export default defineComponent({
       password: '',
       cpassword: ''
     })
-
+    const loading = ref(false)
     const groupValue = ref('1')
     const onFinish = values => {
       console.log('Success:', values)
@@ -106,6 +113,7 @@ export default defineComponent({
 
     // 沟通后端登录
     const register = () => {
+      loading.value = true
       axios({
         method: 'post',
         url: 'api/user/register/',
@@ -118,7 +126,8 @@ export default defineComponent({
       })
         .then(
           res => {
-            bubbleNotice(res.data.message)
+            loading.value = false
+            message.success(res.data.message)
             if (res.data.code === 1) {
               push()
             }
@@ -136,7 +145,8 @@ export default defineComponent({
       onFinishFailed,
       disabled,
       register,
-      groupValue
+      groupValue,
+      loading
     }
   }
 

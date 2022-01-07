@@ -1,47 +1,49 @@
 <template>
-  <a-divider orientation="left">个人设置</a-divider>
-  <a-card>
-<!--    下部的图标-->
-    <template #actions>
-      <edit-outlined style="color: #1E90FF" key="edit" @click="showModal" />
-      <logout-outlined style="color: #DC143C" key="logout" @click="logout" />
-    </template>
-    <a-card-meta v-model:title="info.name" v-model:description="info.describe" />
-<!--    统计信息-->
-    <a-row v-if="show" style="margin-top: 20px">
-      <a-col :span="12">
-        <a-statistic title="本年度接单总量" :value="100" style="margin-right: 50px" />
-      </a-col>
-      <a-col :span="12">
-        <a-statistic title="当月接单总量" :value="20" />
-      </a-col>
-    </a-row>
-  </a-card>
+  <a-skeleton v-if="!login" active/>
+  <div v-if="login">
+    <a-divider orientation="left">个人设置</a-divider>
+    <a-card>
+      <!--    下部的图标-->
+      <template #actions>
+        <edit-outlined style="color: #1E90FF" key="edit" @click="showModal" />
+        <logout-outlined style="color: #DC143C" key="logout" @click="logout" />
+      </template>
+      <a-card-meta v-model:title="info.name" v-model:description="info.describe" />
+      <!--    统计信息-->
+      <a-row v-if="show" style="margin-top: 20px">
+        <a-col :span="12">
+          <a-statistic title="本年度接单总量" :value="100" style="margin-right: 50px" />
+        </a-col>
+        <a-col :span="12">
+          <a-statistic title="当月接单总量" :value="20" />
+        </a-col>
+      </a-row>
+    </a-card>
 
-  <a-modal
-    v-model:visible="visible"
-    title="修改信息"
-    ok-text="确认"
-    cancel-text="取消"
-    :confirm-loading="confirmLoading"
-    @ok="handleOk"
-  >
-    <p>修改密码</p>
-    <a-input-password v-model:value="info.newPassword" placeholder="输入内容" />
-  </a-modal>
-  <a-divider orientation="left">接单列表</a-divider>
-  <a-empty v-if="!show" style="margin-top: 20px" description="暂无数据"/>
-<!--  表格-->
-  <div>{{ dataSource.content }}</div>
-  <a-table
-    v-if="show"
-    :columns="columns"
-    :dataSource="dataSource"
-    :pagination="pagination"
-    :scroll="{ x: 1500 }"
-    @change="handleTableChange"
-  >
-  </a-table>
+    <a-modal
+      v-model:visible="visible"
+      title="修改信息"
+      ok-text="确认"
+      cancel-text="取消"
+      :confirm-loading="confirmLoading"
+      @ok="handleOk"
+    >
+      <p>修改密码</p>
+      <a-input-password v-model:value="info.newPassword" placeholder="输入内容" />
+    </a-modal>
+    <a-divider orientation="left">接单列表</a-divider>
+    <a-empty v-if="!show" style="margin-top: 20px" description="暂无数据"/>
+    <!--  表格-->
+    <a-table
+      v-if="show"
+      :columns="columns"
+      :dataSource="dataSource"
+      :pagination="pagination"
+      :scroll="{ x: 1500 }"
+      @change="handleTableChange"
+    >
+    </a-table>
+  </div>
 </template>
 <script>
 import { EditOutlined, LogoutOutlined } from '@ant-design/icons-vue'
@@ -49,7 +51,7 @@ import { defineComponent, ref, reactive, computed } from 'vue'
 import axios from 'axios'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
-import { notification } from 'ant-design-vue'
+import { notification, message } from 'ant-design-vue'
 import qs from 'qs'
 
 export default defineComponent({
@@ -67,14 +69,7 @@ export default defineComponent({
     const pagecurrent = ref(1)
     const state = useStore()
     const router = useRouter()
-    // 判断身份
-    const show = ref(false)
-    // 获取 token 的值
-    state.commit('decodeToken')
-    // 如果身份不符合部分信息不展示
-    if (state.state.groUp === 2) {
-      show.value = true
-    }
+    const login = ref(false)
 
     // 表头结构
     const columns = [
@@ -151,7 +146,7 @@ export default defineComponent({
     const logout = () => {
       state.commit('removeToken')
       router.push('/login')
-      bubbleNotice('退出成功')
+      message.success('退出成功')
     }
 
     // 修改密码
@@ -175,7 +170,7 @@ export default defineComponent({
           if (err.response.status === 401) {
             state.commit('removeToken')
             router.push('/login')
-            bubbleNotice('登录失效，请重新登录')
+            message.error('登录失效，请重新登录')
           }
         })
       visible.value = false
@@ -188,6 +183,8 @@ export default defineComponent({
         description: message
       })
     }
+
+    // 个人信息
     axios({
       method: 'get',
       url: 'api/user/info/',
@@ -197,6 +194,7 @@ export default defineComponent({
         const { data } = res.data
         info.name = data.UserName
         info.describe = '身份: ' + data.GroupName + ' ' + '注册时间: ' + data.RegistrationDate
+        login.value = true
       })
       .catch(err => {
         if (err.response.status === 401) {
@@ -205,6 +203,15 @@ export default defineComponent({
           bubbleNotice('登录失效，请重新登录')
         }
       })
+
+    // 判断身份
+    const show = ref(false)
+    // 获取 token 的值
+    state.commit('decodeToken')
+    // 如果身份不符合部分信息不展示
+    if (state.state.groUp === 2) {
+      show.value = true
+    }
 
     return {
       visible,
@@ -217,7 +224,8 @@ export default defineComponent({
       pagination,
       handleTableChange,
       logout,
-      show
+      show,
+      login
     }
   }
 
