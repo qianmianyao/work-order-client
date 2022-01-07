@@ -9,7 +9,7 @@
     </a-card-meta>
   </a-card>
   <a-empty v-if="!cardShow" description="暂无数据" style="margin-top: 60px;" />
-<!--修改的对话框-->
+<!--报修的对话框-->
   <div>
     <a-modal
       v-model:visible="repairsVisible"
@@ -19,7 +19,13 @@
       cancel-text="取消"
       @ok="repairsOk"
     >
-      <a-descriptions title="车辆信息" layout="vertical" bordered>
+<!--      描述列表组件-->
+      <a-descriptions
+        title="车辆信息"
+        layout="vertical"
+        bordered
+        :column="1"
+      >
         <a-descriptions-item label="车牌">{{ infoList.plate }}</a-descriptions-item>
         <a-descriptions-item label="单位名称">{{ infoList.group }}</a-descriptions-item>
         <a-descriptions-item label="车辆设备">
@@ -38,7 +44,18 @@
         <a-descriptions-item label="报修详情描述">
           <a-textarea v-model:value="repairForm.describe" placeholder="输入内容" :rows="4" />
         </a-descriptions-item>
+<!--        图片上传-->
+        <a-descriptions-item label="详情图片">
+          <a-upload v-model:file-list="fileList" action="https://www.mocky.io/v2/5cc8019d300000980a055e76">
+            <a-button>
+              <upload-outlined></upload-outlined>
+              故障照片
+            </a-button>
+          </a-upload>
+        </a-descriptions-item>
+<!--        图片上传-->
       </a-descriptions>
+<!--      描述列表组件-->
     </a-modal>
   </div>
 <!--详细的对话框-->
@@ -51,7 +68,12 @@
       :confirm-loading="confirmLoading"
       @ok="infoOk"
     >
-      <a-descriptions title="车辆信息" layout="vertical" bordered>
+      <a-descriptions
+        title="车辆信息"
+        layout="vertical"
+        bordered
+        :column="1"
+      >
         <a-descriptions-item label="车牌">{{ infoList.plate }}</a-descriptions-item>
         <a-descriptions-item label="车主">{{ infoList.name }}</a-descriptions-item>
         <a-descriptions-item label="联系电话">{{ infoList.phone }}</a-descriptions-item>
@@ -63,7 +85,7 @@
 </template>
 
 <script>
-import { EditOutlined, UnorderedListOutlined } from '@ant-design/icons-vue'
+import { EditOutlined, UnorderedListOutlined, UploadOutlined } from '@ant-design/icons-vue'
 import { defineComponent, ref, reactive } from 'vue'
 import { useStore } from 'vuex'
 import axios from 'axios'
@@ -72,7 +94,8 @@ import { useRouter } from 'vue-router'
 export default defineComponent({
   components: {
     EditOutlined,
-    UnorderedListOutlined
+    UnorderedListOutlined,
+    UploadOutlined
   },
   setup () {
     const search = ref('')
@@ -113,6 +136,8 @@ export default defineComponent({
         .then(res => {
           if (res.data.code === 404) {
             bubbleNotice(res.data.message)
+          } else if (res.data.code === 401) {
+            bubbleNotice('抱歉，维修人员无法搜索车辆')
           } else {
             const { data } = res.data
             infoList.plate = data.plate
