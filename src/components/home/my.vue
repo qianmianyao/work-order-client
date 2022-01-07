@@ -31,7 +31,7 @@
       <p>修改密码</p>
       <a-input-password v-model:value="info.newPassword" placeholder="输入内容" />
     </a-modal>
-    <a-divider orientation="left">接单列表</a-divider>
+    <a-divider v-if="show" orientation="left">接单列表</a-divider>
     <a-empty v-if="!show" style="margin-top: 20px" description="暂无数据"/>
     <!--  表格-->
     <a-table
@@ -53,6 +53,7 @@ import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { notification, message } from 'ant-design-vue'
 import qs from 'qs'
+import moment from 'moment'
 
 export default defineComponent({
   components: {
@@ -92,7 +93,10 @@ export default defineComponent({
       {
         title: '报修时间',
         dataIndex: 'SubmitTime',
-        width: '15%'
+        width: '13%',
+        customRender: ({ text }) => {
+          return text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : ''
+        }
       },
       {
         title: '维修人员',

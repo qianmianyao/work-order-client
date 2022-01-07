@@ -52,7 +52,7 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import qs from 'qs'
-import { notification, message } from 'ant-design-vue'
+import { message } from 'ant-design-vue'
 import { useStore } from 'vuex'
 export default defineComponent({
   components: {
@@ -83,14 +83,6 @@ export default defineComponent({
     const router = useRouter()
     const push = () => {
       router.push({ path: '/orderList' })
-    }
-
-    // 气泡通知
-    const bubbleNotice = (message) => {
-      notification.open({
-        message: '通知',
-        description: message
-      })
     }
 
     const state = useStore()
@@ -124,8 +116,8 @@ export default defineComponent({
           }
         })
         .catch(err => {
-          const message = err.response.statusText
-          bubbleNotice(message)
+          const mes = err.response.statusText
+          message.error(mes)
         })
     }
     return {

@@ -1,5 +1,6 @@
 <template>
   <a-input-search placeholder="输入车牌查找" v-model:value="search" enter-button @search="onSearch"/>
+  <a-divider orientation="left">结果</a-divider>
   <a-card v-if="cardShow" style="margin-top: 24px;">
     <template #actions>
       <edit-outlined key="edit" style="color: #1E90FF" @click="repairs"/>
