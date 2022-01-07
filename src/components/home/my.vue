@@ -7,7 +7,8 @@
       <logout-outlined style="color: #DC143C" key="logout" @click="logout" />
     </template>
     <a-card-meta v-model:title="info.name" v-model:description="info.describe" />
-    <a-row style="margin-top: 20px ">
+<!--    统计信息-->
+    <a-row v-if="show" style="margin-top: 20px">
       <a-col :span="12">
         <a-statistic title="本年度接单总量" :value="100" style="margin-right: 50px" />
       </a-col>
@@ -29,10 +30,11 @@
     <a-input-password v-model:value="info.newPassword" placeholder="输入内容" />
   </a-modal>
   <a-divider orientation="left">接单列表</a-divider>
-<!--  <a-empty style="margin-top: 20px" description="暂无数据"/>-->
+  <a-empty v-if="!show" style="margin-top: 20px" description="暂无数据"/>
 <!--  表格-->
   <div>{{ dataSource.content }}</div>
   <a-table
+    v-if="show"
     :columns="columns"
     :dataSource="dataSource"
     :pagination="pagination"
@@ -65,6 +67,14 @@ export default defineComponent({
     const pagecurrent = ref(1)
     const state = useStore()
     const router = useRouter()
+    // 判断身份
+    const show = ref(false)
+    // 获取 token 的值
+    state.commit('decodeToken')
+    // 如果身份不符合部分信息不展示
+    if (state.state.groUp === 2) {
+      show.value = true
+    }
 
     // 表头结构
     const columns = [
@@ -206,7 +216,8 @@ export default defineComponent({
       dataSource,
       pagination,
       handleTableChange,
-      logout
+      logout,
+      show
     }
   }
 

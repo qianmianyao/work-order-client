@@ -8,15 +8,15 @@
         mode="horizontal"
         :style="{ lineHeight: '64px' }"
       >
-        <a-menu-item key="1">
+        <a-menu-item key="orderList">
           <router-link to="/orderList" />
           接单
         </a-menu-item>
-        <a-menu-item key="2">
+        <a-menu-item v-if="show" key="maintain">
           <router-link to="/maintain" />
           报修
         </a-menu-item>
-        <a-menu-item key="3">
+        <a-menu-item key="my">
           <router-link to="/my" />
           我的
         </a-menu-item>
@@ -47,6 +47,7 @@
 
 <script>
 import { defineComponent, ref, getCurrentInstance } from 'vue'
+import { useStore } from 'vuex'
 export default defineComponent({
   setup () {
     const visible = ref(true)
@@ -60,23 +61,31 @@ export default defineComponent({
     const path = proxy.$root.$route.path
     const get = () => {
       if (path === '/orderList') {
-        selectedKeys.value[0] = '1'
+        selectedKeys.value[0] = 'orderList'
       } else if (path === '/maintain') {
-        selectedKeys.value[0] = '2'
+        selectedKeys.value[0] = 'maintain'
       } else if (path === '/my') {
-        selectedKeys.value[0] = '3'
+        selectedKeys.value[0] = 'my'
       } else {
-        selectedKeys.value[0] = '1'
+        selectedKeys.value[0] = 'orderList'
       }
     }
     get()
+
+    const show = ref(false)
+    const state = useStore()
+    state.commit('decodeToken')
+    if (state.state.groUp === 1) {
+      show.value = true
+    }
 
     const message = ref('主页测试信息')
     return {
       selectedKeys,
       visible,
       handleClose,
-      message
+      message,
+      show
     }
   }
 
