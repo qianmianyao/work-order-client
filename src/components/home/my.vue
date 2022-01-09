@@ -34,15 +34,39 @@
     <a-divider v-if="show" orientation="left">接单列表</a-divider>
     <a-empty v-if="!show" style="margin-top: 20px" description="暂无数据"/>
     <!--  表格-->
-    <a-table
-      v-if="show"
-      :columns="columns"
-      :dataSource="dataSource"
-      :pagination="pagination"
-      :scroll="{ x: 1500 }"
-      @change="handleTableChange"
-    >
-    </a-table>
+    <div>
+      <a-table
+        size="small"
+        :row-selection="rowSelection"
+        v-if="show"
+        :columns="columns"
+        :dataSource="dataSource"
+        :pagination="pagination"
+        :scroll="{ x: 1500 }"
+        @change="handleTableChange"
+        :row-class-name="(_record, index) => (index % 2 === 1 ? 'table-striped' : null)"
+        class="ant-table-striped"
+      >
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.key === 'status'">
+            <a-badge
+              :status="record.status === '已接单' ? 'warning' : 'success'"
+              v-bind:text="record.status"
+            />
+          </template>
+          <template v-else-if="column.key === 'accomplishTime'">
+            <span v-if="record.accomplishTime === null">还未完成</span>
+          </template>
+          <template v-else-if="column.key === 'describe'">
+            <a-collapse ghost>
+              <a-collapse-panel key="1" header="查看详情">
+                <p>{{ record.describe }}</p>
+              </a-collapse-panel>
+            </a-collapse>
+          </template>
+        </template>
+      </a-table>
+    </div>
   </div>
 </template>
 <script>
@@ -72,35 +96,85 @@ export default defineComponent({
     const router = useRouter()
     const login = ref(false)
 
+    // 判断身份
+    const show = ref(false)
+    // 获取 token 的值
+    state.commit('decodeToken')
+    // 如果身份不符合部分信息不展示
+    if (state.state.groUp === 2) {
+      show.value = true
+    }
+
     // 表头结构
     const columns = [
       {
+        title: '订单状态',
+        dataIndex: 'status',
+        key: 'status',
+        width: '6%',
+        fixed: 'left'
+      },
+      {
+        title: 'ID',
+        dataIndex: 'key',
+        key: 'key',
+        width: '3%'
+      },
+      {
         title: '车牌',
-        dataIndex: 'Plate',
-        fixed: 'left',
+        dataIndex: 'plate',
+        width: '8%'
+      },
+      {
+        title: '所属公司',
+        dataIndex: 'company',
+        key: 'company',
         width: '8%'
       },
       {
         title: '车主',
-        dataIndex: 'Name',
+        dataIndex: 'driversName',
+        key: 'driversName',
         width: '5%'
       },
       {
-        title: '报修人员',
-        dataIndex: 'Users',
-        width: '6%'
+        title: '联系电话',
+        dataIndex: 'mobile',
+        key: 'mobile',
+        width: '8%'
       },
       {
-        title: '报修时间',
-        dataIndex: 'SubmitTime',
+        title: '维修设备',
+        dataIndex: 'terminalDrive',
+        key: 'terminalDrive',
+        width: '5%'
+      },
+      {
+        title: '报修原因',
+        dataIndex: 'cause',
+        key: 'cause',
+        width: '5%'
+      },
+      {
+        title: '报修详情描述',
+        dataIndex: 'describe',
+        key: 'describe',
+        width: '8%'
+      },
+      {
+        title: '派单人',
+        dataIndex: 'sendOrderUserId',
+        key: 'sendOrderUserId',
+        width: '5%'
+      },
+      {
+        title: '订单完成时间',
+        dataIndex: 'accomplishTime',
+        key: 'accomplishTime',
         width: '13%',
         customRender: ({ text }) => {
           return text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : ''
         }
-      },
-      {
-        title: '维修人员',
-        dataIndex: 'OrderUser'
       }
     ]
 
@@ -115,16 +189,20 @@ export default defineComponent({
     const dataSource = ref([])
 
     // 历史记录api
-    axios({
-      method: 'get',
-      url: 'api/user/get_order/',
-      headers: { Authorization: 'bearer ' + state.state.token },
-      params: { index: 1 }
-    }).then((res) => {
-      const { orderList, orderCount } = res.data.data
-      pageTotal.value = orderCount
-      dataSource.value = orderList
-    })
+    const getOrder = () => {
+      axios({
+        method: 'get',
+        url: 'api/user/get_order/',
+        headers: { Authorization: 'bearer ' + state.state.token },
+        params: { index: 1 }
+      }).then((res) => {
+        const { orderList, orderCount } = res.data.data
+        pageTotal.value = orderCount
+        dataSource.value = orderList
+        console.log(dataSource.value)
+      })
+    }
+    getOrder()
 
     // 翻页方法
     const handleTableChange = (pag) => {
@@ -196,8 +274,8 @@ export default defineComponent({
     })
       .then((res) => {
         const { data } = res.data
-        info.name = data.UserName
-        info.describe = '身份: ' + data.GroupName + ' ' + '注册时间: ' + data.RegistrationDate
+        info.name = data.username
+        info.describe = '身份: ' + data.groupName + ' ' + '注册时间: ' + data.registrationDate
         login.value = true
       })
       .catch(err => {
@@ -208,13 +286,37 @@ export default defineComponent({
         }
       })
 
-    // 判断身份
-    const show = ref(false)
-    // 获取 token 的值
-    state.commit('decodeToken')
-    // 如果身份不符合部分信息不展示
-    if (state.state.groUp === 2) {
-      show.value = true
+    // 订单完成
+    const rowSelection = {
+      onChange: (selectedRowKeys) => {
+        for (const id of selectedRowKeys) {
+          completeOrder(id)
+        }
+        getOrder()
+      },
+      // 已完成的单不可再提交
+      getCheckboxProps: record => ({
+        disabled: record.status === '已完成',
+        name: record.status
+      }),
+      columnWidth: '2%'
+    }
+
+    // 确认订单接口
+    const completeOrder = id => {
+      axios({
+        method: 'post',
+        url: 'api/complete_order/',
+        headers: { Authorization: 'bearer ' + state.state.token },
+        data: qs.stringify({
+          id
+        })
+      })
+        .then(res => {
+          if (res.data.code === 200) {
+            message.success(res.data.message)
+          }
+        })
     }
 
     return {
@@ -229,9 +331,15 @@ export default defineComponent({
       handleTableChange,
       logout,
       show,
-      login
+      login,
+      rowSelection
     }
   }
 
 })
 </script>
+<style scoped>
+.ant-table-striped :deep(.table-striped) td {
+  background-color: #fafafa;
+}
+</style>

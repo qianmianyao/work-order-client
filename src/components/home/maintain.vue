@@ -118,6 +118,7 @@ export default defineComponent({
     const state = useStore()
     const router = useRouter()
 
+    // TODO: 待重构
     // 获取车辆详情
     const onSearch = () => {
       axios({
@@ -150,6 +151,7 @@ export default defineComponent({
         })
     }
 
+    // TODO: 待重构
     // 对话框
     // 报修
     const repairsVisible = ref(false)
