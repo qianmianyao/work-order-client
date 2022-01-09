@@ -199,7 +199,6 @@ export default defineComponent({
         const { orderList, orderCount } = res.data.data
         pageTotal.value = orderCount
         dataSource.value = orderList
-        console.log(dataSource.value)
       })
     }
     getOrder()
