@@ -8,11 +8,11 @@
         mode="horizontal"
         :style="{ lineHeight: '64px' }"
       >
-        <a-menu-item key="orderList">
+        <a-menu-item v-if="orderListShow" key="orderList">
           <router-link to="/orderList" />
-          接单
+          派单
         </a-menu-item>
-        <a-menu-item v-if="show" key="maintain">
+        <a-menu-item v-if="maintainShow" key="maintain">
           <router-link to="/maintain" />
           报修
         </a-menu-item>
@@ -56,7 +56,7 @@ export default defineComponent({
     }
 
     // 页面刷新时顶部的标签会根据当前的路由确定位置，不会在刷新之后回到第一个
-    const selectedKeys = ref([''])
+    const selectedKeys = ref(['my'])
     const { proxy } = getCurrentInstance()
     const path = proxy.$root.$route.path
     const get = () => {
@@ -66,17 +66,19 @@ export default defineComponent({
         selectedKeys.value[0] = 'maintain'
       } else if (path === '/my') {
         selectedKeys.value[0] = 'my'
-      } else {
-        selectedKeys.value[0] = 'orderList'
       }
     }
     get()
 
-    const show = ref(false)
+    const maintainShow = ref(false)
+    const orderListShow = ref(false)
     const state = useStore()
     state.commit('decodeToken')
     if (state.state.groUp === 1) {
-      show.value = true
+      maintainShow.value = true
+    }
+    if (state.state.groUp === 3) {
+      orderListShow.value = true
     }
 
     const message = ref('主页测试信息')
@@ -85,7 +87,8 @@ export default defineComponent({
       visible,
       handleClose,
       message,
-      show
+      maintainShow,
+      orderListShow
     }
   }
 
