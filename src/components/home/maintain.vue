@@ -140,9 +140,7 @@ export default defineComponent({
         })
     }
 
-    // TODO: 待重构
-    // 对话框
-    // 报修
+    // 报修对话框
     const repairsVisible = ref(false)
     const repairs = () => {
       repairsVisible.value = true
@@ -168,6 +166,8 @@ export default defineComponent({
             confirmLoading.value = false
             repairsVisible.value = false
             message.success(res.data.message)
+            repairForm.describe = ''
+            repairForm.terminal_drive = ''
           }
         })
         .catch(err => {
