@@ -69,18 +69,7 @@
       :confirm-loading="confirmLoading"
       @ok="infoOk"
     >
-      <a-descriptions
-        title="车辆信息"
-        layout="vertical"
-        bordered
-        :column="1"
-      >
-        <a-descriptions-item label="车牌">{{ infoList.plate }}</a-descriptions-item>
-        <a-descriptions-item label="车主">{{ infoList.name }}</a-descriptions-item>
-        <a-descriptions-item label="联系电话">{{ infoList.phone }}</a-descriptions-item>
-        <a-descriptions-item label="所在组">{{ infoList.group }}</a-descriptions-item>
-        <a-descriptions-item label="设备安装日期">{{ infoList.rowUpdateTime }}</a-descriptions-item>
-      </a-descriptions>
+      <p>当前车辆报修历史</p>
     </a-modal>
   </div>
 </template>

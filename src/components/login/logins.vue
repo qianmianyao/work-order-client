@@ -101,10 +101,10 @@ export default defineComponent({
       })
         .then((res) => {
           loading.value = false
-          if (res.data.code === 0) {
+          if (res.data.code === 401) {
             message.error('账号或者密码错误')
           }
-          if (res.data.code === 1) {
+          if (res.data.code === 200) {
             message.success('登录成功')
             // eslint-disable-next-line camelcase
             const { access_token } = res.data.data

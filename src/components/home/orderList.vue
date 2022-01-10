@@ -1,5 +1,5 @@
 <template>
-  <a-divider orientation="left">接单列表</a-divider>
+  <a-divider orientation="left">派单列表</a-divider>
   <a-skeleton active v-if="true"/>
 </template>
 

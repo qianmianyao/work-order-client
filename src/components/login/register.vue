@@ -71,7 +71,6 @@ import axios from 'axios'
 import qs from 'qs'
 import { useRouter } from 'vue-router'
 export default defineComponent({
-
   components: {
     UserOutlined,
     LockOutlined

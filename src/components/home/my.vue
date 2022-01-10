@@ -12,10 +12,10 @@
       <!--    统计信息-->
       <a-row v-if="show" style="margin-top: 20px">
         <a-col :span="12">
-          <a-statistic title="本年度接单总量" :value="100" style="margin-right: 50px" />
+          <a-statistic title="剩余订单" :value="100" style="margin-right: 50px" />
         </a-col>
         <a-col :span="12">
-          <a-statistic title="当月接单总量" :value="20" />
+          <a-statistic title="完成订单" :value="20" />
         </a-col>
       </a-row>
     </a-card>
@@ -34,7 +34,8 @@
     <a-divider v-if="show" orientation="left">接单列表</a-divider>
     <a-empty v-if="!show" style="margin-top: 20px" description="暂无数据"/>
     <!--  表格-->
-    <div>
+    <a-button type="primary" @click="start" :disabled="!hasSelected" v-if="show">结算工单</a-button>
+    <div style="margin-top: 20px">
       <a-table
         size="small"
         :row-selection="rowSelection"
@@ -190,16 +191,18 @@ export default defineComponent({
 
     // 历史记录api
     const getOrder = () => {
-      axios({
-        method: 'get',
-        url: 'api/user/get_order/',
-        headers: { Authorization: 'bearer ' + state.state.token },
-        params: { index: 1 }
-      }).then((res) => {
-        const { orderList, orderCount } = res.data.data
-        pageTotal.value = orderCount
-        dataSource.value = orderList
-      })
+      if (state.state.groUp === 2) {
+        axios({
+          method: 'get',
+          url: 'api/user/get_order/',
+          headers: { Authorization: 'bearer ' + state.state.token },
+          params: { index: 1 }
+        }).then((res) => {
+          const { orderList, orderCount } = res.data.data
+          pageTotal.value = orderCount
+          dataSource.value = orderList
+        })
+      }
     }
     getOrder()
 
@@ -286,12 +289,19 @@ export default defineComponent({
       })
 
     // 订单完成
+    const states = reactive({
+      selectedRowKeys: []
+    })
+    const hasSelected = computed(() => states.selectedRowKeys.length > 0)
+    const start = () => {
+      for (const id of states.selectedRowKeys) {
+        completeOrder(id)
+        getOrder()
+      }
+    }
     const rowSelection = {
       onChange: (selectedRowKeys) => {
-        for (const id of selectedRowKeys) {
-          completeOrder(id)
-        }
-        getOrder()
+        states.selectedRowKeys = selectedRowKeys
       },
       // 已完成的单不可再提交
       getCheckboxProps: record => ({
@@ -331,7 +341,9 @@ export default defineComponent({
       logout,
       show,
       login,
-      rowSelection
+      rowSelection,
+      start,
+      hasSelected
     }
   }
 
