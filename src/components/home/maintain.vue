@@ -59,7 +59,7 @@
 <!--      描述列表组件-->
     </a-modal>
   </div>
-<!--详细的对话框-->
+<!--车辆历史维修记录对话框-->
   <div>
     <a-modal
       v-model:visible="infoVisible"
@@ -69,13 +69,39 @@
       :confirm-loading="confirmLoading"
       @ok="infoOk"
     >
-      <p>当前车辆报修历史</p>
+<!--      车辆历史维修记录-->
+      <a-list size="small" bordered :data-source="vehicleHistory">
+        <template #renderItem="{ item }">
+          <a-list-item>
+            <a-badge :status="statusColor(item.status)" />{{ item.status }}<a-divider type="vertical" />
+            <alert-outlined style="color: #1E90FF" /> {{ item.cause }}<a-divider type="vertical" />
+            <user-outlined style="color: #1E90FF" /> {{ item.username }}
+            <span v-if="item.accomplishTime !== null" >
+              <a-divider type="vertical" />
+              <clock-circle-outlined style="color: #1E90FF" /> {{
+                item.accomplishTime ? moment(item.accomplishTime).format('YYYY-MM-DD') : ''
+              }}</span>
+          </a-list-item>
+        </template>
+        <template #header>
+          <h4><bars-outlined style="color: #1E90FF" /> 当前车辆维修历史记录</h4>
+        </template>
+      </a-list>
     </a-modal>
   </div>
 </template>
 
 <script>
-import { EditOutlined, UnorderedListOutlined, UploadOutlined } from '@ant-design/icons-vue'
+import moment from 'moment'
+import {
+  BarsOutlined,
+  AlertOutlined,
+  EditOutlined,
+  UnorderedListOutlined,
+  UploadOutlined,
+  UserOutlined,
+  ClockCircleOutlined
+} from '@ant-design/icons-vue'
 import { defineComponent, ref, reactive } from 'vue'
 import { useStore } from 'vuex'
 import axios from 'axios'
@@ -83,12 +109,17 @@ import { message } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
 export default defineComponent({
   components: {
+    BarsOutlined,
+    AlertOutlined,
+    ClockCircleOutlined,
+    UserOutlined,
     EditOutlined,
     UnorderedListOutlined,
     UploadOutlined
   },
   setup () {
     const search = ref('')
+    // 车辆详情
     const infoList = reactive({
       plate: '',
       name: '',
@@ -179,11 +210,33 @@ export default defineComponent({
         })
     }
     const confirmLoading = ref(false)
-    // 详情
+
+    // 车辆报修历史记录
+    const color = ref('')
+    const statusColor = (status) => {
+      if (status === '已完成') {
+        color.value = 'success'
+        return color.value
+      } else if (status === '维修中') {
+        color.value = 'warning'
+        return color.value
+      }
+    }
+    const vehicleHistory = ref([])
     const infoVisible = ref(false)
     const info = () => {
       infoVisible.value = true
+      axios({
+        method: 'get',
+        url: 'api/vehicle_history/',
+        headers: { Authorization: 'bearer ' + state.state.token },
+        params: { plate: search.value }
+      })
+        .then(res => {
+          vehicleHistory.value = res.data.data.history
+        })
     }
+
     const infoOk = () => {
       infoVisible.value = false
     }
@@ -257,7 +310,10 @@ export default defineComponent({
       infoOk,
       cause,
       handleChange,
-      repairForm
+      repairForm,
+      vehicleHistory,
+      moment,
+      statusColor
     }
   }
 })

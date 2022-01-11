@@ -44,7 +44,7 @@ import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { notification, message } from 'ant-design-vue'
 import qs from 'qs'
-import MaintenanceRecord from '@/components/home/my/history/maintenanceRecord'
+import MaintenanceRecord from '@/components/home/my/maintenanceRecord'
 
 export default defineComponent({
   components: {
