@@ -20,7 +20,7 @@
       cancel-text="取消"
       @ok="repairsOk"
     >
-<!--      描述列表组件-->
+      <!--报修提交组件-->
       <a-descriptions
         title="车辆信息"
         layout="vertical"
@@ -37,26 +37,30 @@
             <a-select
               placeholder="选择报修原因"
               :options="cause"
-              style="width: 200px"
               @change="handleChange"
             />
           </a-space>
         </a-descriptions-item>
         <a-descriptions-item label="报修详情描述">
-          <a-textarea v-model:value="repairForm.describe" placeholder="输入内容" :rows="4" />
+          <a-textarea v-model:value="repairForm.describe" placeholder="请输入车辆故障的具体原因以及故障所在地" :rows="4" />
         </a-descriptions-item>
-<!--        图片上传-->
         <a-descriptions-item label="详情图片">
-          <a-upload v-model:file-list="fileList" action="https://www.mocky.io/v2/5cc8019d300000980a055e76">
-            <a-button>
-              <upload-outlined></upload-outlined>
-              故障照片
-            </a-button>
-          </a-upload>
+          <!--图片上传组件-->
+          <a-upload-dragger
+            v-model:fileList="fileList"
+            name="file"
+            :multiple="true"
+            action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+            @change="handleChange"
+          >
+            <p class="ant-upload-drag-icon" style="margin-top: 12px">
+              <inbox-outlined />
+            </p>
+            <p class="ant-upload-text">上传需要维修车辆的相关照片</p>
+            <p class="ant-upload-hint" style="margin-bottom: 12px">请注意，只支持一张照片上传</p>
+          </a-upload-dragger>
         </a-descriptions-item>
-<!--        图片上传-->
       </a-descriptions>
-<!--      描述列表组件-->
     </a-modal>
   </div>
 <!--车辆历史维修记录对话框-->
@@ -69,7 +73,7 @@
       :confirm-loading="confirmLoading"
       @ok="infoOk"
     >
-<!--      车辆历史维修记录-->
+      <!--车辆历史维修记录-->
       <a-list size="small" bordered :data-source="vehicleHistory">
         <template #renderItem="{ item }">
           <a-list-item>
@@ -94,11 +98,11 @@
 <script>
 import moment from 'moment'
 import {
+  InboxOutlined,
   BarsOutlined,
   AlertOutlined,
   EditOutlined,
   UnorderedListOutlined,
-  UploadOutlined,
   UserOutlined,
   ClockCircleOutlined
 } from '@ant-design/icons-vue'
@@ -109,13 +113,13 @@ import { message } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
 export default defineComponent({
   components: {
+    InboxOutlined,
     BarsOutlined,
     AlertOutlined,
     ClockCircleOutlined,
     UserOutlined,
     EditOutlined,
-    UnorderedListOutlined,
-    UploadOutlined
+    UnorderedListOutlined
   },
   setup () {
     const search = ref('')
@@ -230,7 +234,7 @@ export default defineComponent({
         method: 'get',
         url: 'api/vehicle_history/',
         headers: { Authorization: 'bearer ' + state.state.token },
-        params: { plate: search.value }
+        params: { plate: infoList.plate }
       })
         .then(res => {
           vehicleHistory.value = res.data.data.history

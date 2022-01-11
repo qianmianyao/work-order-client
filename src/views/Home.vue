@@ -40,7 +40,7 @@
     </a-layout-content>
 
     <a-layout-footer style="text-align: center">
-      湖南伊爱售后工单系统 <copyright-circle-outlined />2021 Created by hne-eye
+      湖南伊爱售后工单系统 <copyright-circle-outlined /> 2021
     </a-layout-footer>
   </a-layout>
 </template>

@@ -16,7 +16,7 @@
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'status'">
           <a-badge
-            :status="record.status === '已接单' ? 'warning' : 'success'"
+            :status="record.status === '维修中' ? 'warning' : 'success'"
             v-bind:text="record.status"
           />
         </template>
