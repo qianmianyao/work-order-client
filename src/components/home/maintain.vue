@@ -47,11 +47,11 @@
         <a-descriptions-item label="详情图片">
           <!--图片上传组件-->
           <a-upload-dragger
-            v-model:fileList="fileList"
             name="file"
-            :multiple="true"
-            action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-            @change="handleChange"
+            :multiple="false"
+            action="api/maintain/upload_img/"
+            :data="{plate: infoList.plate}"
+            @change="uploadStatus"
           >
             <p class="ant-upload-drag-icon" style="margin-top: 12px">
               <inbox-outlined />
@@ -299,7 +299,12 @@ export default defineComponent({
     }
 
     // TODO: 上传功能
-
+    const uploadStatus = (file) => {
+      // console.log(file)
+      if (file.file.status === 'done') {
+        message.success('上传成功')
+      }
+    }
     return {
       onSearch,
       search,
@@ -317,7 +322,8 @@ export default defineComponent({
       repairForm,
       vehicleHistory,
       moment,
-      statusColor
+      statusColor,
+      uploadStatus
     }
   }
 })
