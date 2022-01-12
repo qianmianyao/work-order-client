@@ -12,6 +12,7 @@
       @change="handleTableChange"
       :row-class-name="(_record, index) => (index % 2 === 1 ? 'table-striped' : null)"
       class="ant-table-striped"
+      :loading="loading"
     >
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'status'">
@@ -147,7 +148,9 @@ export default defineComponent({
     getOrder()
 
     // 翻页方法
+    const loading = ref(false)
     const handleTableChange = (pag) => {
+      loading.value = true
       const index = pag.current
       axios({
         method: 'get',
@@ -155,6 +158,7 @@ export default defineComponent({
         headers: { Authorization: 'bearer ' + state.state.token },
         params: { index: index }
       }).then((res) => {
+        loading.value = true
         const { orderList } = res.data.data
         dataSource.value = orderList
         pageCurrent.value = index
@@ -207,7 +211,8 @@ export default defineComponent({
       start,
       handleTableChange,
       pagination,
-      dataSource
+      dataSource,
+      loading
     }
   }
 })

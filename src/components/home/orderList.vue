@@ -2,7 +2,24 @@
   <a-divider orientation="left">派单列表</a-divider>
   <!--<a-skeleton active v-if="true"/>-->
   <!-- 派单表格 -->
-  <a-button type="primary" @click="start" :disabled="!hasSelected">分配维修人员</a-button>
+  <a-button type="primary" @click="showModal" :disabled="!hasSelected">
+    分配维修人员
+  </a-button>
+  <a-modal
+    v-model:visible="visible"
+    title="分配订单"
+    @ok="handleOk"
+    width="50%"
+    ok-text="分配给他"
+    cancelText="取消"
+  >
+    <a-radio-group v-model:value="groupValue">
+      <a-radio value="1" :style="radioStyle">A</a-radio>
+      <a-radio value="2" :style="radioStyle">B</a-radio>
+      <a-radio value="3" :style="radioStyle">C</a-radio>
+      <a-radio value="4" :style="radioStyle">D</a-radio>
+    </a-radio-group>
+  </a-modal>
   <div style="margin-top: 20px">
   <a-table
     :columns="columns"
@@ -13,6 +30,7 @@
     @change="handleTableChange"
     :row-class-name="(_record, index) => (index % 2 === 1 ? 'table-striped' : null)"
     class="ant-table-striped"
+    :loading="loading"
   >
     <template #bodyCell="{ column, record }">
       <template v-if="column.key === 'status'">
@@ -20,6 +38,13 @@
           :status="record.status === '待派单' ? 'processing' : record.status === '维修中' ? 'warning' : 'success'"
           v-bind:text="record.status"
         />
+      </template>
+      <template v-else-if="column.key === 'describe'">
+        <a-collapse ghost>
+          <a-collapse-panel key="1" header="查看详情">
+            <p>{{ record.describe }}</p>
+          </a-collapse-panel>
+        </a-collapse>
       </template>
     </template>
   </a-table>
@@ -151,6 +176,7 @@ export default defineComponent({
     }))
     // 翻页方法
     const handleTableChange = (page) => {
+      loading.value = true
       const index = page.current
       axios({
         method: 'get',
@@ -158,11 +184,30 @@ export default defineComponent({
         params: { index: index }
       })
         .then(res => {
+          loading.value = false
           const { sendOrder } = res.data.data
           pageCurrent.value = index
           dataSource.value = sendOrder
         })
     }
+    // 翻页加载
+    const loading = ref(false)
+    // 分配订单弹窗
+    const visible = ref(false)
+    const showModal = () => {
+      visible.value = true
+    }
+    const handleOk = () => {
+      start()
+      visible.value = false
+    }
+    // 获取所有的维修组用户
+    const groupValue = ref(false)
+    const radioStyle = reactive({
+      display: 'flex',
+      height: '30px',
+      lineHeight: '30px'
+    })
 
     return {
       columns,
@@ -171,7 +216,13 @@ export default defineComponent({
       hasSelected,
       start,
       pagination,
-      handleTableChange
+      handleTableChange,
+      loading,
+      showModal,
+      visible,
+      handleOk,
+      groupValue,
+      radioStyle
     }
   }
 })
