@@ -45,7 +45,7 @@ import qs from 'qs'
 export default defineComponent({
   setup () {
     const pageTotal = ref(1)
-    const pagecurrent = ref(1)
+    const pageCurrent = ref(1)
     const state = useStore()
 
     // 表头结构
@@ -124,7 +124,7 @@ export default defineComponent({
     // 分页
     const pagination = computed(() => ({
       total: pageTotal.value,
-      current: pagecurrent.value,
+      current: pageCurrent.value,
       pageSize: 10
     }))
 
@@ -157,7 +157,7 @@ export default defineComponent({
       }).then((res) => {
         const { orderList } = res.data.data
         dataSource.value = orderList
-        pagecurrent.value = index
+        pageCurrent.value = index
       })
     }
 
@@ -214,5 +214,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
+.ant-table-striped :deep(.table-striped) td {
+  background-color: #fafafa;
+}
 </style>
