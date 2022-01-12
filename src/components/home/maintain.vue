@@ -46,15 +46,9 @@
         </a-descriptions-item>
         <a-descriptions-item label="详情图片">
           <!--图片上传组件-->
-          <a-upload-dragger
-            name="file"
-            :multiple="false"
-            action="api/maintain/upload_img/"
-            :data="{plate: infoList.plate}"
-            @change="uploadStatus"
-          >
+          <a-upload-dragger :file-list="fileList" :before-upload="beforeUpload">
             <p class="ant-upload-drag-icon" style="margin-top: 12px">
-              <inbox-outlined />
+              <inbox-outlined/>
             </p>
             <p class="ant-upload-text">上传需要维修车辆的相关照片</p>
             <p class="ant-upload-hint" style="margin-bottom: 12px">请注意，只支持一张照片上传</p>
@@ -142,7 +136,6 @@ export default defineComponent({
     const state = useStore()
     const router = useRouter()
 
-    // TODO: 待重构
     // 获取车辆详情
     const onSearch = () => {
       axios({
@@ -176,24 +169,33 @@ export default defineComponent({
     }
 
     // 报修对话框
+    const fileList = ref([])
+    const beforeUpload = file => {
+      fileList.value = [file]
+      return false
+    }
     const repairsVisible = ref(false)
     const repairs = () => {
       repairsVisible.value = true
     }
     const repairsOk = () => {
+      const formData = new FormData()
+      formData.append('plate', infoList.plate)
+      formData.append('cause', repairForm.cause)
+      formData.append('describe', repairForm.describe)
+      formData.append('terminal_drive', repairForm.terminal_drive)
+      fileList.value.forEach(file => {
+        formData.append('file', file)
+      })
       // 报修单提交请求
       axios({
         method: 'post',
         url: 'api/maintain/',
         headers: {
-          Authorization: 'bearer ' + state.state.token
+          Authorization: 'bearer ' + state.state.token,
+          'Content-Type': 'multipart/form-data'
         },
-        data: {
-          plate: infoList.plate,
-          cause: repairForm.cause,
-          describe: repairForm.describe,
-          terminal_drive: repairForm.terminal_drive
-        }
+        data: formData
       })
         .then(res => {
           confirmLoading.value = true
@@ -203,6 +205,7 @@ export default defineComponent({
             message.success(res.data.message)
             repairForm.describe = ''
             repairForm.terminal_drive = ''
+            fileList.value = []
           }
         })
         .catch(err => {
@@ -213,8 +216,8 @@ export default defineComponent({
           }
         })
     }
-    const confirmLoading = ref(false)
 
+    const confirmLoading = ref(false)
     // 车辆报修历史记录
     const color = ref('')
     const statusColor = (status) => {
@@ -297,14 +300,6 @@ export default defineComponent({
     const handleChange = value => {
       repairForm.cause = value
     }
-
-    // TODO: 上传功能
-    const uploadStatus = (file) => {
-      // console.log(file)
-      if (file.file.status === 'done') {
-        message.success('上传成功')
-      }
-    }
     return {
       onSearch,
       search,
@@ -323,7 +318,8 @@ export default defineComponent({
       vehicleHistory,
       moment,
       statusColor,
-      uploadStatus
+      fileList,
+      beforeUpload
     }
   }
 })
