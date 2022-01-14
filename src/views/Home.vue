@@ -10,15 +10,15 @@
       >
         <a-menu-item v-if="orderListShow" key="orderList">
           <router-link to="/orderList" />
-          派单
+          订单派发
         </a-menu-item>
-        <a-menu-item v-if="maintainShow" key="maintain">
+        <a-menu-item key="maintain">
           <router-link to="/maintain" />
-          报修
+          报修与历史
         </a-menu-item>
         <a-menu-item key="my">
           <router-link to="/my" />
-          我的
+          用户信息
         </a-menu-item>
       </a-menu>
     </a-layout-header>
@@ -74,13 +74,9 @@ export default defineComponent({
     }
     get()
 
-    const maintainShow = ref(false)
     const orderListShow = ref(false)
     const state = useStore()
     state.commit('decodeToken')
-    if (state.state.groUp === 1) {
-      maintainShow.value = true
-    }
     if (state.state.groUp === 3) {
       orderListShow.value = true
     }
@@ -91,7 +87,6 @@ export default defineComponent({
       visible,
       handleClose,
       message,
-      maintainShow,
       orderListShow
     }
   }

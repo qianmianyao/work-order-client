@@ -13,12 +13,11 @@
     ok-text="分配给他"
     cancelText="取消"
   >
-    <a-radio-group v-model:value="groupValue">
-      <a-radio value="1" :style="radioStyle">A</a-radio>
-      <a-radio value="2" :style="radioStyle">B</a-radio>
-      <a-radio value="3" :style="radioStyle">C</a-radio>
-      <a-radio value="4" :style="radioStyle">D</a-radio>
-    </a-radio-group>
+      <div v-for="({username}, index) of userList" :key="index">
+        <a-radio-group v-model:value="groupValue">
+          <a-radio :value="username" :style="radioStyle">{{ username }}</a-radio>
+        </a-radio-group>
+      </div>
   </a-modal>
   <div style="margin-top: 20px">
   <a-table
@@ -55,6 +54,10 @@
 import { defineComponent, ref, reactive, computed } from 'vue'
 import moment from 'moment'
 import axios from 'axios'
+import qs from 'qs'
+import { message } from 'ant-design-vue'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 
 export default defineComponent({
   setup () {
@@ -135,7 +138,7 @@ export default defineComponent({
       axios({
         method: 'get',
         url: 'api/get_order_list/',
-        params: { index: 1 }
+        params: { index: 1, status: 1 }
       })
         .then(res => {
           const { sendOrder, pageTotal } = res.data.data
@@ -148,10 +151,31 @@ export default defineComponent({
     const states = reactive({
       selectedRowKeys: []
     })
+    const state = useStore()
+    const router = useRouter()
     const hasSelected = computed(() => states.selectedRowKeys.length > 0)
     const start = () => {
       for (const id of states.selectedRowKeys) {
-        console.log(id)
+        axios({
+          method: 'post',
+          url: 'api/assign_order/',
+          headers: { Authorization: 'bearer ' + state.state.token },
+          data: qs.stringify({
+            work_order_id: id,
+            username: groupValue.value
+          })
+        })
+          .then(res => {
+            message.success(res.data.message)
+            getOrder()
+          })
+          .catch(err => {
+            if (err.response.status === 401) {
+              state.commit('removeToken')
+              router.push('/login')
+              message.error('登录失效，请重新登录')
+            }
+          })
       }
     }
     const rowSelection = {
@@ -181,7 +205,7 @@ export default defineComponent({
       axios({
         method: 'get',
         url: 'api/get_order_list/',
-        params: { index: index }
+        params: { index: index, status: 1 }
       })
         .then(res => {
           loading.value = false
@@ -203,11 +227,20 @@ export default defineComponent({
     }
     // 获取所有的维修组用户
     const groupValue = ref(false)
+    const userList = ref([])
     const radioStyle = reactive({
       display: 'flex',
       height: '30px',
       lineHeight: '30px'
     })
+    axios({
+      method: 'get',
+      url: 'api/user/maintain_user/'
+    })
+      .then(res => {
+        const { userList: user } = res.data.data
+        userList.value = user
+      })
 
     return {
       columns,
@@ -222,7 +255,8 @@ export default defineComponent({
       visible,
       handleOk,
       groupValue,
-      radioStyle
+      radioStyle,
+      userList
     }
   }
 })

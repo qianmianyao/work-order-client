@@ -147,8 +147,6 @@ export default defineComponent({
         .then(res => {
           if (res.data.code === 404) {
             message.warning(res.data.message)
-          } else if (res.data.code === 401) {
-            message.warning('抱歉，维修人员无法搜索车辆')
           } else {
             const { data } = res.data
             infoList.plate = data.plate
@@ -176,7 +174,11 @@ export default defineComponent({
     }
     const repairsVisible = ref(false)
     const repairs = () => {
-      repairsVisible.value = true
+      if (state.state.groUp !== 1) {
+        message.warning('您没有权限报修')
+      } else {
+        repairsVisible.value = true
+      }
     }
     const repairsOk = () => {
       const formData = new FormData()
