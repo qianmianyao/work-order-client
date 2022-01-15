@@ -1,52 +1,71 @@
 <template>
-  <a-divider orientation="left">派单列表</a-divider>
-  <!--<a-skeleton active v-if="true"/>-->
-  <!-- 派单表格 -->
-  <a-button type="primary" @click="showModal" :disabled="!hasSelected">
-    分配维修人员
-  </a-button>
-  <a-modal
-    v-model:visible="visible"
-    title="分配订单"
-    @ok="handleOk"
-    width="50%"
-    ok-text="分配给他"
-    cancelText="取消"
-  >
-      <div v-for="({username}, index) of userList" :key="index">
-        <a-radio-group v-model:value="groupValue">
-          <a-radio :value="username" :style="radioStyle">{{ username }}</a-radio>
-        </a-radio-group>
-      </div>
-  </a-modal>
-  <div style="margin-top: 20px">
-  <a-table
-    :columns="columns"
-    :scroll="{ x: 1500 }"
-    :data-source="dataSource"
-    :row-selection="rowSelection"
-    :pagination="pagination"
-    @change="handleTableChange"
-    :row-class-name="(_record, index) => (index % 2 === 1 ? 'table-striped' : null)"
-    class="ant-table-striped"
-    :loading="loading"
-  >
-    <template #bodyCell="{ column, record }">
-      <template v-if="column.key === 'status'">
-        <a-badge
-          :status="record.status === '待派单' ? 'processing' : record.status === '维修中' ? 'warning' : 'success'"
-          v-bind:text="record.status"
-        />
+  <a-skeleton active v-if="!login"/>
+  <div v-if="login">
+    <a-divider orientation="left">派单列表</a-divider>
+    <!-- 派单表格 -->
+    <a-button type="primary" @click="showModal" :disabled="!hasSelected">
+      分配维修人员
+    </a-button>
+    <a-modal
+      v-model:visible="visible"
+      title="分配订单"
+      @ok="handleOk"
+      width="50%"
+      ok-text="分配给他"
+      cancelText="取消"
+    >
+        <div v-for="({username}, index) of userList" :key="index">
+          <a-radio-group v-model:value="groupValue">
+            <a-radio :value="username" :style="radioStyle">{{ username }}</a-radio>
+          </a-radio-group>
+        </div>
+    </a-modal>
+    <div style="margin-top: 20px">
+    <a-table
+      :columns="columns"
+      :scroll="{ x: 1500 }"
+      :data-source="dataSource"
+      :row-selection="rowSelection"
+      :pagination="pagination"
+      @change="handleTableChange"
+      :row-class-name="(_record, index) => (index % 2 === 1 ? 'table-striped' : null)"
+      class="ant-table-striped"
+      :loading="loading"
+    >
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.key === 'status'">
+          <a-badge
+            :status="record.status === '待派单' ? 'processing' : record.status === '维修中' ? 'warning' : 'success'"
+            v-bind:text="record.status"
+          />
+        </template>
+
+        <template v-else-if="column.key === 'describe'">
+          <a-collapse ghost>
+            <a-collapse-panel key="1" header="查看详情">
+              <p>{{ record.describe }}</p>
+            </a-collapse-panel>
+          </a-collapse>
+        </template>
+
+        <template v-else-if="column.key === 'img'">
+          <a-button :mask="true" type="link" @click="imgShowModal(record.key)">点击展示图片</a-button>
+        </template>
+
       </template>
-      <template v-else-if="column.key === 'describe'">
-        <a-collapse ghost>
-          <a-collapse-panel key="1" header="查看详情">
-            <p>{{ record.describe }}</p>
-          </a-collapse-panel>
-        </a-collapse>
-      </template>
-    </template>
-  </a-table>
+    </a-table>
+    </div>
+    <a-modal
+      v-model:visible="imgVisible"
+      title="图片详情"
+      ok-text="确认"
+      cancel-text="取消"
+      @ok="imgHandleOk"
+      @cancel="imgHandleOk"
+    >
+      <a-empty v-if="imgNull" :image="simpleImage" />
+      <a-image :src="imgUrl"></a-image>
+    </a-modal>
   </div>
 </template>
 
@@ -55,7 +74,7 @@ import { defineComponent, ref, reactive, computed } from 'vue'
 import moment from 'moment'
 import axios from 'axios'
 import qs from 'qs'
-import { message } from 'ant-design-vue'
+import { message, Empty } from 'ant-design-vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 
@@ -91,6 +110,11 @@ export default defineComponent({
         title: '详细描述',
         dataIndex: 'describe',
         key: 'describe',
+        width: '8%'
+      },
+      {
+        title: '详情图片',
+        key: 'img',
         width: '8%'
       },
       {
@@ -144,6 +168,7 @@ export default defineComponent({
           const { sendOrder, pageTotal } = res.data.data
           dataSource.value = sendOrder
           total.value = pageTotal
+          login.value = true
         })
     }
     getOrder()
@@ -181,7 +206,6 @@ export default defineComponent({
     const rowSelection = {
       onChange: selectedRowKeys => {
         states.selectedRowKeys = selectedRowKeys
-        console.log(selectedRowKeys)
       },
       // 已完成的单不可再提交
       getCheckboxProps: record => ({
@@ -241,7 +265,31 @@ export default defineComponent({
         const { userList: user } = res.data.data
         userList.value = user
       })
-
+    // 骨架屏
+    const login = ref(false)
+    // 图片显示
+    const imgVisible = ref(false)
+    const imgUrl = ref('')
+    const imgNull = ref(false)
+    const imgHandleOk = () => {
+      imgUrl.value = ''
+      imgVisible.value = false
+    }
+    const imgShowModal = (imgId) => {
+      imgVisible.value = true
+      axios({
+        method: 'get',
+        url: `api/return_img/${imgId}`
+      })
+        .then(res => {
+          imgUrl.value = `api/return_img/${imgId}`
+          imgNull.value = false
+        }).catch(err => {
+          if (err.response.status === 404) {
+            imgNull.value = true
+          }
+        })
+    }
     return {
       columns,
       dataSource,
@@ -256,7 +304,14 @@ export default defineComponent({
       handleOk,
       groupValue,
       radioStyle,
-      userList
+      userList,
+      login,
+      imgVisible,
+      imgShowModal,
+      imgUrl,
+      simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
+      imgNull,
+      imgHandleOk
     }
   }
 })
