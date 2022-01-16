@@ -1,38 +1,40 @@
 <template>
-  <a-divider orientation="left">接单列表</a-divider>
-  <a-button type="primary" @click="start" :disabled="!hasSelected">结算工单</a-button>
-  <div style="margin-top: 20px">
-    <a-table
-      size="small"
-      :row-selection="rowSelection"
-      :columns="columns"
-      :dataSource="dataSource"
-      :pagination="pagination"
-      :scroll="{ x: 1500 }"
-      @change="handleTableChange"
-      :row-class-name="(_record, index) => (index % 2 === 1 ? 'table-striped' : null)"
-      class="ant-table-striped"
-      :loading="loading"
-    >
-      <template #bodyCell="{ column, record }">
-        <template v-if="column.key === 'status'">
-          <a-badge
-            :status="record.status === '维修中' ? 'warning' : 'success'"
-            v-bind:text="record.status"
-          />
+  <a-skeleton active v-if="!login"/>
+  <div v-if="login">
+    <a-button type="primary" @click="start" :disabled="!hasSelected">结算工单</a-button>
+    <div style="margin-top: 20px">
+      <a-table
+        size="small"
+        :row-selection="rowSelection"
+        :columns="columns"
+        :dataSource="dataSource"
+        :pagination="pagination"
+        :scroll="{ x: 1500 }"
+        @change="handleTableChange"
+        :row-class-name="(_record, index) => (index % 2 === 1 ? 'table-striped' : null)"
+        class="ant-table-striped"
+        :loading="loading"
+      >
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.key === 'status'">
+            <a-badge
+              :status="record.status === '维修中' ? 'warning' : 'success'"
+              v-bind:text="record.status"
+            />
+          </template>
+          <template v-else-if="column.key === 'accomplishTime'">
+            <span v-if="record.accomplishTime === null">还未完成</span>
+          </template>
+          <template v-else-if="column.key === 'describe'">
+            <a-collapse ghost>
+              <a-collapse-panel key="1" header="查看详情">
+                <p>{{ record.describe }}</p>
+              </a-collapse-panel>
+            </a-collapse>
+          </template>
         </template>
-        <template v-else-if="column.key === 'accomplishTime'">
-          <span v-if="record.accomplishTime === null">还未完成</span>
-        </template>
-        <template v-else-if="column.key === 'describe'">
-          <a-collapse ghost>
-            <a-collapse-panel key="1" header="查看详情">
-              <p>{{ record.describe }}</p>
-            </a-collapse-panel>
-          </a-collapse>
-        </template>
-      </template>
-    </a-table>
+      </a-table>
+    </div>
   </div>
 </template>
 
@@ -131,7 +133,7 @@ export default defineComponent({
 
     // 测试数据
     const dataSource = ref([])
-
+    const login = ref(false)
     // 历史记录api
     const getOrder = () => {
       axios({
@@ -143,6 +145,7 @@ export default defineComponent({
         const { orderList, orderCount } = res.data.data
         pageTotal.value = orderCount
         dataSource.value = orderList
+        login.value = true
       })
     }
     getOrder()
@@ -212,7 +215,8 @@ export default defineComponent({
       handleTableChange,
       pagination,
       dataSource,
-      loading
+      loading,
+      login
     }
   }
 })

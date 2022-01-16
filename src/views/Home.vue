@@ -16,6 +16,10 @@
           <router-link to="/maintain" />
           报修与历史
         </a-menu-item>
+        <a-menu-item v-if="waitingRepairShow" key="waitingRepair">
+          <router-link to="/waitingRepair" />
+          待维修列表
+        </a-menu-item>
         <a-menu-item key="my">
           <router-link to="/my" />
           用户信息
@@ -68,17 +72,21 @@ export default defineComponent({
         selectedKeys.value[0] = 'orderList'
       } else if (path === '/maintain') {
         selectedKeys.value[0] = 'maintain'
-      } else if (path === '/my') {
+      } else if (path === '/childComponents') {
         selectedKeys.value[0] = 'my'
       }
     }
     get()
 
     const orderListShow = ref(false)
+    const waitingRepairShow = ref(false)
     const state = useStore()
     state.commit('decodeToken')
     if (state.state.groUp === 3) {
       orderListShow.value = true
+    }
+    if (state.state.groUp === 2) {
+      waitingRepairShow.value = true
     }
 
     const message = ref('主页测试信息')
@@ -87,7 +95,8 @@ export default defineComponent({
       visible,
       handleClose,
       message,
-      orderListShow
+      orderListShow,
+      waitingRepairShow
     }
   }
 

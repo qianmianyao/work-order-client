@@ -3,6 +3,7 @@ import Home from '@/views/Home.vue'
 import my from '@/components/home/my'
 import orderList from '@/components/home/orderList'
 import maintain from '@/components/home/maintain'
+import waitingRepair from '@/components/home/waitingRepair'
 import Login from '@/views/Login'
 import logins from '@/components/login/logins'
 import register from '@/components/login/register'
@@ -28,6 +29,10 @@ const routes = [
       {
         path: '/maintain',
         component: maintain
+      },
+      {
+        path: '/waitingRepair',
+        component: waitingRepair
       }
     ]
   },
@@ -38,7 +43,7 @@ const routes = [
     // 登录后无法进入登录页面
     beforeEnter (to, from, next) {
       const isLogin = localStorage.token
-      isLogin ? next({ path: '/my' }) : next()
+      isLogin ? next({ path: '/childComponents' }) : next()
     },
     children: [
       {

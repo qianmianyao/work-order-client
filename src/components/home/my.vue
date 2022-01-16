@@ -32,8 +32,6 @@
       <a-input-password v-model:value="info.newPassword" placeholder="输入内容" />
     </a-modal>
     <a-empty v-if="!show" style="margin-top: 20px" description="暂无数据"/>
-    <!--  表格-->
-    <maintenance-record v-if="show" />
   </div>
 </template>
 <script>
@@ -44,11 +42,9 @@ import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { notification, message } from 'ant-design-vue'
 import qs from 'qs'
-import MaintenanceRecord from '@/components/home/my/maintenanceRecord'
 
 export default defineComponent({
   components: {
-    MaintenanceRecord, // 历史记录组件
     EditOutlined,
     LogoutOutlined
   },
