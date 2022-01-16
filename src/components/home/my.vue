@@ -12,10 +12,10 @@
       <!--    统计信息-->
       <a-row v-if="show" style="margin-top: 20px">
         <a-col :span="12">
-          <a-statistic title="剩余订单" :value="100" style="margin-right: 50px" />
+          <a-statistic title="剩余订单" :value="pending" style="margin-right: 50px" />
         </a-col>
         <a-col :span="12">
-          <a-statistic title="完成订单" :value="20" />
+          <a-statistic title="完成订单" :value="complete" />
         </a-col>
       </a-row>
     </a-card>
@@ -31,7 +31,7 @@
       <p>修改密码</p>
       <a-input-password v-model:value="info.newPassword" placeholder="输入内容" />
     </a-modal>
-    <a-empty v-if="!show" style="margin-top: 20px" description="暂无数据"/>
+    <a-empty style="margin-top: 20px" description="暂无数据"/>
   </div>
 </template>
 <script>
@@ -134,6 +134,20 @@ export default defineComponent({
         }
       })
 
+    // 订单完成信息
+    const complete = ref(0)
+    const pending = ref(0)
+    axios({
+      method: 'get',
+      url: 'api/user/order_count/',
+      headers: { Authorization: 'bearer ' + state.state.token }
+    })
+      .then(res => {
+        const { complete: c, pending: p } = res.data.data
+        complete.value = c
+        pending.value = p
+      })
+
     return {
       visible,
       confirmLoading,
@@ -142,7 +156,9 @@ export default defineComponent({
       info,
       logout,
       show,
-      login
+      login,
+      pending,
+      complete
     }
   }
 

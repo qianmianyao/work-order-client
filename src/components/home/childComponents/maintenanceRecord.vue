@@ -32,9 +32,23 @@
               </a-collapse-panel>
             </a-collapse>
           </template>
+          <template v-else-if="column.key === 'img'">
+            <a-button :mask="true" type="link" @click="imgShowModal(record.key)">点击展示图片</a-button>
+          </template>
         </template>
       </a-table>
     </div>
+    <a-modal
+      v-model:visible="imgVisible"
+      title="图片详情"
+      ok-text="确认"
+      cancel-text="取消"
+      @ok="imgHandleOk"
+      @cancel="imgHandleOk"
+    >
+      <a-empty v-if="imgNull" :image="simpleImage" />
+      <a-image :src="imgUrl"></a-image>
+    </a-modal>
   </div>
 </template>
 
@@ -43,7 +57,7 @@ import { defineComponent, computed, reactive, ref } from 'vue'
 import { useStore } from 'vuex'
 import moment from 'moment'
 import axios from 'axios'
-import { message } from 'ant-design-vue'
+import { Empty, message } from 'ant-design-vue'
 import qs from 'qs'
 export default defineComponent({
   setup () {
@@ -108,6 +122,11 @@ export default defineComponent({
         width: '8%'
       },
       {
+        title: '详情图片',
+        key: 'img',
+        width: '8%'
+      },
+      {
         title: '派单人',
         dataIndex: 'sendOrderUserId',
         key: 'sendOrderUserId',
@@ -140,7 +159,7 @@ export default defineComponent({
         method: 'get',
         url: 'api/user/get_order/',
         headers: { Authorization: 'bearer ' + state.state.token },
-        params: { index: 1 }
+        params: { index: 1, status: 2 }
       }).then((res) => {
         const { orderList, orderCount } = res.data.data
         pageTotal.value = orderCount
@@ -207,6 +226,30 @@ export default defineComponent({
           }
         })
     }
+
+    // 图片显示
+    const imgVisible = ref(false)
+    const imgUrl = ref('')
+    const imgNull = ref(false)
+    const imgHandleOk = () => {
+      imgUrl.value = ''
+      imgVisible.value = false
+    }
+    const imgShowModal = (imgId) => {
+      imgVisible.value = true
+      axios({
+        method: 'get',
+        url: `api/return_img/${imgId}`
+      })
+        .then(res => {
+          imgUrl.value = `api/return_img/${imgId}`
+          imgNull.value = false
+        }).catch(err => {
+          if (err.response.status === 404) {
+            imgNull.value = true
+          }
+        })
+    }
     return {
       columns,
       rowSelection,
@@ -216,7 +259,13 @@ export default defineComponent({
       pagination,
       dataSource,
       loading,
-      login
+      login,
+      imgShowModal,
+      imgHandleOk,
+      imgVisible,
+      imgUrl,
+      imgNull,
+      simpleImage: Empty.PRESENTED_IMAGE_SIMPLE
     }
   }
 })

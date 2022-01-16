@@ -74,6 +74,8 @@ export default defineComponent({
         selectedKeys.value[0] = 'maintain'
       } else if (path === '/childComponents') {
         selectedKeys.value[0] = 'my'
+      } else if (path === '/waitingRepair') {
+        selectedKeys.value[0] = 'waitingRepair'
       }
     }
     get()
