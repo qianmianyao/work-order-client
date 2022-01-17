@@ -7,6 +7,7 @@ import waitingRepair from '@/components/home/waitingRepair'
 import Login from '@/views/Login'
 import logins from '@/components/login/logins'
 import register from '@/components/login/register'
+import Admin from '@/views/Admin'
 
 const routes = [
   {
@@ -59,6 +60,11 @@ const routes = [
         component: register
       }
     ]
+  },
+  {
+    path: '/admin',
+    name: 'Admin',
+    component: Admin
   }
 ]
 
