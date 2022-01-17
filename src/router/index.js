@@ -1,8 +1,8 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import Home from '@/views/Home.vue'
 import my from '@/components/home/my'
-import orderList from '@/components/home/orderList'
-import maintain from '@/components/home/maintain'
+import sendOrders from '@/components/home/sendOrders'
+import submitOrders from '@/components/home/submitOrders'
 import waitingRepair from '@/components/home/waitingRepair'
 import Login from '@/views/Login'
 import logins from '@/components/login/logins'
@@ -16,19 +16,19 @@ const routes = [
     children: [
       {
         path: '/',
-        component: orderList
+        component: sendOrders
       },
       {
         path: '/my',
         component: my
       },
       {
-        path: '/orderList',
-        component: orderList
+        path: '/sendOrders',
+        component: sendOrders
       },
       {
-        path: '/maintain',
-        component: maintain
+        path: '/submitOrders',
+        component: submitOrders
       },
       {
         path: '/waitingRepair',

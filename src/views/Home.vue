@@ -8,12 +8,12 @@
         mode="horizontal"
         :style="{ lineHeight: '64px' }"
       >
-        <a-menu-item v-if="orderListShow" key="orderList">
-          <router-link to="/orderList" />
+        <a-menu-item v-if="orderListShow" key="sendOrders">
+          <router-link to="/sendOrders" />
           订单派发
         </a-menu-item>
-        <a-menu-item key="maintain">
-          <router-link to="/maintain" />
+        <a-menu-item key="submitOrders">
+          <router-link to="/submitOrders" />
           报修与历史
         </a-menu-item>
         <a-menu-item v-if="waitingRepairShow" key="waitingRepair">
@@ -68,10 +68,10 @@ export default defineComponent({
     const { proxy } = getCurrentInstance()
     const path = proxy.$root.$route.path
     const get = () => {
-      if (path === '/orderList') {
-        selectedKeys.value[0] = 'orderList'
-      } else if (path === '/maintain') {
-        selectedKeys.value[0] = 'maintain'
+      if (path === '/sendOrders') {
+        selectedKeys.value[0] = 'sendOrders'
+      } else if (path === '/submitOrders') {
+        selectedKeys.value[0] = 'submitOrders'
       } else if (path === '/childComponents') {
         selectedKeys.value[0] = 'my'
       } else if (path === '/waitingRepair') {
