@@ -8,6 +8,7 @@ import Login from '@/views/Login'
 import logins from '@/components/login/logins'
 import register from '@/components/login/register'
 import Admin from '@/views/Admin'
+import store from '@/store'
 
 const routes = [
   {
@@ -17,7 +18,7 @@ const routes = [
     children: [
       {
         path: '/',
-        component: sendOrders
+        component: my
       },
       {
         path: '/my',
@@ -64,7 +65,11 @@ const routes = [
   {
     path: '/admin',
     name: 'Admin',
-    component: Admin
+    component: Admin,
+    // 只有财务和维修管理人员可以访问后台
+    beforeEnter (to, from, next) {
+      to.path === '/admin' && (store.state.groUp === 4 || store.state.groUp === 5) ? next() : next(from.path)
+    }
   }
 ]
 

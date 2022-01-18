@@ -76,6 +76,8 @@ export default defineComponent({
         selectedKeys.value[0] = 'my'
       } else if (path === '/waitingRepair') {
         selectedKeys.value[0] = 'waitingRepair'
+      } else {
+        selectedKeys.value[0] = 'my'
       }
     }
     get()
@@ -90,7 +92,7 @@ export default defineComponent({
     if (state.state.groUp === 2) {
       waitingRepairShow.value = true
     }
-
+    console.log('生活应该慢下来 https://qianmianyao.cm')
     const message = ref('主页测试信息')
     return {
       selectedKeys,
