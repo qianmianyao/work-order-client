@@ -29,9 +29,7 @@
       >
         <a-descriptions-item label="车牌">{{ infoList.plate }}</a-descriptions-item>
         <a-descriptions-item label="单位名称">{{ infoList.group }}</a-descriptions-item>
-        <a-descriptions-item label="车辆设备">
-          <a-input v-model:value="repairForm.terminal_drive" placeholder="车辆的终端型号" />
-        </a-descriptions-item>
+        <a-descriptions-item label="车辆设备">{{ infoList.terminal_drive }}</a-descriptions-item>
         <a-descriptions-item label="报修原因">
           <a-space>
             <a-select
@@ -121,6 +119,7 @@ export default defineComponent({
     const infoList = reactive({
       plate: '',
       name: '',
+      terminal_drive: '',
       phone: '',
       group: '',
       rowUpdateTime: ''
@@ -128,8 +127,7 @@ export default defineComponent({
     // 报修提交的数据
     const repairForm = reactive({
       cause: '',
-      describe: '',
-      terminal_drive: ''
+      describe: ''
     })
 
     const cardShow = ref(false)
@@ -151,6 +149,7 @@ export default defineComponent({
             const { data } = res.data
             infoList.plate = data.plate
             infoList.name = data.name
+            infoList.terminal_drive = data.terminal_drive
             infoList.phone = data.phone
             infoList.group = data.group
             infoList.rowUpdateTime = data.rowUpdateTime
@@ -185,7 +184,6 @@ export default defineComponent({
       formData.append('plate', infoList.plate)
       formData.append('cause', repairForm.cause)
       formData.append('describe', repairForm.describe)
-      formData.append('terminal_drive', repairForm.terminal_drive)
       fileList.value.forEach(file => {
         formData.append('file', file)
       })
@@ -206,7 +204,6 @@ export default defineComponent({
             repairsVisible.value = false
             message.success(res.data.message)
             repairForm.describe = ''
-            repairForm.terminal_drive = ''
             fileList.value = []
           }
         })

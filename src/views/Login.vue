@@ -57,7 +57,7 @@ export default defineComponent({
     const { proxy } = getCurrentInstance()
     const path = proxy.$root.$route.path
     const get = () => {
-      if (path === '/logins') {
+      if (path === '/login') {
         selectedKeys.value[0] = '1'
       } else if (path === '/register') {
         selectedKeys.value[0] = '2'

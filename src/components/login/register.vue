@@ -41,11 +41,13 @@
         </a-input-password>
       </a-form-item>
 
-      <a-radio-group v-model:value="groupValue" style="margin-bottom: 24px;">
-        <a-radio  value="1">客服人员</a-radio>
-        <a-radio  value="2">维修人员</a-radio>
-        <a-radio  value="3">派单人员</a-radio>
-      </a-radio-group>
+      <a-space style="margin-bottom: 24px;">
+        <a-select
+          placeholder="请选择身份"
+          :options="identity"
+          @change="handleChange"
+        />
+      </a-space>
 
       <a-form-item>
         <a-button
@@ -69,7 +71,6 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
 import { notification, message } from 'ant-design-vue'
 import axios from 'axios'
 import qs from 'qs'
-import { useRouter } from 'vue-router'
 export default defineComponent({
   components: {
     UserOutlined,
@@ -83,7 +84,6 @@ export default defineComponent({
       cpassword: ''
     })
     const loading = ref(false)
-    const groupValue = ref('1')
     const onFinish = values => {
       console.log('Success:', values)
     }
@@ -105,12 +105,6 @@ export default defineComponent({
       })
     }
 
-    // 跳转
-    const router = useRouter()
-    const push = () => {
-      router.push({ path: '/login' })
-    }
-
     // 沟通后端登录
     const register = () => {
       loading.value = true
@@ -129,7 +123,7 @@ export default defineComponent({
             loading.value = false
             message.success(res.data.message)
             if (res.data.code === 1) {
-              push()
+              message.success('请前往登录页面登录')
             }
           }
         )
@@ -139,6 +133,35 @@ export default defineComponent({
         })
     }
 
+    // 身份选择
+    const groupValue = ref('1')
+    const handleChange = value => {
+      groupValue.value = value
+    }
+
+    const identity = reactive([
+      {
+        value: 1,
+        label: '客服人员'
+      },
+      {
+        value: 2,
+        label: '维修人员'
+      },
+      {
+        value: 3,
+        label: '派单人员'
+      },
+      {
+        value: 4,
+        label: '财务管理'
+      },
+      {
+        value: 5,
+        label: '维修管理'
+      }
+    ])
+
     return {
       formState,
       onFinish,
@@ -146,7 +169,9 @@ export default defineComponent({
       disabled,
       register,
       groupValue,
-      loading
+      loading,
+      handleChange,
+      identity
     }
   }
 
