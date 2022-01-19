@@ -173,10 +173,10 @@ export default defineComponent({
     }
     const repairsVisible = ref(false)
     const repairs = () => {
-      if (state.state.groUp !== 1) {
-        message.warning('您没有权限报修')
-      } else {
+      if (state.state.groUp === 1 || state.state.groUp === 6) {
         repairsVisible.value = true
+      } else {
+        message.warning('您没有权限报修')
       }
     }
     const repairsOk = () => {
