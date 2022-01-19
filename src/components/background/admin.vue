@@ -10,7 +10,7 @@
       <a-button type="primary" style="margin-bottom: 20px">生成新的全局注册码</a-button>
       <a-typography-paragraph copyable>
         <a-typography-text code>
-          5GWC4Y-XJT78P-WVHC6B-WDTMDBA
+          {{ registrationCode }}
         </a-typography-text>
       </a-typography-paragraph>
       <a-typography-paragraph>
@@ -28,12 +28,16 @@ export default defineComponent({
     InfoCircleOutlined
   },
   setup () {
+    // 折叠框
     const activeKey = ref(['1'])
     watch(activeKey, val => {
       console.log(val)
     })
+    // 注册码
+    const registrationCode = ref('5GWC4Y-XJT78P-WVHC6B-WDTMDB')
     return {
-      activeKey
+      activeKey,
+      registrationCode
     }
   }
 
