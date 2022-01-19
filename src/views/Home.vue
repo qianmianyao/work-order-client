@@ -24,6 +24,10 @@
           <router-link to="/my" />
           用户信息
         </a-menu-item>
+        <a-menu-item v-if="isAdmin">
+          <router-link to="/admin" />
+          后台
+        </a-menu-item>
       </a-menu>
     </a-layout-header>
 
@@ -31,7 +35,7 @@
 
       <a-alert
         v-if="visible"
-        :message="message"
+        :message="banner"
         type="success"
         closable
         :after-close="handleClose"
@@ -86,21 +90,29 @@ export default defineComponent({
     const waitingRepairShow = ref(false)
     const state = useStore()
     state.commit('decodeToken')
-    if (state.state.groUp === 3) {
+    if (state.state.groUp === 3 || state.state.groUp === 6) {
       orderListShow.value = true
     }
-    if (state.state.groUp === 2) {
+    if (state.state.groUp === 2 || state.state.groUp === 6) {
       waitingRepairShow.value = true
     }
     console.log('生活应该慢下来 https://qianmianyao.cm')
-    const message = ref('主页测试信息')
+    const banner = ref('主页测试信息')
+
+    // 判断权限
+    const isAdmin = ref(false)
+    state.state.groUp === 4 ||
+    state.state.groUp === 5 ||
+    state.state.groUp === 6
+      ? isAdmin.value = true : isAdmin.value = false
     return {
       selectedKeys,
       visible,
       handleClose,
-      message,
+      banner,
       orderListShow,
-      waitingRepairShow
+      waitingRepairShow,
+      isAdmin
     }
   }
 
