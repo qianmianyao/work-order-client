@@ -8,7 +8,9 @@ import Login from '@/views/Login'
 import logins from '@/components/login/logins'
 import register from '@/components/login/register'
 import Admin from '@/views/Admin'
-import store from '@/store'
+// import store from '@/store'
+import admin from '@/components/background/admin'
+import financial from '@/components/background/financial'
 
 const routes = [
   {
@@ -17,7 +19,7 @@ const routes = [
     component: Home,
     children: [
       {
-        path: '/',
+        path: '',
         component: my
       },
       {
@@ -45,7 +47,7 @@ const routes = [
     // 登录后无法进入登录页面
     beforeEnter (to, from, next) {
       const isLogin = localStorage.token
-      isLogin ? next({ path: '/childComponents' }) : next()
+      isLogin ? next({ path: '/my' }) : next()
     },
     children: [
       {
@@ -66,10 +68,21 @@ const routes = [
     path: '/admin',
     name: 'Admin',
     component: Admin,
-    // 只有财务和维修管理人员可以访问后台
-    beforeEnter (to, from, next) {
-      to.path === '/admin' && (store.state.groUp === 4 || store.state.groUp === 5) ? next() : next(from.path)
-    }
+    // 子路由
+    children: [
+      {
+        path: '',
+        component: financial
+      },
+      {
+        path: '/admin/financial',
+        component: financial
+      },
+      {
+        path: '/admin/globalAdmin',
+        component: admin
+      }
+    ]
   }
 ]
 
@@ -78,7 +91,7 @@ const router = createRouter({
   routes
 })
 
-// 登录事件，如果没有登录只能访问注册和登录页面，这个函数在页面跳转的时候执行
+// 全局路由守卫，如果没有登录只能访问注册和登录页面，这个函数在页面跳转的时候执行
 router.beforeEach((to, from, next) => {
   const isLogin = localStorage.token
   isLogin || to.path === '/login' || to.path === '/register' ? next() : next({ path: '/login' })
