@@ -2,6 +2,15 @@
   <a-skeleton active v-if="!login"/>
   <div v-if="login">
     <a-button type="primary" @click="start" :disabled="!hasSelected">结算工单</a-button>
+    <a-modal
+      ok-text="确认"
+      cancel-text="取消"
+      v-model:visible="settlement"
+      title="请填写完成订单说明"
+      :confirm-loading="confirmLoading"
+      @ok="settlementOk">
+      <a-textarea v-model:value="explainValue" placeholder="请输入详细的报修完毕说明" :rows="4" />
+    </a-modal>
     <div style="margin-top: 20px">
       <a-table
         size="small"
@@ -153,7 +162,7 @@ export default defineComponent({
     // 测试数据
     const dataSource = ref([])
     const login = ref(false)
-    // 历史记录api
+    // 待维修api
     const getOrder = () => {
       axios({
         method: 'get',
@@ -188,16 +197,39 @@ export default defineComponent({
     }
 
     // 订单完成
+    const confirmLoading = ref(false) // loading
+    const settlement = ref(false) // 弹出报修框
+    const explainValue = ref('')
+    const start = () => {
+      settlement.value = true
+    }
     const states = reactive({
       selectedRowKeys: []
     })
     const hasSelected = computed(() => states.selectedRowKeys.length > 0)
-    const start = () => {
+    const settlementOk = () => {
+      confirmLoading.value = true
       for (const id of states.selectedRowKeys) {
-        completeOrder(id)
-        getOrder()
+        axios({
+          method: 'post',
+          url: 'api/complete_order/',
+          headers: { Authorization: 'bearer ' + state.state.token },
+          data: qs.stringify({
+            id,
+            explain: explainValue.value
+          })
+        })
+          .then(res => {
+            if (res.data.code === 200) {
+              settlement.value = false
+              confirmLoading.value = false
+              message.success(res.data.message)
+            }
+          })
       }
     }
+
+    // 获取选择的行的值
     const rowSelection = {
       onChange: (selectedRowKeys) => {
         states.selectedRowKeys = selectedRowKeys
@@ -208,23 +240,6 @@ export default defineComponent({
         name: record.status
       }),
       columnWidth: '2%'
-    }
-
-    // 确认订单接口
-    const completeOrder = id => {
-      axios({
-        method: 'post',
-        url: 'api/complete_order/',
-        headers: { Authorization: 'bearer ' + state.state.token },
-        data: qs.stringify({
-          id
-        })
-      })
-        .then(res => {
-          if (res.data.code === 200) {
-            message.success(res.data.message)
-          }
-        })
     }
 
     // 图片显示
@@ -255,7 +270,11 @@ export default defineComponent({
       rowSelection,
       hasSelected,
       start,
+      settlement,
+      settlementOk,
+      explainValue,
       handleTableChange,
+      confirmLoading,
       pagination,
       dataSource,
       loading,
