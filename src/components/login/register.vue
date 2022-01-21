@@ -125,15 +125,18 @@ export default defineComponent({
         data: qs.stringify({
           username: formState.username,
           password: formState.password,
-          group: groupValue.value
+          group: groupValue.value,
+          key: formState.token
         })
       })
         .then(
           res => {
             loading.value = false
-            message.success(res.data.message)
             if (res.data.code === 1) {
-              message.success('请前往登录页面登录')
+              message.success(res.data.message + '请前往登录页面登录')
+              formState.token = ''
+            } else {
+              message.error(res.data.message)
             }
           }
         )
