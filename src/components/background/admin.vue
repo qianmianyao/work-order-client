@@ -7,6 +7,16 @@
       <p>账户管理</p>
     </a-collapse-panel>
     <a-collapse-panel key="2" header="全局注册码">
+      是否开启注册
+      <a-switch
+        @click="checked"
+        v-model:checked="registeredSwitch"
+        checked-children="开" un-checked-children="关"
+        size="small"
+        unCheckedValue="0"
+        checkedValue="1"
+      />
+      <a-divider orientation="right" plain>注册权限设置</a-divider>
       <a-button type="primary" style="margin-bottom: 20px" @click="updateToken">生成新的全局注册码</a-button>
       <a-typography-paragraph copyable>
         <a-typography-text code>
@@ -14,8 +24,11 @@
         </a-typography-text>
       </a-typography-paragraph>
       <a-typography-paragraph>
-        <history-outlined  style="color: green"/> 最近更新时间: <span style="color: green">{{ moment(updateTime).format('YYYY-MM-DD HH:mm:ss') }}</span>
-        <br/>
+        <history-outlined  style="color: green"/> 最近更新时间:
+        <span style="color: green">
+          {{ moment(updateTime).format('YYYY-MM-DD HH:mm:ss') }}
+        </span>
+        <a-divider orientation="right" plain>说明</a-divider>
         <info-circle-outlined style="color: #DC143C"/> 为了防止无关人员注册，注册需要使用此全局注册码，注册码可以进行更新，更新后原有的注册码将会失效，请勿泄漏
       </a-typography-paragraph>
     </a-collapse-panel>
@@ -65,12 +78,24 @@ export default defineComponent({
       getToken(1)
       message.success('全局验证码更新成功')
     }
+
+    // 注册开关
+    const registeredSwitch = ref('')
+    axios.get('api/switch/').then(res => {
+      registeredSwitch.value = res.data.data.status
+    })
+    const checked = () => {
+      console.log(registeredSwitch.value)
+      axios.get('api/switch/', { params: { status: registeredSwitch.value } })
+    }
     return {
       activeKey,
       registrationCode,
       updateToken,
       updateTime,
-      moment
+      moment,
+      registeredSwitch,
+      checked
     }
   }
 

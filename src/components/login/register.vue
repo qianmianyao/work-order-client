@@ -1,5 +1,6 @@
 <template>
-  <div :style="{ background: '#fff', padding: '25px', minHeight: '280px'}">
+  <div v-if="!globalVisible"><a-empty description="暂未开启注册，请联系管理员申请账号"/></div>
+  <div v-if="globalVisible" :style="{ background: '#fff', padding: '25px', minHeight: '280px'}">
     <a-form
       style="margin: 0 auto"
       :model="formState"
@@ -175,6 +176,14 @@ export default defineComponent({
       }
     ])
 
+    // 判断是否显示此页面
+    const globalVisible = ref(true)
+    axios.get('api/switch/').then(res => {
+      if (res.data.data.status !== '1') {
+        globalVisible.value = false
+      }
+    })
+
     return {
       formState,
       onFinish,
@@ -184,7 +193,8 @@ export default defineComponent({
       groupValue,
       loading,
       handleChange,
-      identity
+      identity,
+      globalVisible
     }
   }
 
