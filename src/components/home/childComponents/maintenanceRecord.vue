@@ -197,6 +197,18 @@ export default defineComponent({
     }
 
     // 订单完成
+    // 获取选择的行的值
+    const rowSelection = {
+      onChange: selectedRowKeys => {
+        states.selectedRowKeys = selectedRowKeys
+      },
+      // 已完成的单不可再提交
+      getCheckboxProps: record => ({
+        disabled: record.status === '已完成',
+        name: record.status
+      }),
+      columnWidth: '2%'
+    }
     const confirmLoading = ref(false) // loading
     const settlement = ref(false) // 弹出报修框
     const explainValue = ref('')
@@ -224,22 +236,12 @@ export default defineComponent({
               settlement.value = false
               confirmLoading.value = false
               message.success(res.data.message)
+              getOrder()
+              // 订单提交完毕后置空选中项，避免可以再次提交
+              states.selectedRowKeys = []
             }
           })
       }
-    }
-
-    // 获取选择的行的值
-    const rowSelection = {
-      onChange: (selectedRowKeys) => {
-        states.selectedRowKeys = selectedRowKeys
-      },
-      // 已完成的单不可再提交
-      getCheckboxProps: record => ({
-        disabled: record.status === '已完成',
-        name: record.status
-      }),
-      columnWidth: '2%'
     }
 
     // 图片显示

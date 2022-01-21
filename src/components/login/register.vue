@@ -41,6 +41,14 @@
         </a-input-password>
       </a-form-item>
 
+      <a-form-item name="token" :rules="[{ required: true, message: '请输入全局注册码!' }]">
+        <a-input v-model:value="formState.token" placeholder="请输入全局注册码">
+          <template #prefix>
+            <KeyOutlined class="site-form-item-icon" />
+          </template>
+        </a-input>
+      </a-form-item>
+
       <a-space style="margin-bottom: 24px;">
         <a-select
           placeholder="请选择身份"
@@ -67,21 +75,23 @@
 
 <script>
 import { computed, defineComponent, reactive, ref } from 'vue'
-import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
+import { UserOutlined, LockOutlined, KeyOutlined } from '@ant-design/icons-vue'
 import { notification, message } from 'ant-design-vue'
 import axios from 'axios'
 import qs from 'qs'
 export default defineComponent({
   components: {
     UserOutlined,
-    LockOutlined
+    LockOutlined,
+    KeyOutlined
   },
 
   setup () {
     const formState = reactive({
       username: '',
       password: '',
-      cpassword: ''
+      cpassword: '',
+      token: ''
     })
     const loading = ref(false)
     const onFinish = values => {
@@ -94,7 +104,7 @@ export default defineComponent({
 
     // 不允许有空
     const disabled = computed(() => {
-      return !(formState.username && formState.password && formState.cpassword)
+      return !(formState.username && formState.password && formState.cpassword && formState.token)
     })
 
     // 气泡通知
