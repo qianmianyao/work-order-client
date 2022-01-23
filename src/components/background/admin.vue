@@ -26,11 +26,26 @@
         :scroll="{ x: 1000 }"
       >
         <template #bodyCell="{ column, record }">
-          <template v-if="column.key === 'password'">
+          <template v-if="column.key === 'action'">
 
             <a-popover trigger="click" :visible="record.id === visible">
               <template #content>
-                <a-input-password v-model:value="newPassword" style="width: 188px; height: 32px" placeholder="输入新密码"></a-input-password>
+                <a-divider orientation="right" plain>修改密码</a-divider>
+                <a-input-password
+                  v-model:value="newPassword"
+                  style="width: 188px; height: 32px"
+                  placeholder="输入新密码"
+                />
+                <a-divider orientation="right" plain>修改用户组</a-divider>
+                <a-space>
+                  <a-select
+                    style="width: 188px"
+                    :placeholder="record.groupName"
+                    :options="identity"
+                    @change="handleChange"
+                    :username="username = record.username"
+                  />
+                </a-space>
                 <br/>
                 <a-button
                   size="small"
@@ -48,7 +63,7 @@
                   提交
                 </a-button>
               </template>
-              <a-button type="link" @click="show(record.id)">修改密码</a-button>
+              <a-button type="link" @click="show(record.id)">修改</a-button>
             </a-popover>
 
           </template>
@@ -86,7 +101,7 @@
   </a-collapse>
 </template>
 <script>
-import { defineComponent, ref, watch } from 'vue'
+import { defineComponent, ref, reactive } from 'vue'
 import { CaretRightOutlined, InfoCircleOutlined, HistoryOutlined } from '@ant-design/icons-vue'
 import axios from 'axios'
 import { useStore } from 'vuex'
@@ -103,9 +118,6 @@ export default defineComponent({
     const state = useStore()
     // 折叠框
     const activeKey = ref(['1', '2'])
-    watch(activeKey, val => {
-      console.log(val)
-    })
 
     // 获取全局注册码
     const registrationCode = ref('')
@@ -170,17 +182,20 @@ export default defineComponent({
         key: 'registrationDate'
       },
       {
-        title: '密码',
-        key: 'password'
+        title: '修改用户相关信息',
+        key: 'action'
       }
     ]
     // 获取所有的用户
     const dataSource = ref([])
-    axios.get('api/admin/get_all_users/', { headers: { Authorization: 'bearer ' + state.state.token } })
-      .then(res => {
-        const { users } = res.data.data
-        dataSource.value = users
-      })
+    const getAllUsers = () => {
+      axios.get('api/admin/get_all_users/', { headers: { Authorization: 'bearer ' + state.state.token } })
+        .then(res => {
+          const { users } = res.data.data
+          dataSource.value = users
+        })
+    }
+    getAllUsers()
 
     // 修改密码气泡框
     const visible = ref(false)
@@ -198,13 +213,13 @@ export default defineComponent({
       })
         .then(res => {
           if (res.data.code === 200) {
-            message.success(username + ' 的密码更新成功')
+            message.success(username + '的密码更新成功')
             newPassword.value = ''
             visible.value = false
           }
         })
     }
-    // 丢该 visible 使其为真
+    // visible 使其为真
     const show = (id) => {
       visible.value = id
     }
@@ -212,6 +227,43 @@ export default defineComponent({
       visible.value = false
       newPassword.value = ''
     }
+    // 修改用户组
+    const username = ref('')
+    const handleChange = (value) => {
+      axios({
+        method: 'post',
+        url: 'api/admin/change_group/',
+        data: qs.stringify({
+          username: username.value,
+          group_id: value
+        })
+      })
+        .then(res => {
+          message.success(res.data.message)
+        })
+    }
+    const identity = reactive([
+      {
+        value: 1,
+        label: '客服人员'
+      },
+      {
+        value: 2,
+        label: '维修人员'
+      },
+      {
+        value: 3,
+        label: '派单人员'
+      },
+      {
+        value: 4,
+        label: '财务管理'
+      },
+      {
+        value: 5,
+        label: '维修管理'
+      }
+    ])
 
     return {
       activeKey,
@@ -228,7 +280,10 @@ export default defineComponent({
       newPassword,
       visible,
       show,
-      close
+      close,
+      identity,
+      handleChange,
+      username
     }
   }
 
