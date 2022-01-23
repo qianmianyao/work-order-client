@@ -7,6 +7,7 @@
       <template #actions>
         <edit-outlined style="color: #1E90FF" key="edit" @click="showModal" />
         <logout-outlined style="color: #DC143C" key="logout" @click="logout" />
+        <FileExcelOutlined style="color: green" key="download" @click="download" />
       </template>
       <a-card-meta v-model:title="info.name" v-model:description="info.describe" />
       <!--    统计信息-->
@@ -30,23 +31,30 @@
     >
       <p>修改密码</p>
       <a-input-password v-model:value="info.newPassword" placeholder="输入内容" />
+
     </a-modal>
     <a-empty style="margin-top: 20px" description="暂无数据"/>
+    <a-modal v-model:visible="downloadShow" title="报表导出">
+      <report />
+    </a-modal>
   </div>
 </template>
 <script>
-import { EditOutlined, LogoutOutlined } from '@ant-design/icons-vue'
+import { EditOutlined, LogoutOutlined, FileExcelOutlined } from '@ant-design/icons-vue'
 import { defineComponent, ref, reactive } from 'vue'
 import axios from 'axios'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { notification, message } from 'ant-design-vue'
 import qs from 'qs'
+import report from '@/components/home/childComponents/report'
 
 export default defineComponent({
   components: {
     EditOutlined,
-    LogoutOutlined
+    LogoutOutlined,
+    FileExcelOutlined,
+    report
   },
   setup () {
     const info = reactive({
@@ -148,6 +156,12 @@ export default defineComponent({
         pending.value = p
       })
 
+    // 报表导出按钮
+    const downloadShow = ref(false)
+    const download = () => {
+      downloadShow.value = true
+    }
+
     return {
       visible,
       confirmLoading,
@@ -158,7 +172,9 @@ export default defineComponent({
       show,
       login,
       pending,
-      complete
+      complete,
+      download,
+      downloadShow
     }
   }
 
