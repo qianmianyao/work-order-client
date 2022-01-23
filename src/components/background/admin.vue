@@ -4,9 +4,59 @@
       <caret-right-outlined :rotate="isActive ? 90 : 0" />
     </template>
     <a-collapse-panel key="1" header="全局账户管理">
-      <p>账户管理</p>
+<!--      <a-divider orientation="left" plain>账户管理</a-divider>-->
+      <div>
+        <a-input-search
+          style="float: left; width: 200px"
+          placeholder="查找用户"
+        />
+        <a-button
+          type="primary"
+          style="margin-bottom: 8px; float: right"
+        >
+          增加用户
+        </a-button>
+      </div>
+
+      <a-table
+        bordered
+        :data-source="dataSource"
+        :columns="columns"
+        size="small"
+        :scroll="{ x: 1000 }"
+      >
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.key === 'password'">
+
+            <a-popover trigger="click" :visible="record.id === visible">
+              <template #content>
+                <a-input-password v-model:value="newPassword" style="width: 188px; height: 32px" placeholder="输入新密码"></a-input-password>
+                <br/>
+                <a-button
+                  size="small"
+                  @click="close"
+                  style="width: 90px; margin-top: 10px;  margin-right: 9px"
+                >
+                  关闭
+                </a-button>
+                <a-button
+                  @click="submit(record.username)"
+                  type="primary"
+                  size="small"
+                  style="width: 90px; margin-top: 10px"
+                >
+                  提交
+                </a-button>
+              </template>
+              <a-button type="link" @click="show(record.id)">修改密码</a-button>
+            </a-popover>
+
+          </template>
+        </template>
+      </a-table>
+
     </a-collapse-panel>
-    <a-collapse-panel key="2" header="全局注册码">
+    <a-collapse-panel key="2" header="注册权限设置">
       是否开启注册
       <a-switch
         @click="checked"
@@ -15,8 +65,9 @@
         size="small"
         unCheckedValue="0"
         checkedValue="1"
+        :loading="switchLoading"
       />
-      <a-divider orientation="right" plain>注册权限设置</a-divider>
+      <a-divider orientation="right" plain>注册码设置</a-divider>
       <a-button type="primary" style="margin-bottom: 20px" @click="updateToken">生成新的全局注册码</a-button>
       <a-typography-paragraph copyable>
         <a-typography-text code>
@@ -41,6 +92,7 @@ import axios from 'axios'
 import { useStore } from 'vuex'
 import { message } from 'ant-design-vue'
 import moment from 'moment'
+import qs from 'qs'
 export default defineComponent({
   components: {
     CaretRightOutlined,
@@ -50,7 +102,7 @@ export default defineComponent({
   setup () {
     const state = useStore()
     // 折叠框
-    const activeKey = ref(['1'])
+    const activeKey = ref(['1', '2'])
     watch(activeKey, val => {
       console.log(val)
     })
@@ -80,14 +132,87 @@ export default defineComponent({
     }
 
     // 注册开关
+    const switchLoading = ref(false)
     const registeredSwitch = ref('')
     axios.get('api/switch/').then(res => {
       registeredSwitch.value = res.data.data.status
     })
     const checked = () => {
-      console.log(registeredSwitch.value)
+      switchLoading.value = true
       axios.get('api/switch/', { params: { status: registeredSwitch.value } })
+        .then(res => {
+          if (res.data.code) {
+            switchLoading.value = false
+          }
+        })
     }
+
+    // 用户列表
+    const columns = [
+      {
+        title: '用户ID',
+        dataIndex: 'id',
+        key: 'id'
+      },
+      {
+        title: '用户名',
+        dataIndex: 'username',
+        key: 'username'
+      },
+      {
+        title: '身份',
+        dataIndex: 'groupName',
+        key: 'groupName'
+      },
+      {
+        title: '注册时间',
+        dataIndex: 'registrationDate',
+        key: 'registrationDate'
+      },
+      {
+        title: '密码',
+        key: 'password'
+      }
+    ]
+    // 获取所有的用户
+    const dataSource = ref([])
+    axios.get('api/admin/get_all_users/', { headers: { Authorization: 'bearer ' + state.state.token } })
+      .then(res => {
+        const { users } = res.data.data
+        dataSource.value = users
+      })
+
+    // 修改密码气泡框
+    const visible = ref(false)
+    const newPassword = ref('')
+    const submit = (username) => {
+      console.log(username)
+      axios({
+        method: 'post',
+        url: 'api/user/change_password/',
+        headers: { Authorization: 'bearer ' + state.state.token },
+        data: qs.stringify({
+          username: username,
+          password: newPassword.value
+        })
+      })
+        .then(res => {
+          if (res.data.code === 200) {
+            message.success(username + ' 的密码更新成功')
+            newPassword.value = ''
+            visible.value = false
+          }
+        })
+    }
+    // 丢该 visible 使其为真
+    const show = (id) => {
+      visible.value = id
+    }
+    const close = () => {
+      visible.value = false
+      newPassword.value = ''
+    }
+
     return {
       activeKey,
       registrationCode,
@@ -95,7 +220,15 @@ export default defineComponent({
       updateTime,
       moment,
       registeredSwitch,
-      checked
+      checked,
+      switchLoading,
+      columns,
+      dataSource,
+      submit,
+      newPassword,
+      visible,
+      show,
+      close
     }
   }
 
