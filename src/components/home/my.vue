@@ -7,7 +7,7 @@
       <template #actions>
         <edit-outlined style="color: #1E90FF" key="edit" @click="showModal" />
         <logout-outlined style="color: #DC143C" key="logout" @click="logout" />
-        <FileExcelOutlined style="color: green" key="download" @click="download" />
+        <FileExcelOutlined style="color: green" key="download" @click="window" />
       </template>
       <a-card-meta v-model:title="info.name" v-model:description="info.describe" />
       <!--    统计信息-->
@@ -24,8 +24,6 @@
     <a-modal
       v-model:visible="visible"
       title="修改信息"
-      ok-text="确认"
-      cancel-text="取消"
       :confirm-loading="confirmLoading"
       @ok="handleOk"
     >
@@ -33,28 +31,45 @@
       <a-input-password v-model:value="info.newPassword" placeholder="输入内容" />
 
     </a-modal>
-    <a-empty style="margin-top: 20px" description="暂无数据"/>
-    <a-modal v-model:visible="downloadShow" title="报表导出">
-      <report />
+    <a-empty style="margin-top: 20px"/>
+    <a-modal
+      v-model:visible="downloadShow"
+      @ok="download"
+      title="报表导出"
+      :confirm-loading="downLoading"
+      :ok-text="exportText"
+    >
+      <a-range-picker
+        :bordered="false"
+        v-model:value="date"
+        @change="getTime"
+        allowClear
+        size="middle"
+        inputReadOnly
+      />
+      <br/>
+      <a-divider orientation="left" plain>说明</a-divider>
+      <info-circle-outlined style="color: #DC143C"/>
+      请注意，导出的数据都是售后已经结单的数据，如果订单还在维修中或者在派单中则不会出现在表格中
     </a-modal>
   </div>
 </template>
 <script>
-import { EditOutlined, LogoutOutlined, FileExcelOutlined } from '@ant-design/icons-vue'
+import { EditOutlined, LogoutOutlined, FileExcelOutlined, InfoCircleOutlined } from '@ant-design/icons-vue'
 import { defineComponent, ref, reactive } from 'vue'
 import axios from 'axios'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { notification, message } from 'ant-design-vue'
 import qs from 'qs'
-import report from '@/components/home/childComponents/report'
+import fileDownload from 'js-file-download'
 
 export default defineComponent({
   components: {
     EditOutlined,
     LogoutOutlined,
     FileExcelOutlined,
-    report
+    InfoCircleOutlined
   },
   setup () {
     const info = reactive({
@@ -158,8 +173,51 @@ export default defineComponent({
 
     // 报表导出按钮
     const downloadShow = ref(false)
-    const download = () => {
+    const window = () => {
       downloadShow.value = true
+    }
+    // 时间组件
+    const date = ref()
+    let start = ''
+    let end = ''
+    const getTime = (_, dateString) => {
+      start = dateString[0]
+      end = dateString[1]
+    }
+
+    const exportText = ref('导出')
+    const downLoading = ref(false)
+
+    // 导出报表
+    const download = () => {
+      downLoading.value = true
+      exportText.value = '导出中...'
+      axios({
+        method: 'get',
+        url: 'api/statement/',
+        responseType: 'blob',
+        params: {
+          start_time: start,
+          end_time: end
+        }
+      }).then(res => {
+        const disposition = res.headers['content-disposition'].split('/')
+        const fileName = decodeURIComponent(disposition[disposition.length - 1])
+        fileDownload(res.data, fileName)
+        downLoading.value = false
+        message.success(fileName + '下载成功')
+        exportText.value = '导出完毕'
+        setTimeout(() => {
+          exportText.value = '导出'
+        }, 2000)
+      })
+        .catch(err => {
+          if (err.response.status === 500) {
+            message.error('文件导出失败')
+            exportText.value = '导出'
+            downLoading.value = false
+          }
+        })
     }
 
     return {
@@ -173,8 +231,13 @@ export default defineComponent({
       login,
       pending,
       complete,
+      window,
+      downloadShow,
+      getTime,
+      date,
       download,
-      downloadShow
+      downLoading,
+      exportText
     }
   }
 
