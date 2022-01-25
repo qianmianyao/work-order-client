@@ -299,6 +299,7 @@ export default defineComponent({
       })
         .then(res => {
           message.success(res.data.message)
+          getAllUsers()
         })
     }
     const identity = reactive([
