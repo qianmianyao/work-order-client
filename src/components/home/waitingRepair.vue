@@ -1,6 +1,6 @@
 <template>
   <a-divider orientation="left">接单列表</a-divider>
- <MaintenanceRecord />
+ <MaintenanceRecord status="2" :buttonShow="true" />
 </template>
 
 <script>

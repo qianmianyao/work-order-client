@@ -1,7 +1,7 @@
 <template>
   <a-skeleton active v-if="!login"/>
   <div v-if="login">
-    <a-button type="primary" @click="start" :disabled="!hasSelected">结算工单</a-button>
+    <a-button type="primary" @click="start" :disabled="!hasSelected" v-if="buttonShow">结算工单</a-button>
     <a-modal
       ok-text="确认"
       cancel-text="取消"
@@ -69,7 +69,11 @@ import axios from 'axios'
 import { Empty, message } from 'ant-design-vue'
 import qs from 'qs'
 export default defineComponent({
-  setup () {
+  props: {
+    status: undefined,
+    buttonShow: undefined
+  },
+  setup (props) {
     const pageTotal = ref(1)
     const pageCurrent = ref(1)
     const state = useStore()
@@ -159,7 +163,7 @@ export default defineComponent({
       pageSize: 10
     }))
 
-    // 测试数据
+    // 数据
     const dataSource = ref([])
     const login = ref(false)
     // 待维修api
@@ -168,7 +172,7 @@ export default defineComponent({
         method: 'get',
         url: 'api/user/get_order/',
         headers: { Authorization: 'bearer ' + state.state.token },
-        params: { index: 1, status: 2 }
+        params: { index: 1, status: props.status }
       }).then((res) => {
         const { orderList, orderCount } = res.data.data
         pageTotal.value = orderCount

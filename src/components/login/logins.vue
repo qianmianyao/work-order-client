@@ -118,6 +118,7 @@ export default defineComponent({
         .catch(err => {
           const mes = err.response.statusText
           message.error(mes)
+          loading.value = false
         })
     }
     return {

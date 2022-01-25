@@ -31,7 +31,6 @@
       <a-input-password v-model:value="info.newPassword" placeholder="输入内容" />
 
     </a-modal>
-    <a-empty style="margin-top: 20px"/>
     <a-modal
       v-model:visible="downloadShow"
       @ok="download"
@@ -52,6 +51,8 @@
       <info-circle-outlined style="color: #DC143C"/>
       请注意，导出的数据都是售后已经结单的数据，如果订单还在维修中或者在派单中则不会出现在表格中
     </a-modal>
+<!--    维修用户已完成的订单-->
+    <maintenance-record status="3" v-if="identity === 2" :buttonShow="false" />
   </div>
 </template>
 <script>
@@ -63,13 +64,15 @@ import { useRouter } from 'vue-router'
 import { notification, message } from 'ant-design-vue'
 import qs from 'qs'
 import fileDownload from 'js-file-download'
+import MaintenanceRecord from '@/components/home/childComponents/maintenanceRecord'
 
 export default defineComponent({
   components: {
     EditOutlined,
     LogoutOutlined,
     FileExcelOutlined,
-    InfoCircleOutlined
+    InfoCircleOutlined,
+    MaintenanceRecord
   },
   setup () {
     const info = reactive({
@@ -220,6 +223,9 @@ export default defineComponent({
         })
     }
 
+    // 身份
+    const identity = ref(state.state.groUp)
+
     return {
       visible,
       confirmLoading,
@@ -237,7 +243,9 @@ export default defineComponent({
       date,
       download,
       downLoading,
-      exportText
+      exportText,
+      state,
+      identity
     }
   }
 
