@@ -1,5 +1,11 @@
 <template>
-  <div v-if="!globalVisible"><a-empty description="暂未开启注册，请联系管理员申请账号"/></div>
+  <div v-if="!globalVisible">
+    <a-result title="暂未开启注册" sub-title="请联系管理员获取账号">
+      <template #icon>
+        <smile-twoTone />
+      </template>
+    </a-result>
+  </div>
   <div v-if="demo" :style="{ background: '#fff', padding: '25px', minHeight: '280px'}">
     <a-form
       style="margin: 0 auto"
@@ -76,7 +82,7 @@
 
 <script>
 import { computed, defineComponent, reactive, ref } from 'vue'
-import { UserOutlined, LockOutlined, KeyOutlined } from '@ant-design/icons-vue'
+import { UserOutlined, LockOutlined, KeyOutlined, SmileTwoTone } from '@ant-design/icons-vue'
 import { notification, message } from 'ant-design-vue'
 import axios from 'axios'
 import qs from 'qs'
@@ -84,7 +90,8 @@ export default defineComponent({
   components: {
     UserOutlined,
     LockOutlined,
-    KeyOutlined
+    KeyOutlined,
+    SmileTwoTone
   },
 
   setup () {

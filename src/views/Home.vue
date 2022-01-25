@@ -96,7 +96,7 @@ export default defineComponent({
     if (state.state.groUp === 2 || state.state.groUp === 6) {
       waitingRepairShow.value = true
     }
-    console.log('生活应该慢下来 https://qianmianyao.cm')
+    console.log('生活应该慢下来 https://qianmianyao.com')
     const banner = ref('主页测试信息')
 
     // 判断权限
