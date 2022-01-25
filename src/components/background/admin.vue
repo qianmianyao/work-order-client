@@ -11,6 +11,7 @@
           placeholder="查找用户"
         />
         <a-button
+          @click="switchAUS"
           type="primary"
           style="margin-bottom: 8px; float: right"
         >
@@ -99,10 +100,66 @@
       </a-typography-paragraph>
     </a-collapse-panel>
   </a-collapse>
+
+<!--  增加用户弹窗-->
+  <a-modal v-model:visible="addUserShow" ok-text="注册" title="添加新用户">
+      <a-form
+        style="margin: 0 auto"
+        :model="formState"
+        name="normal_login"
+        class="login-form"
+      >
+        <a-form-item
+          name="username"
+          :rules="[{ required: true, message: '请输入用户名!' }]"
+        >
+          <a-input v-model:value="formState.username" placeholder="用户名">
+            <template #prefix>
+              <UserOutlined class="site-form-item-icon" />
+            </template>
+          </a-input>
+        </a-form-item>
+
+        <a-form-item
+          name="password"
+          :rules="[{ required: true, message: '请输入密码!' }]"
+        >
+          <a-input-password v-model:value="formState.password" placeholder="密码">
+            <template #prefix>
+              <LockOutlined class="site-form-item-icon" />
+            </template>
+          </a-input-password>
+        </a-form-item>
+
+        <a-form-item
+          name="cpassword"
+          :rules="[{ required: true, message: '两次密码不一致', validator: (rule, value, cb) => (value === formState.password ? cb(): cb(false)) }]"
+        >
+          <a-input-password v-model:value="formState.repeatPassword" placeholder="请重复密码">
+            <template #prefix>
+              <LockOutlined class="site-form-item-icon" />
+            </template>
+          </a-input-password>
+        </a-form-item>
+        <a-space style="margin-bottom: 24px;">
+          <a-select
+            placeholder="请选择身份"
+            :options="identity"
+          />
+        </a-space>
+      </a-form>
+  </a-modal>
+
 </template>
 <script>
 import { defineComponent, ref, reactive } from 'vue'
-import { CaretRightOutlined, InfoCircleOutlined, HistoryOutlined } from '@ant-design/icons-vue'
+import {
+  CaretRightOutlined,
+  InfoCircleOutlined,
+  HistoryOutlined,
+  UserOutlined,
+  LockOutlined
+} from '@ant-design/icons-vue'
 import axios from 'axios'
 import { useStore } from 'vuex'
 import { message } from 'ant-design-vue'
@@ -112,7 +169,9 @@ export default defineComponent({
   components: {
     CaretRightOutlined,
     InfoCircleOutlined,
-    HistoryOutlined
+    HistoryOutlined,
+    UserOutlined,
+    LockOutlined
   },
   setup () {
     const state = useStore()
@@ -265,6 +324,18 @@ export default defineComponent({
       }
     ])
 
+    // 增加用户部分的函数
+    const addUserShow = ref(false)
+    const switchAUS = () => {
+      addUserShow.value = true
+    }
+    const formState = reactive({
+      username: '',
+      password: '',
+      repeatPassword: '',
+      token: ''
+    })
+
     return {
       activeKey,
       registrationCode,
@@ -283,7 +354,10 @@ export default defineComponent({
       close,
       identity,
       handleChange,
-      username
+      username,
+      addUserShow,
+      switchAUS,
+      formState
     }
   }
 

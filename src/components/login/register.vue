@@ -123,7 +123,7 @@ export default defineComponent({
       })
     }
 
-    // 沟通后端登录
+    // 沟通后端注册
     const register = () => {
       loading.value = true
       axios({

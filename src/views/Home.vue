@@ -90,10 +90,10 @@ export default defineComponent({
     const waitingRepairShow = ref(false)
     const state = useStore()
     state.commit('decodeToken')
-    if (state.state.groUp === 3 || state.state.groUp === 6) {
+    if (state.state.groUp === 3) {
       orderListShow.value = true
     }
-    if (state.state.groUp === 2 || state.state.groUp === 6) {
+    if (state.state.groUp === 2) {
       waitingRepairShow.value = true
     }
     console.log('生活应该慢下来 https://qianmianyao.com')

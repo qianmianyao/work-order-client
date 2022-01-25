@@ -69,14 +69,10 @@
       <a-list size="small" bordered :data-source="vehicleHistory">
         <template #renderItem="{ item }">
           <a-list-item>
-            <a-badge :status="statusColor(item.status)" />{{ item.status }}<a-divider type="vertical" />
+            {{ item.status }}<a-divider type="vertical" />
             <alert-outlined style="color: #1E90FF" /> {{ item.cause }}<a-divider type="vertical" />
-            <user-outlined style="color: #1E90FF" /> {{ item.username }}
-            <span v-if="item.accomplishTime !== null" >
-              <a-divider type="vertical" />
-              <clock-circle-outlined style="color: #1E90FF" /> {{
-                item.accomplishTime ? moment(item.accomplishTime).format('YYYY-MM-DD') : ''
-              }}</span>
+            <user-outlined style="color: #1E90FF" /> {{ item.username }}<a-divider type="vertical" />
+            <clock-circle-outlined style="color: #1E90FF" /> {{ item.accomplishTime ? moment(item.accomplishTime).format('YYYY-MM-DD') : '没有完成时间' }}
           </a-list-item>
         </template>
         <template #header>
@@ -92,9 +88,9 @@ import moment from 'moment'
 import {
   InboxOutlined,
   BarsOutlined,
-  AlertOutlined,
   EditOutlined,
   UnorderedListOutlined,
+  AlertOutlined,
   UserOutlined,
   ClockCircleOutlined
 } from '@ant-design/icons-vue'
@@ -107,11 +103,11 @@ export default defineComponent({
   components: {
     InboxOutlined,
     BarsOutlined,
-    AlertOutlined,
-    ClockCircleOutlined,
-    UserOutlined,
     EditOutlined,
-    UnorderedListOutlined
+    UnorderedListOutlined,
+    AlertOutlined,
+    UserOutlined,
+    ClockCircleOutlined
   },
   setup () {
     const search = ref('')
@@ -217,19 +213,9 @@ export default defineComponent({
     }
 
     const confirmLoading = ref(false)
-    // 车辆报修历史记录
-    const color = ref('')
-    const statusColor = (status) => {
-      if (status === '已完成') {
-        color.value = 'success'
-        return color.value
-      } else if (status === '维修中') {
-        color.value = 'warning'
-        return color.value
-      }
-    }
-    const vehicleHistory = ref([])
+    const vehicleHistory = ref()
     const infoVisible = ref(false)
+    // 获取历史报修记录
     const info = () => {
       infoVisible.value = true
       axios({
@@ -316,7 +302,6 @@ export default defineComponent({
       repairForm,
       vehicleHistory,
       moment,
-      statusColor,
       fileList,
       beforeUpload
     }
