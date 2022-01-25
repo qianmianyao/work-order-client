@@ -202,7 +202,7 @@ export default defineComponent({
           if (res.data.code === 200) {
             confirmLoading.value = false
             repairsVisible.value = false
-            message.success(res.data.message)
+            message.success(res.data.message, 2)
             repairForm.describe = ''
             fileList.value = []
           }

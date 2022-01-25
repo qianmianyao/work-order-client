@@ -134,7 +134,7 @@ export default defineComponent({
           res => {
             loading.value = false
             if (res.data.code === 1) {
-              message.success(res.data.message + '请前往登录页面登录')
+              message.success(res.data.message + '请前往登录页面登录', 2)
               formState.token = ''
             } else {
               message.error(res.data.message)

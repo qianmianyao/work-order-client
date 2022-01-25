@@ -53,6 +53,10 @@
     </a-modal>
 <!--    维修用户已完成的订单-->
     <maintenance-record status="3" v-if="identity === 2" :buttonShow="false" />
+<!--    派单用户已经派发的订单-->
+    <SendSingleRecord status="2" v-if="identity === 3" :buttonShow="false" :row="true"/>
+<!--    客服已经报修的订单-->
+    <SendSingleRecord status="1" v-if="identity === 1" :buttonShow="false" :row="true" />
   </div>
 </template>
 <script>
@@ -65,6 +69,7 @@ import { notification, message } from 'ant-design-vue'
 import qs from 'qs'
 import fileDownload from 'js-file-download'
 import MaintenanceRecord from '@/components/home/childComponents/maintenanceRecord'
+import SendSingleRecord from '@/components/home/childComponents/sendSingleRecord'
 
 export default defineComponent({
   components: {
@@ -72,7 +77,8 @@ export default defineComponent({
     LogoutOutlined,
     FileExcelOutlined,
     InfoCircleOutlined,
-    MaintenanceRecord
+    MaintenanceRecord,
+    SendSingleRecord
   },
   setup () {
     const info = reactive({
