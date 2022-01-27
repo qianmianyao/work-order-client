@@ -29,27 +29,30 @@
     >
       <p>修改密码</p>
       <a-input-password v-model:value="info.newPassword" placeholder="输入内容" />
-
+<!--报表导出-->
     </a-modal>
     <a-modal
       v-model:visible="downloadShow"
-      @ok="download"
+      @ok="exportStatement('api/statement/')"
       title="报表导出"
       :confirm-loading="downLoading"
       :ok-text="exportText"
     >
-      <a-range-picker
-        :bordered="false"
-        v-model:value="date"
-        @change="getTime"
-        allowClear
-        size="middle"
-        inputReadOnly
-      />
+      <div>
+        <a-range-picker
+          :bordered="false"
+          v-model:value="date"
+          @change="getTime"
+          allowClear
+          size="middle"
+          inputReadOnly
+        />
+        <a-button type="dashed" style="float: right" @click="exportStatement('api/all_statement/')">导出全部报表</a-button>
+      </div>
       <br/>
       <a-divider orientation="left" plain>说明</a-divider>
-      <info-circle-outlined style="color: #DC143C"/>
-      请注意，导出的数据都是售后已经结单的数据，如果订单还在维修中或者在派单中则不会出现在表格中
+      <info-circle-outlined style="color: #FFA500; margin-top: 20px"/>
+      请注意，底部的导出只能导出售后已经结单完毕的数据，右侧的导出可以导出所有报修的数据
     </a-modal>
 <!--    维修用户已完成的订单-->
     <maintenance-record status="3" v-if="identity === 2" :buttonShow="false" />
@@ -199,12 +202,12 @@ export default defineComponent({
     const downLoading = ref(false)
 
     // 导出报表
-    const download = () => {
+    const exportStatement = (url) => {
       downLoading.value = true
       exportText.value = '导出中...'
       axios({
         method: 'get',
-        url: 'api/statement/',
+        url: url,
         responseType: 'blob',
         params: {
           start_time: start,
@@ -248,7 +251,7 @@ export default defineComponent({
       downloadShow,
       getTime,
       date,
-      download,
+      exportStatement,
       downLoading,
       exportText,
       state,

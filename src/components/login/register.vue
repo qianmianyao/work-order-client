@@ -1,6 +1,6 @@
 <template>
   <div v-if="!globalVisible">
-    <a-result title="暂未开启注册" sub-title="请联系管理员获取账号">
+    <a-result :title="title" :sub-title="titleSub">
       <template #icon>
         <smile-twoTone />
       </template>
@@ -124,6 +124,8 @@ export default defineComponent({
     }
 
     // 沟通后端注册
+    const title = ref('暂未开启注册')
+    const titleSub = ref('请联系管理员申请账号')
     const register = () => {
       loading.value = true
       axios({
@@ -141,7 +143,12 @@ export default defineComponent({
           res => {
             loading.value = false
             if (res.data.code === 1) {
-              message.success(res.data.message + '请前往登录页面登录', 2)
+              // 表单隐藏
+              demo.value = false
+              title.value = '注册成功'
+              titleSub.value = '请前往登录页面登录'
+              globalVisible.value = false
+              message.success(res.data.message + '请前往登录页面登录')
               formState.token = ''
             } else {
               message.error(res.data.message)
@@ -205,7 +212,9 @@ export default defineComponent({
       handleChange,
       identity,
       globalVisible,
-      demo
+      demo,
+      title,
+      titleSub
     }
   }
 
