@@ -35,8 +35,8 @@
       v-model:visible="downloadShow"
       @ok="exportStatement('api/statement/')"
       title="报表导出"
-      :confirm-loading="downLoading"
-      :ok-text="exportText"
+      ok-text="导出已完成订单"
+      :ok-button-props="{ disabled: buttonOptional }"
     >
       <div>
         <a-range-picker
@@ -47,7 +47,14 @@
           size="middle"
           inputReadOnly
         />
-        <a-button type="dashed" style="float: right" @click="exportStatement('api/all_statement/')">导出全部报表</a-button>
+        <a-button
+          type="primary"
+          style="float: right"
+          @click="exportStatement('api/all_statement/')"
+          :disabled="buttonOptional"
+        >
+          导出全部订单
+        </a-button>
       </div>
       <br/>
       <a-divider orientation="left" plain>说明</a-divider>
@@ -193,18 +200,16 @@ export default defineComponent({
     const date = ref()
     let start = ''
     let end = ''
+    // 日期变化回调
+    const buttonOptional = ref(true)
     const getTime = (_, dateString) => {
       start = dateString[0]
       end = dateString[1]
+      buttonOptional.value = false
     }
-
-    const exportText = ref('导出')
-    const downLoading = ref(false)
 
     // 导出报表
     const exportStatement = (url) => {
-      downLoading.value = true
-      exportText.value = '导出中...'
       axios({
         method: 'get',
         url: url,
@@ -217,18 +222,11 @@ export default defineComponent({
         const disposition = res.headers['content-disposition'].split('/')
         const fileName = decodeURIComponent(disposition[disposition.length - 1])
         fileDownload(res.data, fileName)
-        downLoading.value = false
         message.success(fileName + '导出成功')
-        exportText.value = '导出完毕'
-        setTimeout(() => {
-          exportText.value = '导出'
-        }, 2000)
       })
         .catch(err => {
           if (err.response.status === 500) {
             message.error('文件导出失败')
-            exportText.value = '导出'
-            downLoading.value = false
           }
         })
     }
@@ -252,10 +250,9 @@ export default defineComponent({
       getTime,
       date,
       exportStatement,
-      downLoading,
-      exportText,
       state,
-      identity
+      identity,
+      buttonOptional
     }
   }
 
