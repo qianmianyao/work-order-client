@@ -4,6 +4,7 @@
     <!-- 派单表格 -->
     <a-button type="primary" @click="showModal" :disabled="!hasSelected" v-if="buttonShow">
       分配维修人员
+<!--      分派对话框-->
     </a-button>
     <a-modal
       v-model:visible="visible"
@@ -13,7 +14,8 @@
       ok-text="分配给他"
       cancelText="取消"
     >
-      <div v-for="({username}, index) of userList" :key="index">
+      <a-textarea v-model:value="explain" placeholder="请填写派单说明" :rows="4" />
+      <div v-for="({username}, index) of userList" :key="index" style="margin-top: 20px">
         <a-radio-group v-model:value="groupValue">
           <a-radio :value="username" :style="radioStyle">{{ username }}</a-radio>
         </a-radio-group>
@@ -181,6 +183,7 @@ export default defineComponent({
     const states = reactive({
       selectedRowKeys: []
     })
+    const explain = ref('')
     const state = useStore()
     const router = useRouter()
     const hasSelected = computed(() => states.selectedRowKeys.length > 0)
@@ -192,7 +195,8 @@ export default defineComponent({
           headers: { Authorization: 'bearer ' + state.state.token },
           data: qs.stringify({
             work_order_id: id,
-            username: groupValue.value
+            username: groupValue.value,
+            explain: explain.value
           })
         })
           .then(res => {
@@ -318,7 +322,8 @@ export default defineComponent({
       imgUrl,
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
       imgNull,
-      imgHandleOk
+      imgHandleOk,
+      explain
     }
   }
 })

@@ -132,7 +132,7 @@ export default defineComponent({
         title: '报修详情描述',
         dataIndex: 'describe',
         key: 'describe',
-        width: '8%'
+        width: '9%'
       },
       {
         title: '详情图片',
@@ -144,6 +144,12 @@ export default defineComponent({
         dataIndex: 'sendOrderUserId',
         key: 'sendOrderUserId',
         width: '5%'
+      },
+      {
+        title: '补充信息',
+        dataIndex: 'sendExplain',
+        key: 'sendExplain',
+        width: '10%'
       },
       {
         title: '订单完成时间',
