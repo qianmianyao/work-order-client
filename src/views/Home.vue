@@ -54,6 +54,12 @@
     <a-layout-footer style="text-align: center">
       湖南伊爱售后工单系统 <copyright-circle-outlined /> 2021
     </a-layout-footer>
+<!--    回到顶部-->
+    <div id="components-back-top-demo-custom">
+      <a-back-top>
+        <div class="ant-back-top-inner">↑</div>
+      </a-back-top>
+    </div>
   </a-layout>
 </template>
 
@@ -128,12 +134,26 @@ export default defineComponent({
 
 })
 </script>
-<style>
+<style scoped>
 .logo {
   float: left;
   width: 31px;
   height: 31px;
   margin: 16px 24px 16px 0;
   background: rgba(255, 255, 255, 0.3);
+}
+.ant-back-top {
+  bottom: 150px;
+}
+#components-back-top-demo-custom .ant-back-top-inner {
+  height: 40px;
+  width: 40px;
+  line-height: 40px;
+  border-radius: 4px;
+  background-color: #1088e9;
+  color: #fff;
+  text-align: center;
+  font-size: 20px;
+  opacity: 0.5;
 }
 </style>

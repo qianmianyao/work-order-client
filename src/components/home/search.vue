@@ -1,11 +1,20 @@
 <template>
-  <div>全局搜索</div>
+  <a-input-search placeholder="输入车牌查找历史信息" v-model:value="search" enter-button @search="onSearch"/>
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 export default defineComponent({
-
+  setup () {
+    const search = ref()
+    const onSearch = () => {
+      console.log(search.value)
+    }
+    return {
+      search,
+      onSearch
+    }
+  }
 })
 </script>
 
