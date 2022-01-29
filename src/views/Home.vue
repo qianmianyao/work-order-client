@@ -8,11 +8,15 @@
         mode="horizontal"
         :style="{ lineHeight: '64px' }"
       >
+        <a-menu-item key="search">
+          <router-link to="/search" />
+          订单搜索
+        </a-menu-item>
         <a-menu-item v-if="orderListShow" key="sendOrders">
           <router-link to="/sendOrders" />
           订单派发
         </a-menu-item>
-        <a-menu-item key="submitOrders">
+        <a-menu-item v-if="sendOrdersShow" key="submitOrders">
           <router-link to="/submitOrders" />
           报修与历史
         </a-menu-item>
@@ -80,12 +84,14 @@ export default defineComponent({
         selectedKeys.value[0] = 'my'
       } else if (path === '/waitingRepair') {
         selectedKeys.value[0] = 'waitingRepair'
+      } else if (path === '/search') {
+        selectedKeys.value[0] = 'search'
       } else {
         selectedKeys.value[0] = 'my'
       }
     }
     get()
-
+    const sendOrdersShow = ref(false)
     const orderListShow = ref(false)
     const waitingRepairShow = ref(false)
     const state = useStore()
@@ -95,6 +101,9 @@ export default defineComponent({
     }
     if (state.state.groUp === 2) {
       waitingRepairShow.value = true
+    }
+    if (state.state.groUp === 1) {
+      sendOrdersShow.value = true
     }
     console.log('生活应该慢下来 https://qianmianyao.com')
     const banner = ref('主页测试信息')
@@ -112,7 +121,8 @@ export default defineComponent({
       banner,
       orderListShow,
       waitingRepairShow,
-      isAdmin
+      isAdmin,
+      sendOrdersShow
     }
   }
 

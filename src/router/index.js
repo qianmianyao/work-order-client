@@ -8,9 +8,9 @@ import Login from '@/views/Login'
 import logins from '@/components/login/logins'
 import register from '@/components/login/register'
 import Admin from '@/views/Admin'
-// import store from '@/store'
 import admin from '@/components/background/admin'
 import financial from '@/components/background/financial'
+import search from '@/components/home/search'
 
 const routes = [
   {
@@ -37,6 +37,10 @@ const routes = [
       {
         path: '/waitingRepair',
         component: waitingRepair
+      },
+      {
+        path: '/search',
+        component: search
       }
     ]
   },
