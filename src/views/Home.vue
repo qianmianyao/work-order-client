@@ -18,7 +18,7 @@
         </a-menu-item>
         <a-menu-item v-if="sendOrdersShow" key="submitOrders">
           <router-link to="/submitOrders" />
-          报修与历史
+          报修
         </a-menu-item>
         <a-menu-item v-if="waitingRepairShow" key="waitingRepair">
           <router-link to="/waitingRepair" />
@@ -93,7 +93,7 @@ export default defineComponent({
       } else if (path === '/search') {
         selectedKeys.value[0] = 'search'
       } else {
-        selectedKeys.value[0] = 'my'
+        selectedKeys.value[0] = 'search'
       }
     }
     get()

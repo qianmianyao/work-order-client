@@ -82,7 +82,7 @@ export default defineComponent({
     // 跳转
     const router = useRouter()
     const push = () => {
-      router.push({ path: '/my' })
+      router.push({ path: '/search' })
     }
 
     const state = useStore()

@@ -102,7 +102,12 @@
   </a-collapse>
 
 <!--  增加用户弹窗-->
-  <a-modal v-model:visible="addUserShow" ok-text="注册" title="添加新用户">
+  <a-modal
+    v-model:visible="addUserShow"
+    ok-text="注册"
+    title="添加新用户"
+    @ok="register"
+  >
       <a-form
         style="margin: 0 auto"
         :model="formState"
@@ -141,12 +146,27 @@
             </template>
           </a-input-password>
         </a-form-item>
-        <a-space style="margin-bottom: 24px;">
-          <a-select
-            placeholder="请选择身份"
-            :options="identity"
-          />
-        </a-space>
+
+          <a-form-item
+            name="key"
+            :rules="[{ required: true, message: '请输入全局注册码!' }]"
+          >
+            <a-input v-model:value="formState.key" placeholder="请输入全局注册码">
+              <template #prefix>
+                <KeyOutlined class="site-form-item-icon" />
+              </template>
+            </a-input>
+          </a-form-item>
+
+        <a-form-item>
+          <a-space>
+            <a-select
+              placeholder="请选择身份"
+              :options="identity"
+              @change="group"
+            />
+          </a-space>
+        </a-form-item>
       </a-form>
   </a-modal>
 
@@ -158,7 +178,8 @@ import {
   InfoCircleOutlined,
   HistoryOutlined,
   UserOutlined,
-  LockOutlined
+  LockOutlined,
+  KeyOutlined
 } from '@ant-design/icons-vue'
 import axios from 'axios'
 import { useStore } from 'vuex'
@@ -171,7 +192,8 @@ export default defineComponent({
     InfoCircleOutlined,
     HistoryOutlined,
     UserOutlined,
-    LockOutlined
+    LockOutlined,
+    KeyOutlined
   },
   setup () {
     const state = useStore()
@@ -334,8 +356,31 @@ export default defineComponent({
       username: '',
       password: '',
       repeatPassword: '',
-      token: ''
+      key: ''
     })
+
+    const groupValue = ref()
+
+    const group = (groupId) => {
+      groupValue.value = groupId
+    }
+
+    const register = () => {
+      axios({
+        method: 'post',
+        url: 'api/user/register/',
+        data: qs.stringify({
+          username: formState.username,
+          password: formState.password,
+          group: groupValue.value,
+          key: formState.key
+        })
+      })
+        .then(res => {
+          message.success(`${formState.username} 添加成功`)
+          getAllUsers()
+        })
+    }
 
     return {
       activeKey,
@@ -358,7 +403,9 @@ export default defineComponent({
       username,
       addUserShow,
       switchAUS,
-      formState
+      formState,
+      register,
+      group
     }
   }
 

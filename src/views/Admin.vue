@@ -17,7 +17,7 @@
           全局管理员
         </a-menu-item>
         <a-menu-item key="4">
-          <router-link to="/my" />
+          <router-link to="/search" />
           前台
         </a-menu-item>
       </a-menu>
