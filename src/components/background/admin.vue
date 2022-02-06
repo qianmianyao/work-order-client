@@ -83,21 +83,23 @@
         checkedValue="1"
         :loading="switchLoading"
       />
-      <a-divider orientation="right" plain>注册码设置</a-divider>
-      <a-button type="primary" style="margin-bottom: 20px" @click="updateToken">生成新的全局注册码</a-button>
-      <a-typography-paragraph copyable>
-        <a-typography-text code>
-          {{ registrationCode }}
-        </a-typography-text>
-      </a-typography-paragraph>
-      <a-typography-paragraph>
-        <history-outlined  style="color: green"/> 最近更新时间:
-        <span style="color: green">
+      <div v-if="registrationShow">
+        <a-divider orientation="right" plain>注册码设置</a-divider>
+        <a-button type="primary" style="margin-bottom: 20px" @click="updateToken">生成新的全局注册码</a-button>
+        <a-typography-paragraph copyable>
+          <a-typography-text code>
+            {{ registrationCode }}
+          </a-typography-text>
+        </a-typography-paragraph>
+        <a-typography-paragraph>
+          <history-outlined  style="color: green"/> 最近更新时间:
+          <span style="color: green">
           {{ moment(updateTime).format('YYYY-MM-DD HH:mm:ss') }}
         </span>
-        <a-divider orientation="right" plain>说明</a-divider>
-        <info-circle-outlined style="color: #DC143C"/> 为了防止无关人员注册，注册需要使用此全局注册码，注册码可以进行更新，更新后原有的注册码将会失效，请勿泄漏
-      </a-typography-paragraph>
+          <a-divider orientation="right" plain>说明</a-divider>
+          <info-circle-outlined style="color: #DC143C"/> 为了防止无关人员注册，注册需要使用此全局注册码，注册码可以进行更新，更新后原有的注册码将会失效，请勿泄漏
+        </a-typography-paragraph>
+      </div>
     </a-collapse-panel>
   </a-collapse>
 
@@ -200,6 +202,9 @@ export default defineComponent({
     // 折叠框
     const activeKey = ref(['1', '2'])
 
+    // 全局验证码模块是否显示
+    const registrationShow = ref(false)
+
     // 获取全局注册码
     const registrationCode = ref('')
     const updateTime = ref('')
@@ -227,9 +232,18 @@ export default defineComponent({
     // 注册开关
     const switchLoading = ref(false)
     const registeredSwitch = ref('')
-    axios.get('api/switch/').then(res => {
-      registeredSwitch.value = res.data.data.status
-    })
+    // 获取后台的值，是否允许注册
+    const getSwitch = () => {
+      axios.get('api/switch/').then(res => {
+        registeredSwitch.value = res.data.data.status
+        if (registeredSwitch.value === '1') {
+          registrationShow.value = true
+        } else if (registeredSwitch.value !== '1') {
+          registrationShow.value = false
+        }
+      })
+    }
+    getSwitch()
     const checked = () => {
       switchLoading.value = true
       axios.get('api/switch/', { params: { status: registeredSwitch.value } })
@@ -238,6 +252,7 @@ export default defineComponent({
             switchLoading.value = false
           }
         })
+      getSwitch()
     }
 
     // 用户列表
@@ -405,7 +420,8 @@ export default defineComponent({
       switchAUS,
       formState,
       register,
-      group
+      group,
+      registrationShow
     }
   }
 
