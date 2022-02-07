@@ -4,11 +4,12 @@
       <caret-right-outlined :rotate="isActive ? 90 : 0" />
     </template>
     <a-collapse-panel key="1" header="全局账户管理">
-<!--      <a-divider orientation="left" plain>账户管理</a-divider>-->
       <div>
         <a-input-search
           style="float: left; width: 200px"
           placeholder="查找用户"
+          @search="searchUser"
+          v-model:value="searchValue"
         />
         <a-button
           @click="switchAUS"
@@ -149,17 +150,6 @@
           </a-input-password>
         </a-form-item>
 
-          <a-form-item
-            name="key"
-            :rules="[{ required: true, message: '请输入全局注册码!' }]"
-          >
-            <a-input v-model:value="formState.key" placeholder="请输入全局注册码">
-              <template #prefix>
-                <KeyOutlined class="site-form-item-icon" />
-              </template>
-            </a-input>
-          </a-form-item>
-
         <a-form-item>
           <a-space>
             <a-select
@@ -180,8 +170,7 @@ import {
   InfoCircleOutlined,
   HistoryOutlined,
   UserOutlined,
-  LockOutlined,
-  KeyOutlined
+  LockOutlined
 } from '@ant-design/icons-vue'
 import axios from 'axios'
 import { useStore } from 'vuex'
@@ -194,8 +183,7 @@ export default defineComponent({
     InfoCircleOutlined,
     HistoryOutlined,
     UserOutlined,
-    LockOutlined,
-    KeyOutlined
+    LockOutlined
   },
   setup () {
     const state = useStore()
@@ -218,6 +206,7 @@ export default defineComponent({
         .then(res => {
           const { key: token, update: time } = res.data.data
           registrationCode.value = token
+          formState.key = token
           updateTime.value = time
         })
     }
@@ -297,7 +286,6 @@ export default defineComponent({
     const visible = ref(false)
     const newPassword = ref('')
     const submit = (username) => {
-      console.log(username)
       axios({
         method: 'post',
         url: 'api/user/change_password/',
@@ -397,6 +385,11 @@ export default defineComponent({
         })
     }
 
+    // 搜索用户
+    const searchValue = ref()
+    const searchUser = () => {
+      console.log(searchValue.value)
+    }
     return {
       activeKey,
       registrationCode,
@@ -421,7 +414,9 @@ export default defineComponent({
       formState,
       register,
       group,
-      registrationShow
+      registrationShow,
+      searchUser,
+      searchValue
     }
   }
 
