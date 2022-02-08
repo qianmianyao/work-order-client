@@ -44,7 +44,7 @@
         </a-descriptions-item>
         <a-descriptions-item label="详情图片">
           <!--图片上传组件-->
-          <a-upload-dragger :file-list="fileList" :before-upload="beforeUpload">
+          <a-upload-dragger :file-list="fileList" :remove="handleRemove" :before-upload="beforeUpload">
             <p class="ant-upload-drag-icon" style="margin-top: 12px">
               <inbox-outlined/>
             </p>
@@ -162,9 +162,10 @@ export default defineComponent({
     }
 
     // 报修对话框
+    // 图片上传
     const fileList = ref([])
     const beforeUpload = file => {
-      fileList.value = [file]
+      fileList.value = [...fileList.value, file]
       return false
     }
     const repairsVisible = ref(false)
@@ -210,6 +211,14 @@ export default defineComponent({
             message.error('登录失效，请重新登录')
           }
         })
+    }
+
+    // 删除图片
+    const handleRemove = file => {
+      const index = fileList.value.indexOf(file)
+      const newFileList = fileList.value.slice()
+      newFileList.splice(index, 1)
+      fileList.value = newFileList
     }
 
     const confirmLoading = ref(false)
@@ -303,7 +312,8 @@ export default defineComponent({
       vehicleHistory,
       moment,
       fileList,
-      beforeUpload
+      beforeUpload,
+      handleRemove
     }
   }
 })

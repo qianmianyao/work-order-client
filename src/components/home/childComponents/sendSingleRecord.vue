@@ -66,7 +66,9 @@
       @cancel="imgHandleOk"
     >
       <a-empty v-if="imgNull" :image="simpleImage" />
-      <a-image :src="imgUrl"></a-image>
+      <div v-for="(item, index) of imgList" :key="index + item">
+        <a-image :src="item" style="margin-top: 10px"/>
+      </div>
     </a-modal>
   </div>
 </template>
@@ -279,27 +281,28 @@ export default defineComponent({
     // 骨架屏
     const login = ref(false)
     // 图片显示
+    const imgList = ref([])
     const imgVisible = ref(false)
-    const imgUrl = ref('')
     const imgNull = ref(false)
     const imgHandleOk = () => {
-      imgUrl.value = ''
       imgVisible.value = false
+      imgList.value = []
     }
+    // 获取图片的 id
     const imgShowModal = (imgId) => {
       imgVisible.value = true
-      axios({
-        method: 'get',
-        url: `api/return_img/${imgId}`
-      })
-        .then(res => {
-          imgUrl.value = `api/return_img/${imgId}`
-          imgNull.value = false
-        }).catch(err => {
-          if (err.response.status === 404) {
-            imgNull.value = true
+      axios.get('api/img_list/', { params: { work_order_id: imgId } }).then(res => {
+        const { img_id: imgId } = res.data.data
+        if (imgId.length === 0) {
+          imgNull.value = true
+        } else {
+          for (const imgUrl of imgId) {
+            imgNull.value = false
+            imgList.value.push('api/return_img/' + imgUrl.id)
           }
-        })
+        }
+      }
+      )
     }
     return {
       columns,
@@ -319,11 +322,11 @@ export default defineComponent({
       login,
       imgVisible,
       imgShowModal,
-      imgUrl,
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
       imgNull,
       imgHandleOk,
-      explain
+      explain,
+      imgList
     }
   }
 })
