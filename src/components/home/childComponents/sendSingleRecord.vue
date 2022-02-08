@@ -130,7 +130,7 @@ export default defineComponent({
         title: '终端型号',
         dataIndex: 'terminalDrive',
         key: 'terminalDrive',
-        width: '5%'
+        width: '7%'
       },
       {
         title: '车主',

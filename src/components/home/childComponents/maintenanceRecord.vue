@@ -122,7 +122,7 @@ export default defineComponent({
         title: '维修设备',
         dataIndex: 'terminalDrive',
         key: 'terminalDrive',
-        width: '5%'
+        width: '7%'
       },
       {
         title: '报修原因',
