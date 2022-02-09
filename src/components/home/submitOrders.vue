@@ -49,7 +49,7 @@
               <inbox-outlined/>
             </p>
             <p class="ant-upload-text">上传需要维修车辆的相关照片</p>
-            <p class="ant-upload-hint" style="margin-bottom: 12px">请注意，只支持一张照片上传</p>
+            <p class="ant-upload-hint" style="margin-bottom: 12px">支持多张图片上传</p>
           </a-upload-dragger>
         </a-descriptions-item>
       </a-descriptions>

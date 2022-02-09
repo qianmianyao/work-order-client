@@ -4,8 +4,8 @@
     <!-- 派单表格 -->
     <a-button type="primary" @click="showModal" :disabled="!hasSelected" v-if="buttonShow">
       分配维修人员
-<!--      分派对话框-->
     </a-button>
+<!--    派单对话框-->
     <a-modal
       v-model:visible="visible"
       title="分配订单"
@@ -57,6 +57,7 @@
         </template>
       </a-table>
     </div>
+<!--    分派订单对话框-->
     <a-modal
       v-model:visible="imgVisible"
       title="图片详情"

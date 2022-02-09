@@ -1,27 +1,37 @@
 <template>
-  <div>
-    <a-input-search
-      style="float: left; width: 200px; margin-bottom: 20px"
-      placeholder="输入车牌"
-    />
-    <a-button
-      type="primary"
-      style="margin-bottom: 8px; float: right"
-    >
-      导出报表
-    </a-button>
-  </div>
-  <a-table
-    :columns="columns"
-    :scroll="{ x: 1000 }"
-  >
-  </a-table>
+  <a-collapse v-model:activeKey="activeKey" ghost>
+    <a-collapse-panel key="1" header="服务费列表">
+      <div>
+        <a-input-search
+          style="float: left; width: 200px; margin-bottom: 20px"
+          placeholder="输入车牌"
+        />
+        <a-button
+          type="primary"
+          style="margin-bottom: 8px; float: right"
+        >
+          导出报表
+        </a-button>
+      </div>
+      <a-table
+        bordered
+        size="small"
+        :columns="columns"
+        :scroll="{ x: 1000 }"
+      >
+      </a-table>
+    </a-collapse-panel>
+    <a-collapse-panel key="2" header="设置服务费套餐">
+      <p>设置服务费套餐</p>
+    </a-collapse-panel>
+  </a-collapse>
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 export default defineComponent({
   setup () {
+    const activeKey = ref(['1', '2'])
     const columns = [
       {
         title: '订单号',
@@ -53,7 +63,8 @@ export default defineComponent({
       }
     ]
     return {
-      columns
+      columns,
+      activeKey
     }
   }
 })
