@@ -23,11 +23,16 @@
       </a-menu>
     </a-layout-header>
     <a-layout-content :style="{ padding: '0 10px', marginTop: '64px' }">
-      <a-breadcrumb :style="{ margin: '16px 0' }">
-        <a-breadcrumb-item>Home</a-breadcrumb-item>
-        <a-breadcrumb-item>List</a-breadcrumb-item>
-        <a-breadcrumb-item>App</a-breadcrumb-item>
-      </a-breadcrumb>
+<!--      面包屑导航-->
+    <div>
+      <a-alert
+        :message="banner"
+        :banner="true"
+        type="warning"
+        style="margin: 16px 0"
+      />
+    </div>
+
       <div :style="{ background: '#fff', padding: '12px', minHeight: '80vh' }">
         <router-view />
       </div>
@@ -40,6 +45,7 @@
 <script>
 import { defineComponent, ref, getCurrentInstance } from 'vue'
 import { CopyrightCircleOutlined } from '@ant-design/icons-vue'
+
 export default defineComponent({
   components: {
     CopyrightCircleOutlined
@@ -53,7 +59,10 @@ export default defineComponent({
     } else if (path === '/admin/globalAdmin') {
       selectedKeys.value[0] = '3'
     }
+    // 横幅
+    const banner = ref('当前版本 V1.0')
     return {
+      banner,
       selectedKeys
     }
   }

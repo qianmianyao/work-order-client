@@ -7,6 +7,7 @@
       <div>
         <a-input-search
           style="float: left; width: 200px"
+          @change="empty"
           placeholder="查找用户"
           @search="searchUser"
           v-model:value="searchValue"
@@ -273,14 +274,25 @@ export default defineComponent({
     ]
     // 获取所有的用户
     const dataSource = ref([])
-    const getAllUsers = () => {
-      axios.get('api/admin/get_all_users/', { headers: { Authorization: 'bearer ' + state.state.token } })
+    const getAllUsers = (user) => {
+      axios.get('api/admin/get_all_users/', {
+        headers: {
+          Authorization: 'bearer ' + state.state.token
+        },
+        params: {
+          user: user
+        }
+      })
         .then(res => {
           const { users } = res.data.data
-          dataSource.value = users
+          if (users.length === 0) {
+            message.warning('未找到这个用户')
+          } else {
+            dataSource.value = users
+          }
         })
     }
-    getAllUsers()
+    getAllUsers(null)
 
     // 修改密码气泡框
     const visible = ref(false)
@@ -324,7 +336,7 @@ export default defineComponent({
       })
         .then(res => {
           message.success(res.data.message)
-          getAllUsers()
+          getAllUsers(null)
         })
     }
     const identity = reactive([
@@ -381,14 +393,24 @@ export default defineComponent({
       })
         .then(res => {
           message.success(`${formState.username} 添加成功`)
-          getAllUsers()
+          getAllUsers(null)
         })
     }
 
     // 搜索用户
     const searchValue = ref()
     const searchUser = () => {
-      console.log(searchValue.value)
+      if (searchValue.value === undefined || searchValue.value === '') {
+        getAllUsers(null)
+      } else {
+        getAllUsers(searchValue.value)
+      }
+    }
+    // 搜索框置空以后触发获取所有数据
+    const empty = () => {
+      if (searchValue.value === '') {
+        getAllUsers(null)
+      }
     }
     return {
       activeKey,
@@ -416,7 +438,8 @@ export default defineComponent({
       group,
       registrationShow,
       searchUser,
-      searchValue
+      searchValue,
+      empty
     }
   }
 

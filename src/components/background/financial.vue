@@ -22,13 +22,20 @@
       </a-table>
     </a-collapse-panel>
     <a-collapse-panel key="2" header="设置服务费套餐">
-      <p>设置服务费套餐</p>
+      <a-table
+        bordered
+        size="small"
+        :columns="serverFee"
+        :data-source="serverFeeGroupData"
+      >
+      </a-table>
     </a-collapse-panel>
   </a-collapse>
 </template>
 
 <script>
 import { defineComponent, ref } from 'vue'
+import axios from 'axios'
 export default defineComponent({
   setup () {
     const activeKey = ref(['1', '2'])
@@ -62,9 +69,38 @@ export default defineComponent({
         key: 'suspend'
       }
     ]
+    const serverFee = [
+      {
+        title: '组ID',
+        dataIndex: 'id',
+        key: 'id'
+      },
+      {
+        title: '套餐类型',
+        dataIndex: 'groupName',
+        key: 'groupName'
+      },
+      {
+        title: '套餐金额',
+        dataIndex: 'cost',
+        key: 'cost'
+      },
+      {
+        title: '操作',
+        key: 'action'
+      }
+    ]
+    const serverFeeGroupData = ref([])
+    axios.get('api/get_server_group/', { params: { index: 1 } }).then(res => {
+      const { serverFeeGroup } = res.data.data
+      console.log(serverFeeGroup)
+      serverFeeGroupData.value = serverFeeGroup
+    })
     return {
       columns,
-      activeKey
+      activeKey,
+      serverFee,
+      serverFeeGroupData
     }
   }
 })

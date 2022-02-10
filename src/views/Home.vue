@@ -38,11 +38,9 @@
     <a-layout-content style="padding: 0 10px">
 
       <a-alert
-        v-if="visible"
         :message="banner"
-        type="success"
-        closable
-        :after-close="handleClose"
+        :banner="true"
+        type="warning"
         style="margin: 16px 0"
       />
 
@@ -72,11 +70,6 @@ export default defineComponent({
     CopyrightCircleOutlined
   },
   setup () {
-    const visible = ref(true)
-    const handleClose = () => {
-      visible.value = false
-    }
-
     // 页面刷新时顶部的标签会根据当前的路由确定位置，不会在刷新之后回到第一个
     const selectedKeys = ref(['my'])
     const { proxy } = getCurrentInstance()
@@ -112,7 +105,7 @@ export default defineComponent({
       sendOrdersShow.value = true
     }
     console.log('生活应该慢下来 https://qianmianyao.com')
-    const banner = ref('主页测试信息')
+    const banner = ref('欢迎使用伊爱工单系统')
 
     // 判断权限
     const isAdmin = ref(false)
@@ -122,8 +115,6 @@ export default defineComponent({
       ? isAdmin.value = true : isAdmin.value = false
     return {
       selectedKeys,
-      visible,
-      handleClose,
       banner,
       orderListShow,
       waitingRepairShow,
