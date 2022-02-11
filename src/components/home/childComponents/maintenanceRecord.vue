@@ -10,6 +10,16 @@
       :confirm-loading="confirmLoading"
       @ok="settlementOk">
       <a-textarea v-model:value="explainValue" placeholder="请输入详细的报修完毕说明" :rows="4" />
+      <!--图片上传组件-->
+      <div style="margin-top: 12px">
+        <a-upload-dragger :file-list="fileList" :remove="handleRemove" :before-upload="beforeUpload">
+          <p class="ant-upload-drag-icon" style="margin-top: 12px">
+            <inbox-outlined/>
+          </p>
+          <p class="ant-upload-text">上传维修完毕的相关照片</p>
+          <p class="ant-upload-hint" style="margin-bottom: 12px">支持多张图片上传，请在五张以内</p>
+        </a-upload-dragger>
+      </div>
     </a-modal>
     <div style="margin-top: 20px">
       <a-table
@@ -18,7 +28,7 @@
         :columns="columns"
         :dataSource="dataSource"
         :pagination="pagination"
-        :scroll="{ x: 1500 }"
+        :scroll="{ x: 1600 }"
         @change="handleTableChange"
         :row-class-name="(_record, index) => (index % 2 === 1 ? 'table-striped' : null)"
         class="ant-table-striped"
@@ -70,10 +80,14 @@ import moment from 'moment'
 import axios from 'axios'
 import { Empty, message } from 'ant-design-vue'
 import qs from 'qs'
+import { InboxOutlined } from '@ant-design/icons-vue'
 export default defineComponent({
   props: {
     status: undefined,
     buttonShow: undefined
+  },
+  components: {
+    InboxOutlined
   },
   setup (props) {
     const pageTotal = ref(1)
@@ -154,6 +168,12 @@ export default defineComponent({
         width: '10%'
       },
       {
+        title: '订单完成图片',
+        dataIndex: 'completePicture',
+        key: 'completePicture',
+        width: '10%'
+      },
+      {
         title: '订单完成时间',
         dataIndex: 'accomplishTime',
         key: 'accomplishTime',
@@ -231,6 +251,19 @@ export default defineComponent({
       selectedRowKeys: []
     })
     const hasSelected = computed(() => states.selectedRowKeys.length > 0)
+    // 图片上传相关
+    const fileList = ref([])
+    // 删除图片
+    const handleRemove = file => {
+      const index = fileList.value.indexOf(file)
+      const newFileList = fileList.value.slice()
+      newFileList.splice(index, 1)
+      fileList.value = newFileList
+    }
+    const beforeUpload = file => {
+      fileList.value = [...fileList.value, file]
+      return false
+    }
     const settlementOk = () => {
       confirmLoading.value = true
       for (const id of states.selectedRowKeys) {
@@ -299,7 +332,10 @@ export default defineComponent({
       imgVisible,
       imgNull,
       simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
-      imgList
+      imgList,
+      fileList,
+      handleRemove,
+      beforeUpload
     }
   }
 })
