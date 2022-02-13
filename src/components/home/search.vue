@@ -13,7 +13,7 @@
       <template #renderItem="{ item }">
         <a-list-item>
           <a-list-item-meta
-            :description="item.status"
+            :description="'订单状态: ' + item.status + ' ' + '报修时间: ' + moment(item.submitOrderTime).format('YYYY-MM-DD HH:mm:ss')"
           >
             <template #title>
               <a @click="pushPlate(item.id)">{{ item.plate }}</a>
@@ -30,6 +30,7 @@ import { defineComponent, ref } from 'vue'
 import axios from 'axios'
 import { message } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
+import moment from 'moment'
 export default defineComponent({
   setup () {
     // 搜索栏的值
@@ -87,7 +88,8 @@ export default defineComponent({
       loading,
       plateInfo,
       pushPlate,
-      show
+      show,
+      moment
     }
   }
 })
