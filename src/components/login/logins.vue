@@ -68,11 +68,11 @@ export default defineComponent({
     const loading = ref(false)
 
     const onFinish = values => {
-      console.log('Success:', values)
+      // console.log('Success:', values)
     }
 
     const onFinishFailed = errorInfo => {
-      console.log('Failed:', errorInfo)
+      // console.log('Failed:', errorInfo)
     }
 
     const disabled = computed(() => {

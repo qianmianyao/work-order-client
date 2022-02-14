@@ -79,7 +79,6 @@ import { useStore } from 'vuex'
 import moment from 'moment'
 import axios from 'axios'
 import { Empty, message } from 'ant-design-vue'
-import qs from 'qs'
 import { InboxOutlined } from '@ant-design/icons-vue'
 export default defineComponent({
   props: {
@@ -242,7 +241,7 @@ export default defineComponent({
       columnWidth: '2%'
     }
     const confirmLoading = ref(false) // loading
-    const settlement = ref(false) // 弹出报修框
+    const settlement = ref(false)
     const explainValue = ref('')
     const start = () => {
       settlement.value = true
@@ -267,14 +266,17 @@ export default defineComponent({
     const settlementOk = () => {
       confirmLoading.value = true
       for (const id of states.selectedRowKeys) {
+        const formData = new FormData()
+        formData.append('id', id)
+        formData.append('explain', explainValue.value)
+        fileList.value.forEach(file => {
+          formData.append('files', file)
+        })
         axios({
           method: 'post',
           url: 'api/complete_order/',
           headers: { Authorization: 'bearer ' + state.state.token },
-          data: qs.stringify({
-            id,
-            explain: explainValue.value
-          })
+          data: formData
         })
           .then(res => {
             if (res.data.code === 200) {
