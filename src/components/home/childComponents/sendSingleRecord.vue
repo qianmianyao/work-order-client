@@ -41,19 +41,12 @@
               v-bind:text="record.status"
             />
           </template>
-
           <template v-else-if="column.key === 'describe'">
-            <a-collapse ghost>
-              <a-collapse-panel key="1" header="查看详情">
-                <p>{{ record.describe }}</p>
-              </a-collapse-panel>
-            </a-collapse>
+            <a-button :mask="true" type="link" @click="infoModal(column.title, record.describe)">查看详情描述</a-button>
           </template>
-
           <template v-else-if="column.key === 'img'">
             <a-button :mask="true" type="link" @click="imgShowModal(record.key)">点击展示图片</a-button>
           </template>
-
         </template>
       </a-table>
     </div>
@@ -75,11 +68,11 @@
 </template>
 
 <script>
-import { defineComponent, ref, reactive, computed } from 'vue'
+import { defineComponent, ref, reactive, computed, h } from 'vue'
 import moment from 'moment'
 import axios from 'axios'
 import qs from 'qs'
-import { message, Empty } from 'ant-design-vue'
+import { message, Empty, Modal } from 'ant-design-vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 
@@ -305,6 +298,13 @@ export default defineComponent({
       }
       )
     }
+
+    const infoModal = (title, value) => {
+      Modal.info({
+        title: title,
+        content: h('div', {}, [h('p', value)])
+      })
+    }
     return {
       columns,
       dataSource,
@@ -327,7 +327,8 @@ export default defineComponent({
       imgNull,
       imgHandleOk,
       explain,
-      imgList
+      imgList,
+      infoModal
     }
   }
 })

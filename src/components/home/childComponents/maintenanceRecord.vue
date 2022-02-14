@@ -41,18 +41,20 @@
               v-bind:text="record.status"
             />
           </template>
-          <template v-else-if="column.key === 'accomplishTime'">
-            <span v-if="record.accomplishTime === null">还未完成</span>
-          </template>
           <template v-else-if="column.key === 'describe'">
-            <a-collapse ghost>
-              <a-collapse-panel key="1" header="查看详情">
-                <p>{{ record.describe }}</p>
-              </a-collapse-panel>
-            </a-collapse>
+            <a-button :mask="true" type="link" @click="infoModal(column.title, record.describe)">查看详情描述</a-button>
           </template>
           <template v-else-if="column.key === 'img'">
             <a-button :mask="true" type="link" @click="imgShowModal(record.key)">点击展示图片</a-button>
+          </template>
+          <template v-else-if="column.key === 'sendExplain'">
+            <a-button :mask="true" type="link" @click="infoModal(column.title, record.sendExplain)">查看补充信息</a-button>
+          </template>
+          <template v-else-if="column.key === 'completePicture'">
+            <a-button :mask="true" type="link">点击展示图片</a-button>
+          </template>
+          <template v-else-if="column.key === 'accomplishTime'">
+            <span v-if="record.accomplishTime === null">还未完成</span>
           </template>
         </template>
       </a-table>
@@ -74,11 +76,11 @@
 </template>
 
 <script>
-import { defineComponent, computed, reactive, ref } from 'vue'
+import { defineComponent, computed, reactive, ref, h } from 'vue'
 import { useStore } from 'vuex'
 import moment from 'moment'
 import axios from 'axios'
-import { Empty, message } from 'ant-design-vue'
+import { Empty, message, Modal } from 'ant-design-vue'
 import { InboxOutlined } from '@ant-design/icons-vue'
 export default defineComponent({
   props: {
@@ -315,6 +317,12 @@ export default defineComponent({
       }
       )
     }
+    const infoModal = (title, value) => {
+      Modal.info({
+        title: title,
+        content: h('div', {}, [h('p', value)])
+      })
+    }
     return {
       columns,
       rowSelection,
@@ -337,7 +345,8 @@ export default defineComponent({
       imgList,
       fileList,
       handleRemove,
-      beforeUpload
+      beforeUpload,
+      infoModal
     }
   }
 })
