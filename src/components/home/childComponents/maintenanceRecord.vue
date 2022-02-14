@@ -9,9 +9,8 @@
       title="请填写完成订单说明"
       :confirm-loading="confirmLoading"
       @ok="settlementOk">
-      <a-textarea v-model:value="explainValue" placeholder="请输入详细的报修完毕说明" :rows="4" />
       <!--图片上传组件-->
-      <div style="margin-top: 12px">
+      <div>
         <a-upload-dragger :file-list="fileList" :remove="handleRemove" :before-upload="beforeUpload">
           <p class="ant-upload-drag-icon" style="margin-top: 12px">
             <inbox-outlined/>
@@ -20,6 +19,12 @@
           <p class="ant-upload-hint" style="margin-bottom: 12px">支持多张图片上传，请在五张以内</p>
         </a-upload-dragger>
       </div>
+      <a-textarea
+        style="margin-top: 12px"
+        v-model:value="explainValue"
+        placeholder="请输入详细的报修完毕说明"
+        :rows="4"
+      />
     </a-modal>
     <div style="margin-top: 20px">
       <a-table
@@ -28,7 +33,7 @@
         :columns="columns"
         :dataSource="dataSource"
         :pagination="pagination"
-        :scroll="{ x: 1600 }"
+        :scroll="{ x: 1800 }"
         @change="handleTableChange"
         :row-class-name="(_record, index) => (index % 2 === 1 ? 'table-striped' : null)"
         class="ant-table-striped"
@@ -42,16 +47,16 @@
             />
           </template>
           <template v-else-if="column.key === 'describe'">
-            <a-button :mask="true" type="link" @click="infoModal(column.title, record.describe)">查看详情描述</a-button>
+            <a @click="infoModal(column.title, record.describe)">查看详情描述</a>
           </template>
           <template v-else-if="column.key === 'img'">
-            <a-button :mask="true" type="link" @click="imgShowModal(record.key)">点击展示图片</a-button>
+            <a @click="imgShowModal(record.key)">点击展示图片</a>
           </template>
           <template v-else-if="column.key === 'sendExplain'">
-            <a-button :mask="true" type="link" @click="infoModal(column.title, record.sendExplain)">查看补充信息</a-button>
+            <a @click="infoModal(column.title, record.sendExplain)">查看补充信息</a>
           </template>
           <template v-else-if="column.key === 'completePicture'">
-            <a-button :mask="true" type="link">点击展示图片</a-button>
+            <a>点击展示图片</a>
           </template>
           <template v-else-if="column.key === 'accomplishTime'">
             <span v-if="record.accomplishTime === null">还未完成</span>
@@ -101,8 +106,7 @@ export default defineComponent({
         title: '订单状态',
         dataIndex: 'status',
         key: 'status',
-        width: '6%',
-        fixed: 'left'
+        width: '6%'
       },
       {
         title: 'ID',
@@ -166,13 +170,13 @@ export default defineComponent({
         title: '补充信息',
         dataIndex: 'sendExplain',
         key: 'sendExplain',
-        width: '10%'
+        width: '8%'
       },
       {
         title: '订单完成图片',
         dataIndex: 'completePicture',
         key: 'completePicture',
-        width: '10%'
+        width: '8%'
       },
       {
         title: '订单完成时间',
