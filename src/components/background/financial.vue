@@ -22,6 +22,8 @@
       </a-table>
     </a-collapse-panel>
     <a-collapse-panel key="2" header="设置服务费套餐">
+      <a-button type="primary" style="margin-bottom: 20px; float: left">设置服务费套餐</a-button>
+      <a-button danger style="margin-bottom: 20px; float: right">删除服务费套餐</a-button>
       <a-table
         bordered
         size="small"
