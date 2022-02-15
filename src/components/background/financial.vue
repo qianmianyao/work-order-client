@@ -5,6 +5,9 @@
         <a-input-search
           style="float: left; width: 200px; margin-bottom: 20px"
           placeholder="输入车牌"
+          v-model:value="searchValue"
+          @search="searchPlate"
+          @change="empty"
         />
         <a-button
           type="primary"
@@ -17,8 +20,17 @@
         bordered
         size="small"
         :columns="columns"
+        :data-source="serverFeeList"
+        :pagination="pagination"
+        @change="handleTableChange"
+        :loading="loading"
         :scroll="{ x: 1000 }"
       >
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.key === 'state'">
+            {{ record.state ? '在网' : '脱网' }}
+          </template>
+        </template>
       </a-table>
     </a-collapse-panel>
     <a-collapse-panel key="2" header="设置服务费套餐">
@@ -57,6 +69,7 @@ import { CaretRightOutlined } from '@ant-design/icons-vue'
 import { useStore } from 'vuex'
 import qs from 'qs'
 import { message } from 'ant-design-vue'
+import moment from 'moment'
 export default defineComponent({
   components: {
     CaretRightOutlined
@@ -76,9 +89,27 @@ export default defineComponent({
         key: 'plate'
       },
       {
+        title: '操作人',
+        dataIndex: 'operator',
+        key: 'operator'
+      },
+      {
         title: '到期时间',
         dataIndex: 'due_datetime',
-        key: 'due_datetime'
+        key: 'due_datetime',
+        customRender: ({ text }) => {
+          return text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : ''
+        }
+      },
+      {
+        title: '套餐',
+        dataIndex: 'cost',
+        key: 'cost'
+      },
+      {
+        title: '实缴',
+        dataIndex: 'realityCost',
+        key: 'realityCost'
       },
       {
         title: '服务状态',
@@ -111,15 +142,80 @@ export default defineComponent({
         key: 'cost'
       }
     ]
+    // 获取后台服务费列表
+    const serverFeeList = ref([])
+    const getServerFee = (plate, index, pageSize) => {
+      axios({
+        method: 'get',
+        url: 'api/server_fee/',
+        params: {
+          index,
+          plate,
+          pageSize
+        }
+      })
+        .then(res => {
+          loading.value = false
+          const { server, serverCount } = res.data.data
+          serverFeeList.value = server
+          total.value = serverCount
+          if (server.length === 0) {
+            message.warning('未找到当前车牌服务信息')
+          }
+        })
+    }
+    getServerFee(null, 1, 10)
+
+    // 分页
+    const total = ref(1)
+    const pageSize = ref(10)
+    const pageCurrent = ref(1)
+    const pagination = computed(() => ({
+      total: total.value,
+      current: pageCurrent.value,
+      pageSize: pageSize.value,
+      onShowSizeChange: (current, ps) => {
+        pageSize.value = ps
+        getServerFee(null, current, ps)
+      }
+    }))
+    // 翻页方法
+    const handleTableChange = (page) => {
+      loading.value = true
+      const index = page.current
+      getServerFee(null, index, pageSize.value)
+      pageCurrent.value = index
+    }
+
+    // 翻页加载
+    const loading = ref(true)
+
+    // 搜索
+    const searchValue = ref()
+    const searchPlate = () => {
+      loading.value = true
+      if (searchValue.value === undefined || searchValue.value === '') {
+        getServerFee(null, 1, 10)
+      } else {
+        getServerFee(searchValue.value, 1, 10)
+      }
+    }
+    // 搜索框置空以后触发获取所有数据
+    const empty = () => {
+      if (searchValue.value === '') {
+        getServerFee(null, 1, 10)
+      }
+    }
+
     // 获取后台的服务套餐
     const serverFeeGroupData = ref([])
-    const getServerFee = () => {
+    const getServerFeeGroup = () => {
       axios.get('api/get_server_group/', { params: { index: 1 } }).then(res => {
         const { serverFeeGroup } = res.data.data
         serverFeeGroupData.value = serverFeeGroup
       })
     }
-    getServerFee()
+    getServerFeeGroup()
     // 增加或者删除服务费套餐
     const formState = reactive({
       groupName: '',
@@ -147,7 +243,7 @@ export default defineComponent({
           } else if (ms === '删除服务费组成功') {
             message.info(ms)
           }
-          getServerFee()
+          getServerFeeGroup()
         })
     }
     const hasSelected = computed(() => states.selectedRowKeys.length > 0)
@@ -173,7 +269,14 @@ export default defineComponent({
       formState,
       onChange,
       deleteGroup,
-      hasSelected
+      hasSelected,
+      serverFeeList,
+      loading,
+      pagination,
+      handleTableChange,
+      searchValue,
+      searchPlate,
+      empty
     }
   }
 })
