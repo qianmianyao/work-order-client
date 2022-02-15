@@ -67,7 +67,7 @@
     <SendSingleRecord status="2" v-if="identity === 3" :buttonShow="false" :row="true"/>
 <!--    客服已经报修的订单-->
     <SendSingleRecord status="1" v-if="identity === 1" :buttonShow="false" :row="true" />
-    <a-empty v-if="identity === 6" style="margin-top: 100px" />
+    <a-empty v-if="identity === 6 || identity === 4" style="margin-top: 100px" />
   </div>
 </template>
 <script>
