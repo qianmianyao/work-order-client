@@ -12,7 +12,7 @@
           <router-link to="/admin/financial" />
           财务管理
         </a-menu-item>
-        <a-menu-item key="3">
+        <a-menu-item key="3" v-if="show">
           <router-link to="/admin/globalAdmin"/>
           全局管理员
         </a-menu-item>
@@ -45,6 +45,7 @@
 <script>
 import { defineComponent, ref, getCurrentInstance } from 'vue'
 import { CopyrightCircleOutlined } from '@ant-design/icons-vue'
+import { useStore } from 'vuex'
 
 export default defineComponent({
   components: {
@@ -61,9 +62,17 @@ export default defineComponent({
     }
     // 横幅
     const banner = ref('当前版本 V1.0')
+    // 分组展示
+    const show = ref(false)
+    const state = useStore()
+    state.commit('decodeToken')
+    if (state.state.groUp === 6) {
+      show.value = true
+    }
     return {
       banner,
-      selectedKeys
+      selectedKeys,
+      show
     }
   }
 
