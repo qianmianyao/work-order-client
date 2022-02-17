@@ -403,6 +403,7 @@ export default defineComponent({
         .then(res => {
           message.success(`${formState.username} 添加成功`)
           getAllUsers(null)
+          addUserShow.value = false
         })
     }
 

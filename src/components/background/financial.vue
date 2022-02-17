@@ -341,6 +341,7 @@ export default defineComponent({
           }
           options.value = []
           getServerFeeGroup()
+          addOrDeleteVisible.value = false
         })
     }
     const hasSelected = computed(() => states.selectedRowKeys.length > 0)
@@ -391,9 +392,9 @@ export default defineComponent({
           message.success(res.data.message)
           getServerFee(null, 1, 10)
           plate.value = undefined
-          cost.value = undefined
           realityCost.value = undefined
           years.value = 1
+          renewalVisible.value = false
         })
     }
     // 新增服务费对话框
@@ -421,9 +422,9 @@ export default defineComponent({
           message.success(res.data.message)
           getServerFee(null, 1, 10)
           plate.value = undefined
-          cost.value = undefined
           realityCost.value = undefined
           years.value = 1
+          newVisible.value = false
         })
     }
     return {
