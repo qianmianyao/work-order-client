@@ -76,7 +76,7 @@ import { defineComponent, ref, reactive } from 'vue'
 import axios from 'axios'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
-import { notification, message } from 'ant-design-vue'
+import { message } from 'ant-design-vue'
 import qs from 'qs'
 import fileDownload from 'js-file-download'
 import MaintenanceRecord from '@/components/home/childComponents/maintenanceRecord'
@@ -134,7 +134,7 @@ export default defineComponent({
       })
         .then((res) => {
           if (res.data.code === 200) {
-            bubbleNotice(res.data.message)
+            message.info(res.data.message)
             state.commit('removeToken')
             router.push('/login')
           }
@@ -147,14 +147,6 @@ export default defineComponent({
           }
         })
       visible.value = false
-    }
-
-    // 气泡通知
-    const bubbleNotice = (message) => {
-      notification.open({
-        message: '通知',
-        description: message
-      })
     }
 
     // 个人信息
@@ -173,7 +165,7 @@ export default defineComponent({
         if (err.response.status === 401) {
           state.commit('removeToken')
           router.push('/login')
-          bubbleNotice('登录失效，请重新登录')
+          message.error('登录失效，请重新登录')
         }
       })
 

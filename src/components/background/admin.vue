@@ -178,6 +178,7 @@ import { useStore } from 'vuex'
 import { message } from 'ant-design-vue'
 import moment from 'moment'
 import qs from 'qs'
+import { useRouter } from 'vue-router'
 export default defineComponent({
   components: {
     CaretRightOutlined,
@@ -187,6 +188,7 @@ export default defineComponent({
     LockOutlined
   },
   setup () {
+    const router = useRouter()
     const state = useStore()
     // 折叠框
     const activeKey = ref(['1', '2'])
@@ -209,6 +211,13 @@ export default defineComponent({
           registrationCode.value = token
           formState.key = token
           updateTime.value = time
+        })
+        .catch(err => {
+          if (err.response.status === 401) {
+            state.commit('removeToken')
+            router.push('/login')
+            message.error('登录失效，请重新登录')
+          }
         })
     }
     getToken(2)

@@ -12,8 +12,9 @@
         <a-button
           type="primary"
           style="margin-bottom: 8px; float: right"
+          @click="showNew"
         >
-          导出报表
+          新增车辆服务费
         </a-button>
       </div>
       <a-table
@@ -28,14 +29,38 @@
       >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'state'">
-            {{ record.state ? '在网' : '脱网' }}
+            <a-badge
+              v-if='moment(moment().format("YYYY-MM-DD HH:mm:ss")).isBefore(record.due_datetime) === true'
+              status="success"
+              text="服务中"
+            />
+            <a-badge
+              v-if='moment(moment().format("YYYY-MM-DD HH:mm:ss")).isBefore(record.due_datetime) === false'
+              status="warning"
+              text="已到期"
+            />
+          </template>
+          <template v-if="column.key === 'renewal'">
+            <a @click="renewalShow(record.id)">续费</a>
           </template>
         </template>
       </a-table>
     </a-collapse-panel>
     <a-collapse-panel key="2" header="设置服务费套餐">
-      <a-button type="primary" :disabled="hasSelected" @click="showAddOrDelete" style="margin-bottom: 20px; float: left">设置服务费套餐</a-button>
-      <a-button danger :disabled="!hasSelected" @click="deleteGroup" style="margin-bottom: 20px; float: right">删除服务费套餐</a-button>
+      <a-button
+        type="primary"
+        :disabled="hasSelected"
+        @click="showAddOrDelete"
+        style="margin-bottom: 20px; float: left">
+        设置服务费套餐
+      </a-button>
+      <a-button
+        danger
+        :disabled="!hasSelected"
+        @click="deleteGroup"
+        style="margin-bottom: 20px; float: right">
+        删除服务费套餐
+      </a-button>
       <a-table
         bordered
         size="small"
@@ -60,19 +85,80 @@
       </a-form-item>
     </a-form>
   </a-modal>
+<!--  续费-->
+  <a-modal v-model:visible="renewalVisible" title="续费操作" @ok="renewal">
+    <a-descriptions bordered :column="1" layout="vertical" size="small">
+      <a-descriptions-item label="选择套餐">
+        <a-select
+          placeholder="请选择套餐"
+          :options="options"
+          @change="handleChange"
+        />
+      </a-descriptions-item>
+      <a-descriptions-item label="实际缴纳">
+        <a-input prefix="￥" suffix="RMB" placeholder="实际收取费用" v-model:value="realityCost"/>
+      </a-descriptions-item>
+      <a-descriptions-item label="续期年限">
+        <a-input style="width: 100px" v-model:value='years'>
+          <template #prefix>
+            <minus-outlined @click="reduce" />
+          </template>
+          <template #suffix>
+            <plus-outlined @click="increase"/>
+          </template>
+        </a-input>
+      </a-descriptions-item>
+    </a-descriptions>
+    <info-circle-outlined style="color: #FFA500; margin-top: 20px"/> 请注意: <span style="color: #DC143C">服务到到期时间和续期年限相关联</span>，和实际缴纳费用无关，服务到期时间续期后会自动更新
+  </a-modal>
+<!--  新增-->
+  <a-modal
+    v-model:visible="newVisible"
+    title="新增服务费"
+    @ok="addServerFee"
+  >
+    <a-descriptions bordered :column="1" layout="vertical" size="small">
+      <a-descriptions-item label="车牌">
+        <a-input placeholder="请输入车牌" v-model:value="plate"></a-input>
+      </a-descriptions-item>
+      <a-descriptions-item label="选择套餐">
+        <a-select
+          placeholder="请选择套餐"
+          :options="options"
+          @change="handleChange"
+        />
+      </a-descriptions-item>
+      <a-descriptions-item label="实际缴费">
+        <a-input prefix="￥" suffix="RMB" placeholder="实际收取费用" v-model:value="realityCost"/>
+      </a-descriptions-item>
+      <a-descriptions-item label="服务年限">
+        <a-input style="width: 100px" v-model:value='years'>
+          <template #prefix>
+            <minus-outlined @click="reduce" />
+          </template>
+          <template #suffix>
+            <plus-outlined @click="increase"/>
+          </template>
+        </a-input>
+      </a-descriptions-item>
+    </a-descriptions>
+  </a-modal>
 </template>
 
 <script>
 import { defineComponent, ref, reactive, computed } from 'vue'
 import axios from 'axios'
-import { CaretRightOutlined } from '@ant-design/icons-vue'
+import { CaretRightOutlined, InfoCircleOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { useStore } from 'vuex'
 import qs from 'qs'
 import { message } from 'ant-design-vue'
 import moment from 'moment'
 export default defineComponent({
   components: {
-    CaretRightOutlined
+    CaretRightOutlined,
+    InfoCircleOutlined,
+    MinusOutlined,
+    PlusOutlined
   },
   setup () {
     const state = useStore()
@@ -81,48 +167,51 @@ export default defineComponent({
       {
         title: '订单号',
         dataIndex: 'id',
-        key: 'id'
+        key: 'id',
+        width: '6%'
       },
       {
         title: '车牌',
         dataIndex: 'plate',
-        key: 'plate'
+        key: 'plate',
+        width: '10%'
       },
       {
         title: '操作人',
         dataIndex: 'operator',
-        key: 'operator'
+        key: 'operator',
+        width: '10%'
       },
       {
         title: '到期时间',
         dataIndex: 'due_datetime',
         key: 'due_datetime',
+        width: '20%',
         customRender: ({ text }) => {
           return text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : ''
         }
       },
       {
+        title: '服务状态',
+        dataIndex: 'state',
+        key: 'state',
+        width: '10%'
+      },
+      {
         title: '套餐',
         dataIndex: 'cost',
-        key: 'cost'
+        key: 'cost',
+        width: '10%'
       },
       {
         title: '实缴',
         dataIndex: 'realityCost',
-        key: 'realityCost'
+        key: 'realityCost',
+        width: '10%'
       },
       {
-        title: '服务状态',
-        dataIndex: 'state',
-        key: 'state'
-      },
-      {
-        title: '续费',
+        title: '',
         key: 'renewal'
-      },
-      {
-        title: '暂停服务',
-        key: 'suspend'
       }
     ]
     const serverFee = [
@@ -208,11 +297,18 @@ export default defineComponent({
     }
 
     // 获取后台的服务套餐
+    const options = ref([])
     const serverFeeGroupData = ref([])
     const getServerFeeGroup = () => {
       axios.get('api/get_server_group/', { params: { index: 1 } }).then(res => {
         const { serverFeeGroup } = res.data.data
         serverFeeGroupData.value = serverFeeGroup
+        serverFeeGroup.forEach(({ cost, groupName }) => {
+          options.value.push({
+            value: cost,
+            label: groupName
+          })
+        })
       })
     }
     getServerFeeGroup()
@@ -243,6 +339,7 @@ export default defineComponent({
           } else if (ms === '删除服务费组成功') {
             message.info(ms)
           }
+          options.value = []
           getServerFeeGroup()
         })
     }
@@ -256,7 +353,78 @@ export default defineComponent({
     const deleteGroup = () => {
       for (const id of states.selectedRowKeys) {
         addOrDelete(id)
+        states.selectedRowKeys = []
       }
+    }
+    // 套餐选择
+    const handleChange = value => {
+      cost.value = value
+    }
+    // 续费对话框
+    const renewalId = ref()
+    const renewalVisible = ref(false)
+    const renewalShow = (id) => {
+      renewalVisible.value = true
+      renewalId.value = id
+    }
+    const years = ref(1)
+    const increase = () => {
+      years.value += 1
+    }
+    const reduce = () => {
+      years.value -= 1
+    }
+    // TODO: 续费 api
+    const renewal = () => {
+      axios({
+        method: 'post',
+        url: 'api/alter_server_fee/',
+        headers: { Authorization: 'bearer ' + state.state.token },
+        data: qs.stringify({
+          id: renewalId.value,
+          cost: cost.value,
+          realityCost: realityCost.value,
+          years: years.value
+        })
+      })
+        .then(res => {
+          message.success(res.data.message)
+          getServerFee(null, 1, 10)
+          plate.value = undefined
+          cost.value = undefined
+          realityCost.value = undefined
+          years.value = 1
+        })
+    }
+    // 新增服务费对话框
+    const cost = ref()
+    const realityCost = ref()
+    const newVisible = ref(false)
+    const showNew = () => {
+      newVisible.value = true
+    }
+    const plate = ref()
+    // 新增服务费 api
+    const addServerFee = () => {
+      axios({
+        method: 'post',
+        url: 'api/add_server_fee/',
+        headers: { Authorization: 'bearer ' + state.state.token },
+        data: qs.stringify({
+          plate: plate.value,
+          cost: cost.value,
+          realityCost: realityCost.value,
+          years: years.value
+        })
+      })
+        .then(res => {
+          message.success(res.data.message)
+          getServerFee(null, 1, 10)
+          plate.value = undefined
+          cost.value = undefined
+          realityCost.value = undefined
+          years.value = 1
+        })
     }
     return {
       columns,
@@ -276,7 +444,21 @@ export default defineComponent({
       handleTableChange,
       searchValue,
       searchPlate,
-      empty
+      empty,
+      moment,
+      renewalVisible,
+      renewalShow,
+      years,
+      increase,
+      reduce,
+      newVisible,
+      showNew,
+      plate,
+      realityCost,
+      addServerFee,
+      options,
+      handleChange,
+      renewal
     }
   }
 })
