@@ -40,6 +40,9 @@
               text="已到期"
             />
           </template>
+          <template v-if="column.key === 'cost'">
+            {{ record.cost + ' ' + '/' + ' ' + '年' }}
+          </template>
           <template v-if="column.key === 'renewal'">
             <a @click="renewalShow(record.id)">续费</a>
           </template>
@@ -68,7 +71,19 @@
         :data-source="serverFeeGroupData"
         :row-selection="{ onChange: onChange}"
       >
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.key === 'cost'">
+            {{ record.cost + ' ' + '/' + ' ' + '年' }}
+          </template>
+        </template>
       </a-table>
+    </a-collapse-panel>
+    <a-collapse-panel key="3" header="报表导出">
+      <a-descriptions layout="vertical" bordered>
+        <a-descriptions-item label="导出所有服务中的车辆">Zhou Maomao</a-descriptions-item>
+        <a-descriptions-item label="导出不同服务组的车辆">1810000000</a-descriptions-item>
+        <a-descriptions-item label="导出到期时间区间车辆">Hangzhou, Zhejiang</a-descriptions-item>
+      </a-descriptions>
     </a-collapse-panel>
   </a-collapse>
   <a-modal v-model:visible="addOrDeleteVisible" title="设置服务费" @ok="addOrDelete">
@@ -98,15 +113,8 @@
       <a-descriptions-item label="实际缴纳">
         <a-input prefix="￥" suffix="RMB" placeholder="实际收取费用" v-model:value="realityCost"/>
       </a-descriptions-item>
-      <a-descriptions-item label="续期年限">
-        <a-input style="width: 100px" v-model:value='years'>
-          <template #prefix>
-            <minus-outlined @click="reduce" />
-          </template>
-          <template #suffix>
-            <plus-outlined @click="increase"/>
-          </template>
-        </a-input>
+      <a-descriptions-item label="续期年限(月份计算)">
+        <a-input style="width: 100px" suffix="/月" v-model:value='month' />
       </a-descriptions-item>
     </a-descriptions>
     <info-circle-outlined style="color: #FFA500; margin-top: 20px"/> 请注意: <span style="color: #DC143C">服务到到期时间和续期年限相关联</span>，和实际缴纳费用无关，服务到期时间续期后会自动更新
@@ -131,15 +139,8 @@
       <a-descriptions-item label="实际缴费">
         <a-input prefix="￥" suffix="RMB" placeholder="实际收取费用" v-model:value="realityCost"/>
       </a-descriptions-item>
-      <a-descriptions-item label="服务年限">
-        <a-input style="width: 100px" v-model:value='years'>
-          <template #prefix>
-            <minus-outlined @click="reduce" />
-          </template>
-          <template #suffix>
-            <plus-outlined @click="increase"/>
-          </template>
-        </a-input>
+      <a-descriptions-item label="续期年限(月份计算)">
+        <a-input style="width: 100px" suffix="/月" v-model:value='month' />
       </a-descriptions-item>
     </a-descriptions>
   </a-modal>
@@ -148,7 +149,7 @@
 <script>
 import { defineComponent, ref, reactive, computed } from 'vue'
 import axios from 'axios'
-import { CaretRightOutlined, InfoCircleOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons-vue'
+import { CaretRightOutlined, InfoCircleOutlined } from '@ant-design/icons-vue'
 import { useStore } from 'vuex'
 import qs from 'qs'
 import { message } from 'ant-design-vue'
@@ -156,9 +157,7 @@ import moment from 'moment'
 export default defineComponent({
   components: {
     CaretRightOutlined,
-    InfoCircleOutlined,
-    MinusOutlined,
-    PlusOutlined
+    InfoCircleOutlined
   },
   setup () {
     const state = useStore()
@@ -186,9 +185,9 @@ export default defineComponent({
         title: '到期时间',
         dataIndex: 'due_datetime',
         key: 'due_datetime',
-        width: '20%',
+        width: '15%',
         customRender: ({ text }) => {
-          return text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : ''
+          return text ? moment(text).format('YYYY-MM-DD') : ''
         }
       },
       {
@@ -368,13 +367,7 @@ export default defineComponent({
       renewalVisible.value = true
       renewalId.value = id
     }
-    const years = ref(1)
-    const increase = () => {
-      years.value += 1
-    }
-    const reduce = () => {
-      years.value -= 1
-    }
+    const month = ref(1)
     // TODO: 续费 api
     const renewal = () => {
       axios({
@@ -385,7 +378,7 @@ export default defineComponent({
           id: renewalId.value,
           cost: cost.value,
           realityCost: realityCost.value,
-          years: years.value
+          month: month.value
         })
       })
         .then(res => {
@@ -393,7 +386,7 @@ export default defineComponent({
           getServerFee(null, 1, 10)
           plate.value = undefined
           realityCost.value = undefined
-          years.value = 1
+          month.value = 1
           renewalVisible.value = false
         })
     }
@@ -415,7 +408,7 @@ export default defineComponent({
           plate: plate.value,
           cost: cost.value,
           realityCost: realityCost.value,
-          years: years.value
+          month: month.value
         })
       })
         .then(res => {
@@ -423,7 +416,7 @@ export default defineComponent({
           getServerFee(null, 1, 10)
           plate.value = undefined
           realityCost.value = undefined
-          years.value = 1
+          month.value = 1
           newVisible.value = false
         })
     }
@@ -449,9 +442,7 @@ export default defineComponent({
       moment,
       renewalVisible,
       renewalShow,
-      years,
-      increase,
-      reduce,
+      month,
       newVisible,
       showNew,
       plate,
