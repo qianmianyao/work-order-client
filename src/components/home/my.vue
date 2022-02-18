@@ -60,6 +60,7 @@
       <a-divider orientation="left" plain>说明</a-divider>
       <info-circle-outlined style="color: #FFA500; margin-top: 20px"/>
       请注意，底部的导出只能导出<span style="color: red">选定日期内</span>售后已经完成的数据，右侧的导出可以导出<span style="color: red">选定日期内</span>所有报修的数据(包含: 已提交，已派单，已完成)
+      ，注意选定日期需要加 1， 如 14 号到 16 号的数据，选择日期请选择 14 号至 17 号
     </a-modal>
 <!--    维修用户已完成的订单-->
     <maintenance-record status="3" v-if="identity === 2" :buttonShow="false" />

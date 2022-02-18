@@ -50,7 +50,7 @@
         </template>
       </a-table>
     </div>
-<!--    分派订单对话框-->
+<!--    图片展示对话框-->
     <a-modal
       v-model:visible="imgVisible"
       title="图片详情"
@@ -127,6 +127,17 @@ export default defineComponent({
         width: '7%'
       },
       {
+        title: '终端ID',
+        dataIndex: 'terminalID',
+        key: 'terminalID'
+      },
+      {
+        title: '安装日期',
+        dataIndex: 'vehicleMadeDate',
+        key: 'vehicleMadeDate',
+        width: '8%'
+      },
+      {
         title: '车主',
         dataIndex: 'driversName',
         key: 'driversName',
@@ -155,7 +166,7 @@ export default defineComponent({
         key: 'submitOrderTime',
         width: '10%',
         customRender: ({ text }) => {
-          return text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : ''
+          return text ? moment(text).format('YYYY-MM-DD') : ''
         }
       }
     ]

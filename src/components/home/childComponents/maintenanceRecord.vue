@@ -33,7 +33,7 @@
         :columns="columns"
         :dataSource="dataSource"
         :pagination="pagination"
-        :scroll="{ x: 1800 }"
+        :scroll="{ x: 2000 }"
         @change="handleTableChange"
         :row-class-name="(_record, index) => (index % 2 === 1 ? 'table-striped' : null)"
         class="ant-table-striped"
@@ -56,7 +56,7 @@
             <a @click="infoModal(column.title, record.sendExplain)">查看补充信息</a>
           </template>
           <template v-else-if="column.key === 'completePicture'">
-            <a>点击展示图片</a>
+            <a @click="imgShowModal(null, record.completePicture)">点击展示图片</a>
           </template>
           <template v-else-if="column.key === 'accomplishTime'">
             <span v-if="record.accomplishTime === null">还未完成</span>
@@ -106,7 +106,7 @@ export default defineComponent({
         title: '订单状态',
         dataIndex: 'status',
         key: 'status',
-        width: '6%'
+        width: '5%'
       },
       {
         title: 'ID',
@@ -117,31 +117,43 @@ export default defineComponent({
       {
         title: '车牌',
         dataIndex: 'plate',
-        width: '8%'
+        width: '7%'
       },
       {
         title: '所属公司',
         dataIndex: 'company',
         key: 'company',
-        width: '8%'
+        width: '6%'
       },
       {
         title: '车主',
         dataIndex: 'driversName',
         key: 'driversName',
-        width: '5%'
+        width: '4%'
       },
       {
         title: '联系电话',
         dataIndex: 'mobile',
         key: 'mobile',
-        width: '8%'
+        width: '6%'
       },
       {
         title: '维修设备',
         dataIndex: 'terminalDrive',
         key: 'terminalDrive',
         width: '7%'
+      },
+      {
+        title: '终端ID',
+        dataIndex: 'terminalID',
+        key: 'terminalID',
+        width: '6%'
+      },
+      {
+        title: '安装日期',
+        dataIndex: 'vehicleMadeDate',
+        key: 'vehicleMadeDate',
+        width: '8%'
       },
       {
         title: '报修原因',
@@ -153,30 +165,30 @@ export default defineComponent({
         title: '报修详情描述',
         dataIndex: 'describe',
         key: 'describe',
-        width: '9%'
+        width: '7%'
       },
       {
         title: '详情图片',
         key: 'img',
-        width: '8%'
+        width: '6%'
       },
       {
         title: '派单人',
         dataIndex: 'sendOrderUserId',
         key: 'sendOrderUserId',
-        width: '5%'
+        width: '4%'
       },
       {
         title: '补充信息',
         dataIndex: 'sendExplain',
         key: 'sendExplain',
-        width: '8%'
+        width: '6%'
       },
       {
         title: '订单完成图片',
         dataIndex: 'completePicture',
         key: 'completePicture',
-        width: '8%'
+        width: '6%'
       },
       {
         title: '订单完成时间',
@@ -306,9 +318,9 @@ export default defineComponent({
       imgList.value = []
     }
     // 获取图片的 id
-    const imgShowModal = (imgId) => {
+    const imgShowModal = (imgId, completePicture) => {
       imgVisible.value = true
-      axios.get('api/img_list/', { params: { work_order_id: imgId } }).then(res => {
+      axios.get('api/img_list/', { params: { work_order_id: imgId, completePicture: completePicture } }).then(res => {
         const { img_id: imgId } = res.data.data
         if (imgId.length === 0) {
           imgNull.value = true

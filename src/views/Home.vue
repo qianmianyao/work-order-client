@@ -43,7 +43,6 @@
         type="warning"
         style="margin: 16px 0"
       />
-
       <div :style="{ background: '#fff', padding: '12px', minHeight: '80vh' }">
         <router-view />
       </div>

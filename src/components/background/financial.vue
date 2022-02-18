@@ -25,7 +25,7 @@
         :pagination="pagination"
         @change="handleTableChange"
         :loading="loading"
-        :scroll="{ x: 1000 }"
+        :scroll="{ x: 1500 }"
       >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'state'">
@@ -176,16 +176,52 @@ export default defineComponent({
         width: '10%'
       },
       {
+        title: '终端型号',
+        dataIndex: 'terminalDrive',
+        key: 'terminalDrive',
+        width: '8%'
+      },
+      {
+        title: '终端ID',
+        dataIndex: 'terminalID',
+        key: 'terminalID',
+        width: '8%'
+      },
+      {
+        title: '设备安装时间',
+        dataIndex: 'vehicleMadeDate',
+        key: 'vehicleMadeDate',
+        width: '8%'
+      },
+      {
+        title: '车主',
+        dataIndex: 'driversName',
+        key: 'driversName',
+        width: '5%'
+      },
+      {
+        title: '联系方式',
+        dataIndex: 'mobile',
+        key: 'mobile',
+        width: '10%'
+      },
+      {
+        title: '分组',
+        dataIndex: 'company',
+        key: 'company',
+        width: '10%'
+      },
+      {
         title: '操作人',
         dataIndex: 'operator',
         key: 'operator',
-        width: '10%'
+        width: '5%'
       },
       {
         title: '到期时间',
         dataIndex: 'due_datetime',
         key: 'due_datetime',
-        width: '15%',
+        width: '10%',
         customRender: ({ text }) => {
           return text ? moment(text).format('YYYY-MM-DD') : ''
         }
@@ -194,23 +230,24 @@ export default defineComponent({
         title: '服务状态',
         dataIndex: 'state',
         key: 'state',
-        width: '10%'
+        width: '5%'
       },
       {
         title: '套餐',
         dataIndex: 'cost',
         key: 'cost',
-        width: '10%'
+        width: '7%'
       },
       {
         title: '实缴',
         dataIndex: 'realityCost',
         key: 'realityCost',
-        width: '10%'
+        width: '5%'
       },
       {
         title: '',
-        key: 'renewal'
+        key: 'renewal',
+        width: '8%'
       }
     ]
     const serverFee = [
