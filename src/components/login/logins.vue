@@ -1,5 +1,6 @@
 <template>
   <div :style="{ background: '#fff', padding: '24px', minHeight: '280px' }">
+    <h1 class="logo" style="margin-bottom: 20px">湖南伊爱工单系统</h1>
     <a-form
       style="margin: 0 auto"
       :model="formState"
@@ -133,5 +134,15 @@ export default defineComponent({
 
 })
 </script>
-<style>
+<style scoped>
+.login-form {
+  max-width: 300px;
+}
+.login-form-button {
+  width: 100%;
+}
+.logo {
+  text-align: center;
+  margin-bottom: auto;
+}
 </style>

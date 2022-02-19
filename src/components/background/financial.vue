@@ -2,20 +2,37 @@
   <a-collapse v-model:activeKey="activeKey" ghost>
     <a-collapse-panel key="1" header="服务费列表">
       <div>
+        <a-dropdown :trigger="['click']">
+          <a-button type="primary">操作<DownOutlined /></a-button>
+          <template #overlay>
+            <a-menu>
+              <a-menu-item>
+                <a @click="showNew">
+                  <plus-outlined /> 新增服务费
+                </a>
+              </a-menu-item>
+              <a-sub-menu title="报表导出">
+                <a-menu-item>
+                  <a @click="statementExport('根据服务状态导出报表', 1)">
+                    <DownloadOutlined /> 根据服务状态导出报表
+                  </a>
+                </a-menu-item>
+                <a-menu-item>
+                  <a @click="statementExport('根据服务费导出报表', 3)">
+                    <DownloadOutlined /> 根据服务费导出报表
+                  </a>
+                </a-menu-item>
+              </a-sub-menu>
+            </a-menu>
+          </template>
+        </a-dropdown>
         <a-input-search
-          style="float: left; width: 200px; margin-bottom: 20px"
+          style="float: right; width: 200px; margin-bottom: 20px"
           placeholder="输入车牌"
           v-model:value="searchValue"
           @search="searchPlate"
           @change="empty"
         />
-        <a-button
-          type="primary"
-          style="margin-bottom: 8px; float: right"
-          @click="showNew"
-        >
-          新增车辆服务费
-        </a-button>
       </div>
       <a-table
         bordered
@@ -78,13 +95,6 @@
         </template>
       </a-table>
     </a-collapse-panel>
-    <a-collapse-panel key="3" header="报表导出">
-      <a-descriptions layout="vertical" bordered>
-        <a-descriptions-item label="导出所有服务中的车辆">Zhou Maomao</a-descriptions-item>
-        <a-descriptions-item label="导出不同服务组的车辆">1810000000</a-descriptions-item>
-        <a-descriptions-item label="导出到期时间区间车辆">Hangzhou, Zhejiang</a-descriptions-item>
-      </a-descriptions>
-    </a-collapse-panel>
   </a-collapse>
   <a-modal v-model:visible="addOrDeleteVisible" title="设置服务费" @ok="addOrDelete">
     <a-form :model="formState">
@@ -105,6 +115,7 @@
     <a-descriptions bordered :column="1" layout="vertical" size="small">
       <a-descriptions-item label="选择套餐">
         <a-select
+          style="width: 180px"
           placeholder="请选择套餐"
           :options="options"
           @change="handleChange"
@@ -131,6 +142,7 @@
       </a-descriptions-item>
       <a-descriptions-item label="选择套餐">
         <a-select
+          style="width: 180px"
           placeholder="请选择套餐"
           :options="options"
           @change="handleChange"
@@ -144,12 +156,54 @@
       </a-descriptions-item>
     </a-descriptions>
   </a-modal>
+<!--  报表导出对话框-->
+  <a-modal
+    v-model:visible="statementVisible"
+    :title="statementTitle"
+    @ok="statementHandleOk"
+    ok-text="导出报表"
+  >
+    <a-descriptions bordered :column="1" layout="vertical" size="small">
+      <a-descriptions-item label="选择日期范围">
+        <!--    日期选择-->
+        <a-range-picker
+          :bordered="false"
+          v-model:value="date"
+          @change="getTime"
+          allowClear
+          size="middle"
+          inputReadOnly
+        />
+      </a-descriptions-item>
+      <a-descriptions-item v-if="statusVisible" label="选择车辆状态">
+        <!--    状态选择-->
+        <a-radio-group v-model:value="status">
+          <a-radio :value="true">服务中</a-radio>
+          <a-radio :value="false">待续费</a-radio>
+        </a-radio-group>
+      </a-descriptions-item>
+      <a-descriptions-item v-if="serverFeeVisible" label="选择服务费分组">
+        <a-select
+          style="width: 180px"
+          placeholder="请选择套餐"
+          :options="options"
+          @change="handleChange"
+        />
+      </a-descriptions-item>
+    </a-descriptions>
+  </a-modal>
 </template>
 
 <script>
 import { defineComponent, ref, reactive, computed } from 'vue'
 import axios from 'axios'
-import { CaretRightOutlined, InfoCircleOutlined } from '@ant-design/icons-vue'
+import {
+  CaretRightOutlined,
+  InfoCircleOutlined,
+  DownOutlined,
+  PlusOutlined,
+  DownloadOutlined
+} from '@ant-design/icons-vue'
 import { useStore } from 'vuex'
 import qs from 'qs'
 import { message } from 'ant-design-vue'
@@ -157,7 +211,10 @@ import moment from 'moment'
 export default defineComponent({
   components: {
     CaretRightOutlined,
-    InfoCircleOutlined
+    InfoCircleOutlined,
+    DownOutlined,
+    PlusOutlined,
+    DownloadOutlined
   },
   setup () {
     const state = useStore()
@@ -339,10 +396,10 @@ export default defineComponent({
       axios.get('api/get_server_group/', { params: { index: 1 } }).then(res => {
         const { serverFeeGroup } = res.data.data
         serverFeeGroupData.value = serverFeeGroup
-        serverFeeGroup.forEach(({ cost, groupName }) => {
+        serverFeeGroup.forEach(({ cost, groupName, key }) => {
           options.value.push({
-            value: cost,
-            label: groupName
+            value: key,
+            label: groupName + ' ' + '(' + cost + ' ' + '/年' + ')'
           })
         })
       })
@@ -394,7 +451,7 @@ export default defineComponent({
       }
     }
     // 套餐选择
-    const handleChange = value => {
+    const handleChange = (value, option) => {
       cost.value = value
     }
     // 续费对话框
@@ -404,8 +461,8 @@ export default defineComponent({
       renewalVisible.value = true
       renewalId.value = id
     }
-    const month = ref(1)
-    // TODO: 续费 api
+    const month = ref(12)
+    // 续费 api
     const renewal = () => {
       axios({
         method: 'post',
@@ -423,7 +480,7 @@ export default defineComponent({
           getServerFee(null, 1, 10)
           plate.value = undefined
           realityCost.value = undefined
-          month.value = 1
+          month.value = 12
           renewalVisible.value = false
         })
     }
@@ -449,14 +506,49 @@ export default defineComponent({
         })
       })
         .then(res => {
-          message.success(res.data.message)
-          getServerFee(null, 1, 10)
-          plate.value = undefined
-          realityCost.value = undefined
-          month.value = 1
-          newVisible.value = false
+          if (res.data.code !== 404) {
+            message.success(res.data.message)
+            getServerFee(null, 1, 10)
+            plate.value = undefined
+            realityCost.value = undefined
+            month.value = 12
+            newVisible.value = false
+          } else {
+            message.error(res.data.message)
+          }
         })
     }
+    // 报表导出对话框
+    const statementVisible = ref(false)
+    const statementTitle = ref()
+    const statementHandleOk = () => {
+      statementVisible.value = false
+      console.log(start, end, status.value, cost.value)
+    }
+    const statementExport = (title, visible) => {
+      statementTitle.value = title
+      statementVisible.value = true
+      if (visible === 1) {
+        serverFeeVisible.value = false
+        statusVisible.value = true
+      } else if (visible === 3) {
+        statusVisible.value = false
+        serverFeeVisible.value = true
+      }
+    }
+    // 时间组件
+    const date = ref()
+    let start = ''
+    let end = ''
+    const getTime = (_, dateString) => {
+      start = dateString[0]
+      end = dateString[1]
+    }
+    // 状态选择
+    const status = ref()
+    // 不同导出功能的显示
+    const statusVisible = ref(false)
+    const serverFeeVisible = ref(false)
     return {
       columns,
       activeKey,
@@ -487,7 +579,16 @@ export default defineComponent({
       addServerFee,
       options,
       handleChange,
-      renewal
+      renewal,
+      statementVisible,
+      statementHandleOk,
+      statementExport,
+      statementTitle,
+      date,
+      getTime,
+      status,
+      statusVisible,
+      serverFeeVisible
     }
   }
 })

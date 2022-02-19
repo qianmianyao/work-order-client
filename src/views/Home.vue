@@ -1,7 +1,7 @@
 <template>
   <a-layout style="min-height: 100vh">
     <a-layout-header>
-      <div class="logo" />
+      <img src="../assets/logo.png" class="logo" />
       <a-menu
         v-model:selectedKeys="selectedKeys"
         theme="dark"
@@ -127,10 +127,9 @@ export default defineComponent({
 <style scoped>
 .logo {
   float: left;
-  width: 31px;
-  height: 31px;
+  width: 48px;
+  height: 32px;
   margin: 16px 24px 16px 0;
-  background: rgba(255, 255, 255, 0.3);
 }
 .ant-back-top {
   bottom: 150px;

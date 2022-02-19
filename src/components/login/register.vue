@@ -7,6 +7,7 @@
     </a-result>
   </div>
   <div v-if="demo" :style="{ background: '#fff', padding: '25px', minHeight: '280px'}">
+    <h1 class="logo" style="margin-bottom: 20px">湖南伊爱工单系统</h1>
     <a-form
       style="margin: 0 auto"
       :model="formState"
@@ -183,10 +184,6 @@ export default defineComponent({
       {
         value: 4,
         label: '财务管理'
-      },
-      {
-        value: 5,
-        label: '维修管理'
       }
     ])
 
@@ -220,3 +217,9 @@ export default defineComponent({
 
 })
 </script>
+<style scoped>
+.logo {
+  text-align: center;
+  margin-bottom: auto;
+}
+</style>

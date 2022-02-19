@@ -1,4 +1,12 @@
 module.exports = {
+  chainWebpack: config => {
+    config
+      .plugin('html')
+      .tap(args => {
+        args[0].title = '湖南伊爱售后工单系统'
+        return args
+      })
+  },
   devServer: {
     open: false,
     host: '0.0.0.0',
