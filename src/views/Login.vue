@@ -30,7 +30,7 @@
         />
 
       <!-- 动态组件-->
-      <div :style="{ background: '#fff', padding: '18%', minHeight: '80vh' }">
+      <div :style="{ background: '#fff', padding: '10%', minHeight: '80vh' }">
         <router-view />
       </div>
     </a-layout-content>

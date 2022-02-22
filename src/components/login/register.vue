@@ -222,4 +222,10 @@ export default defineComponent({
   text-align: center;
   margin-bottom: auto;
 }
+.login-form {
+  max-width: 300px;
+}
+.login-form-button {
+  width: 100%;
+}
 </style>

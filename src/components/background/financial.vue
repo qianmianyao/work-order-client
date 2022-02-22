@@ -208,6 +208,7 @@ import { useStore } from 'vuex'
 import qs from 'qs'
 import { message } from 'ant-design-vue'
 import moment from 'moment'
+import fileDownload from 'js-file-download'
 export default defineComponent({
   components: {
     CaretRightOutlined,
@@ -521,9 +522,26 @@ export default defineComponent({
     // 报表导出对话框
     const statementVisible = ref(false)
     const statementTitle = ref()
+    // 导出报表 post
     const statementHandleOk = () => {
       statementVisible.value = false
       console.log(start, end, status.value, cost.value)
+      axios({
+        method: 'get',
+        url: 'api/statement_export/',
+        params: {
+          start: start,
+          end: end,
+          status: status.value,
+          server_fee_group: cost.value
+        }
+      })
+        .then(res => {
+          const disposition = res.headers['content-disposition'].split('/')
+          const fileName = decodeURIComponent(disposition[disposition.length - 1])
+          fileDownload(res.data, fileName)
+          message.success(fileName + '导出成功')
+        })
     }
     const statementExport = (title, visible) => {
       statementTitle.value = title
