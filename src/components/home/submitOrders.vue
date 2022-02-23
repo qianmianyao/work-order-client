@@ -10,11 +10,9 @@
     </a-card-meta>
   </a-card>
   <a-divider style="margin-top: 24px" orientation="left">关联结果</a-divider>
-  <div style="margin-top: 24px">
-    <div v-for="(value, i) of allPlateInfo" :key="value + i">
-      <a-tag @click="changeTag(value)" style="float: left; margin-top: 10px">{{ value }}</a-tag>
-    </div>
-  </div>
+    <span v-for="(value, i) of allPlateInfo" :key="value + i">
+      <a-tag @click="changeTag(value)"  style="margin-top: 10px">{{ value }}</a-tag>
+    </span>
   <a-empty v-if="!cardShow" description="暂无数据" style="margin-top: 60px;" />
 <!--报修的对话框-->
   <div>
