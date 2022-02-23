@@ -1,7 +1,7 @@
 <template>
   <a-input-search placeholder="输入车牌查找" v-model:value="search" enter-button @search="onSearch(null)"/>
   <a-divider style="margin-top: 20px" orientation="left">结果</a-divider>
-  <a-card v-if="cardShow" style="margin-top: 24px;">
+  <a-card v-if="cardShow" :loading="cardLoading" style="margin-top: 24px;">
     <template #actions>
       <edit-outlined key="edit" style="color: #1E90FF" @click="repairs"/>
       <unordered-list-outlined key="info" style="color: #008000" @click="info" />
@@ -11,7 +11,7 @@
   </a-card>
   <a-divider style="margin-top: 24px" orientation="left">关联结果</a-divider>
     <span v-for="(value, i) of allPlateInfo" :key="value + i">
-      <a-tag @click="changeTag(value)"  style="margin-top: 10px">{{ value }}</a-tag>
+      <a-tag color="blue" @click="changeTag(value)"  style="margin-top: 10px">{{ value }}</a-tag>
     </span>
   <a-empty v-if="!cardShow" description="暂无数据" style="margin-top: 60px;" />
 <!--报修的对话框-->
@@ -139,12 +139,14 @@ export default defineComponent({
       onSearch(value)
     }
 
+    const cardLoading = ref(false)
     // 获取车辆详情
     const onSearch = (plate) => {
       let plateValue = search.value
       if (plate !== null) {
         plateValue = plate
       }
+      cardLoading.value = true
       axios({
         method: 'get',
         url: 'api/search/',
@@ -157,6 +159,7 @@ export default defineComponent({
           } else if (res.data.code === 500) {
             message.warning(res.data.message)
           } else {
+            cardLoading.value = false
             const { data, message } = res.data
             allPlateInfo.value = message
             infoList.plate = data.plate
@@ -331,7 +334,8 @@ export default defineComponent({
       beforeUpload,
       handleRemove,
       allPlateInfo,
-      changeTag
+      changeTag,
+      cardLoading
     }
   }
 })
