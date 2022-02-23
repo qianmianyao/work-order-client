@@ -515,6 +515,7 @@ export default defineComponent({
       axios({
         method: 'get',
         url: 'api/statement_export/',
+        responseType: 'blob',
         params: {
           status: status.value,
           server_fee_group: cost.value
