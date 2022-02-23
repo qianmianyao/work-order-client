@@ -1,11 +1,6 @@
 <template>
   <a-input-search placeholder="输入车牌查找" v-model:value="search" enter-button @search="onSearch(null)"/>
   <a-divider style="margin-top: 20px" orientation="left">结果</a-divider>
-  <div style="margin-bottom: 50px">
-    <div v-for="(value, i) of allPlateInfo" :key="value + i">
-      <a-tag @click="changeTag(value)" style="float: left">{{ value }}</a-tag>
-    </div>
-  </div>
   <a-card v-if="cardShow" style="margin-top: 24px;">
     <template #actions>
       <edit-outlined key="edit" style="color: #1E90FF" @click="repairs"/>
@@ -14,6 +9,12 @@
     <a-card-meta :title="infoList.plate" description="点击下方按钮查看车辆详细或者报修">
     </a-card-meta>
   </a-card>
+  <a-divider style="margin-top: 24px" orientation="left">关联结果</a-divider>
+  <div style="margin-top: 24px">
+    <div v-for="(value, i) of allPlateInfo" :key="value + i">
+      <a-tag @click="changeTag(value)" style="float: left; margin-top: 10px">{{ value }}</a-tag>
+    </div>
+  </div>
   <a-empty v-if="!cardShow" description="暂无数据" style="margin-top: 60px;" />
 <!--报修的对话框-->
   <div>
