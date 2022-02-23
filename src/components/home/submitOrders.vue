@@ -1,6 +1,11 @@
 <template>
-  <a-input-search placeholder="输入车牌查找" v-model:value="search" enter-button @search="onSearch"/>
-  <a-divider orientation="left">结果</a-divider>
+  <a-input-search placeholder="输入车牌查找" v-model:value="search" enter-button @search="onSearch(null)"/>
+  <a-divider style="margin-top: 20px" orientation="left">结果</a-divider>
+  <div style="margin-bottom: 50px">
+    <div v-for="(value, i) of allPlateInfo" :key="value + i">
+      <a-tag @click="changeTag(value)" style="float: left">{{ value }}</a-tag>
+    </div>
+  </div>
   <a-card v-if="cardShow" style="margin-top: 24px;">
     <template #actions>
       <edit-outlined key="edit" style="color: #1E90FF" @click="repairs"/>
@@ -129,20 +134,32 @@ export default defineComponent({
     const cardShow = ref(false)
     const state = useStore()
     const router = useRouter()
+    const allPlateInfo = ref()
+    // 点击标签的回调
+    const changeTag = (value) => {
+      onSearch(value)
+    }
 
     // 获取车辆详情
-    const onSearch = () => {
+    const onSearch = (plate) => {
+      let plateValue = search.value
+      if (plate !== null) {
+        plateValue = plate
+      }
       axios({
         method: 'get',
         url: 'api/search/',
         headers: { Authorization: 'bearer ' + state.state.token },
-        params: { plate: search.value }
+        params: { plate: plateValue }
       })
         .then(res => {
           if (res.data.code === 404) {
             message.warning(res.data.message)
+          } else if (res.data.code === 500) {
+            message.warning(res.data.message)
           } else {
-            const { data } = res.data
+            const { data, message } = res.data
+            allPlateInfo.value = message
             infoList.plate = data.plate
             infoList.name = data.name
             infoList.terminal_drive = data.terminal_drive
@@ -313,7 +330,9 @@ export default defineComponent({
       moment,
       fileList,
       beforeUpload,
-      handleRemove
+      handleRemove,
+      allPlateInfo,
+      changeTag
     }
   }
 })
