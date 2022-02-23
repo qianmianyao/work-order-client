@@ -13,13 +13,8 @@
               </a-menu-item>
               <a-sub-menu title="报表导出">
                 <a-menu-item>
-                  <a @click="statementExport('根据服务状态导出报表', 1)">
-                    <DownloadOutlined /> 根据服务状态导出报表
-                  </a>
-                </a-menu-item>
-                <a-menu-item>
-                  <a @click="statementExport('根据服务费导出报表', 3)">
-                    <DownloadOutlined /> 根据服务费导出报表
+                  <a @click="statementExport('条件导出')">
+                    <DownloadOutlined /> 条件导出
                   </a>
                 </a-menu-item>
               </a-sub-menu>
@@ -164,31 +159,20 @@
     ok-text="导出报表"
   >
     <a-descriptions bordered :column="1" layout="vertical" size="small">
-      <a-descriptions-item label="选择日期范围">
-        <!--    日期选择-->
-        <a-range-picker
-          :bordered="false"
-          v-model:value="date"
-          @change="getTime"
-          allowClear
-          size="middle"
-          inputReadOnly
-        />
-      </a-descriptions-item>
-      <a-descriptions-item v-if="statusVisible" label="选择车辆状态">
-        <!--    状态选择-->
-        <a-radio-group v-model:value="status">
-          <a-radio :value="true">服务中</a-radio>
-          <a-radio :value="false">待续费</a-radio>
-        </a-radio-group>
-      </a-descriptions-item>
-      <a-descriptions-item v-if="serverFeeVisible" label="选择服务费分组">
+      <a-descriptions-item label="选择服务费分组 (必填)">
         <a-select
           style="width: 180px"
           placeholder="请选择套餐"
           :options="options"
           @change="handleChange"
         />
+      </a-descriptions-item>
+      <a-descriptions-item label="选择车辆状态 (可选)">
+        <!--    状态选择-->
+        <a-radio-group v-model:value="status">
+          <a-radio :value="true">服务中</a-radio>
+          <a-radio :value="false">待续费</a-radio>
+        </a-radio-group>
       </a-descriptions-item>
     </a-descriptions>
   </a-modal>
@@ -525,13 +509,11 @@ export default defineComponent({
     // 导出报表 post
     const statementHandleOk = () => {
       statementVisible.value = false
-      console.log(start, end, status.value, cost.value)
+      console.log(status.value, cost.value)
       axios({
         method: 'get',
         url: 'api/statement_export/',
         params: {
-          start: start,
-          end: end,
           status: status.value,
           server_fee_group: cost.value
         }
@@ -543,30 +525,12 @@ export default defineComponent({
           message.success(fileName + '导出成功')
         })
     }
-    const statementExport = (title, visible) => {
+    const statementExport = (title) => {
       statementTitle.value = title
       statementVisible.value = true
-      if (visible === 1) {
-        serverFeeVisible.value = false
-        statusVisible.value = true
-      } else if (visible === 3) {
-        statusVisible.value = false
-        serverFeeVisible.value = true
-      }
-    }
-    // 时间组件
-    const date = ref()
-    let start = ''
-    let end = ''
-    const getTime = (_, dateString) => {
-      start = dateString[0]
-      end = dateString[1]
     }
     // 状态选择
     const status = ref()
-    // 不同导出功能的显示
-    const statusVisible = ref(false)
-    const serverFeeVisible = ref(false)
     return {
       columns,
       activeKey,
@@ -602,11 +566,7 @@ export default defineComponent({
       statementHandleOk,
       statementExport,
       statementTitle,
-      date,
-      getTime,
-      status,
-      statusVisible,
-      serverFeeVisible
+      status
     }
   }
 })

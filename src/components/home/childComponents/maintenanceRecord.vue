@@ -22,7 +22,7 @@
       <a-textarea
         style="margin-top: 12px"
         v-model:value="explainValue"
-        placeholder="请输入详细的报修完毕说明"
+        placeholder="请输入详细的报修完毕说明 (必填)"
         :rows="4"
       />
     </a-modal>
@@ -320,18 +320,24 @@ export default defineComponent({
     // 获取图片的 id
     const imgShowModal = (imgId, completePicture) => {
       imgVisible.value = true
-      axios.get('api/img_list/', { params: { work_order_id: imgId, completePicture: completePicture } }).then(res => {
-        const { img_id: imgId } = res.data.data
-        if (imgId.length === 0) {
-          imgNull.value = true
-        } else {
-          for (const imgUrl of imgId) {
-            imgNull.value = false
-            imgList.value.push('api/return_img/' + imgUrl.id)
+      axios.get('api/img_list/', { params: { work_order_id: imgId, completePicture: completePicture } })
+        .then(res => {
+          console.log(res)
+          if (res.data.code === 404) {
+            imgNull.value = true
+          } else {
+            const { img_id: imgId } = res.data.data
+            if (imgId.length === 0) {
+              imgNull.value = true
+            } else {
+              for (const imgUrl of imgId) {
+                imgNull.value = false
+                imgList.value.push('api/return_img/' + imgUrl.id)
+              }
+            }
           }
         }
-      }
-      )
+        )
     }
     const infoModal = (title, value) => {
       Modal.info({

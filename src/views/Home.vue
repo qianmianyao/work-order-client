@@ -12,13 +12,13 @@
           <router-link to="/search" />
           订单搜索
         </a-menu-item>
-        <a-menu-item v-if="orderListShow" key="sendOrders">
-          <router-link to="/sendOrders" />
-          订单派发
-        </a-menu-item>
         <a-menu-item v-if="sendOrdersShow" key="submitOrders">
           <router-link to="/submitOrders" />
           报修
+        </a-menu-item>
+        <a-menu-item v-if="orderListShow" key="sendOrders">
+          <router-link to="/sendOrders" />
+          订单派发
         </a-menu-item>
         <a-menu-item v-if="waitingRepairShow" key="waitingRepair">
           <router-link to="/waitingRepair" />
@@ -94,13 +94,13 @@ export default defineComponent({
     const waitingRepairShow = ref(false)
     const state = useStore()
     state.commit('decodeToken')
-    if (state.state.groUp === 3) {
+    if (state.state.groUp === 3 || state.state.groUp === 6) {
       orderListShow.value = true
     }
-    if (state.state.groUp === 2) {
+    if (state.state.groUp === 2 || state.state.groUp === 6) {
       waitingRepairShow.value = true
     }
-    if (state.state.groUp === 1) {
+    if (state.state.groUp === 1 || state.state.groUp === 6) {
       sendOrdersShow.value = true
     }
     console.log('生活应该慢下来 https://qianmianyao.com')

@@ -14,7 +14,7 @@
       ok-text="分配给他"
       cancelText="取消"
     >
-      <a-textarea v-model:value="explain" placeholder="请填写派单说明" :rows="4" />
+      <a-textarea v-model:value="explain" placeholder="请填写派单说明 (此项目必填)" :rows="4" />
       <div v-for="({username}, index) of userList" :key="index" style="margin-top: 20px">
         <a-radio-group v-model:value="groupValue">
           <a-radio :value="username" :style="radioStyle">{{ username }}</a-radio>
@@ -280,6 +280,7 @@ export default defineComponent({
       url: 'api/user/maintain_user/'
     })
       .then(res => {
+        console.log(res.data)
         const { userList: user } = res.data.data
         userList.value = user
       })

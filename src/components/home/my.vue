@@ -63,7 +63,7 @@
       ，注意选定日期需要加 1， 如 14 号到 16 号的数据，选择日期请选择 14 号至 17 号
     </a-modal>
 <!--    维修用户已完成的订单-->
-    <maintenance-record status="3" v-if="identity === 2" :buttonShow="false" />
+    <maintenance-record status="3" v-if="identity === 2 || identity === 6" :buttonShow="false" />
 <!--    派单用户已经派发的订单-->
     <SendSingleRecord status="2" v-if="identity === 3" :buttonShow="false" :row="true"/>
 <!--    客服已经报修的订单-->
