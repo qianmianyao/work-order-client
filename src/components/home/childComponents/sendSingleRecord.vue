@@ -280,7 +280,6 @@ export default defineComponent({
       url: 'api/user/maintain_user/'
     })
       .then(res => {
-        console.log(res.data)
         const { userList: user } = res.data.data
         userList.value = user
       })
