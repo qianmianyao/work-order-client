@@ -167,7 +167,7 @@
           @change="handleChange"
         />
       </a-descriptions-item>
-      <a-descriptions-item label="选择车辆状态 (可选)">
+      <a-descriptions-item label="选择车辆状态 (必填)">
         <!--    状态选择-->
         <a-radio-group v-model:value="status">
           <a-radio :value="true">服务中</a-radio>
@@ -175,6 +175,8 @@
         </a-radio-group>
       </a-descriptions-item>
     </a-descriptions>
+    <info-circle-outlined style="color: #FFA500; margin-top: 20px"/>
+    请注意，此导出可以导出组中<span style="color: green">服务中</span>或者<span style="color: #FFA500">已到期</span>的车辆报表
   </a-modal>
 </template>
 
