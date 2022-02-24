@@ -78,7 +78,7 @@ export default defineComponent({
         selectedKeys.value[0] = 'sendOrders'
       } else if (path === '/submitOrders') {
         selectedKeys.value[0] = 'submitOrders'
-      } else if (path === '/childComponents') {
+      } else if (path === '/my') {
         selectedKeys.value[0] = 'my'
       } else if (path === '/waitingRepair') {
         selectedKeys.value[0] = 'waitingRepair'
