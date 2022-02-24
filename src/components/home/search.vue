@@ -41,26 +41,33 @@ export default defineComponent({
     // const pageTotal = ref(1)
     // 加载过程
     const loading = ref(false)
+
     const show = ref(false)
 
     // 获取后端的车牌报修历史数据
     const onSearch = () => {
-      loading.value = true
-      axios({
-        method: 'get',
-        url: 'api/vehicle_history_info/',
-        params: { plate: search.value.toUpperCase() }
-      })
-        .then(res => {
-          loading.value = false
-          if (res.data.code === 404) {
-            message.error('数据库暂无当前车辆报修信息')
-          } else {
-            const { plateAll } = res.data.data
-            data.value = plateAll
-            show.value = true
-          }
+      console.log(search.value)
+      if (search.value === undefined || search.value === '') {
+        message.error('请输入搜索值')
+        show.value = false
+      } else {
+        loading.value = true
+        axios({
+          method: 'get',
+          url: 'api/vehicle_history_info/',
+          params: { plate: search.value.toUpperCase() }
         })
+          .then(res => {
+            loading.value = false
+            if (res.data.code === 404) {
+              message.error('数据库暂无当前车辆报修信息')
+            } else {
+              const { plateAll } = res.data.data
+              data.value = plateAll
+              show.value = true
+            }
+          })
+      }
     }
 
     // 分页
