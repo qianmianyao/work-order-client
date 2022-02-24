@@ -97,7 +97,7 @@ import {
   exportStatement,
   getAllGroup,
   alterPassword
-} from '@/request/myRequests'
+} from '@/js/request/myRequests'
 
 export default defineComponent({
   components: {
