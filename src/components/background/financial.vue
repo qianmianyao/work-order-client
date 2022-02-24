@@ -328,8 +328,10 @@ export default defineComponent({
           const { server, serverCount } = res.data.data
           serverFeeList.value = server
           total.value = serverCount
-          if (server.length === 0) {
-            message.warning('未找到当前车牌服务信息', 1)
+          if (plate !== null) {
+            if (server.length === 0) {
+              message.warning('未找到当前车牌服务信息', 1)
+            }
           }
         })
     }
