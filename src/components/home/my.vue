@@ -33,7 +33,7 @@
     </a-modal>
     <a-modal
       v-model:visible="downloadShow"
-      @ok="exportStatement('api/statement/')"
+      @ok="statement('api/statement/')"
       title="报表导出"
       ok-text="导出已完成订单"
       :ok-button-props="{ disabled: buttonOptional }"
@@ -61,7 +61,7 @@
           <a-descriptions-item label="导出方式">
             <a-button
               type="primary"
-              @click="exportStatement('api/all_statement/')"
+              @click="statement('api/all_statement/')"
               :disabled="buttonOptional"
             >
               导出全部订单
@@ -86,14 +86,18 @@
 <script>
 import { EditOutlined, LogoutOutlined, FileExcelOutlined, InfoCircleOutlined } from '@ant-design/icons-vue'
 import { defineComponent, ref, reactive } from 'vue'
-import axios from 'axios'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
-import qs from 'qs'
-import fileDownload from 'js-file-download'
 import MaintenanceRecord from '@/components/home/childComponents/maintenanceRecord'
 import SendSingleRecord from '@/components/home/childComponents/sendSingleRecord'
+import {
+  getUserInfo,
+  getUserOrder,
+  exportStatement,
+  getAllGroup,
+  alterPassword
+} from '@/request/myRequests'
 
 export default defineComponent({
   components: {
@@ -116,8 +120,10 @@ export default defineComponent({
 
     // 判断身份
     const show = ref(false)
+
     // 获取 token 的值
     state.commit('decodeToken')
+
     // 如果身份不符合部分信息不展示
     if (state.state.groUp === 2) {
       show.value = true
@@ -137,74 +143,28 @@ export default defineComponent({
 
     // 修改密码
     const handleOk = () => {
-      axios({
-        method: 'post',
-        url: 'api/user/change_password/',
-        headers: { Authorization: 'bearer ' + state.state.token },
-        data: qs.stringify({
-          password: info.newPassword
-        })
-      })
-        .then((res) => {
-          if (res.data.code === 200) {
-            message.info(res.data.message)
-            state.commit('removeToken')
-            router.push('/login')
-          }
-        })
-        .catch(err => {
-          if (err.response.status === 401) {
-            state.commit('removeToken')
-            router.push('/login')
-            message.error('登录失效，请重新登录')
-          }
-        })
-      visible.value = false
+      alterPassword(state, info, router, visible)
     }
 
-    // 个人信息
-    axios({
-      method: 'get',
-      url: 'api/user/info/',
-      headers: { Authorization: 'bearer ' + state.state.token }
-    })
-      .then((res) => {
-        const { data } = res.data
-        info.name = data.username
-        info.describe = '身份: ' + data.groupName + ' ' + '注册时间: ' + data.registrationDate
-        login.value = true
-      })
-      .catch(err => {
-        if (err.response.status === 401) {
-          state.commit('removeToken')
-          router.push('/login')
-          message.error('登录失效，请重新登录')
-        }
-      })
+    // 获取用户信息请求
+    getUserInfo(info, login, state, router)
 
     // 订单完成信息
     const complete = ref(0)
     const pending = ref(0)
-    axios({
-      method: 'get',
-      url: 'api/user/order_count/',
-      headers: { Authorization: 'bearer ' + state.state.token }
-    })
-      .then(res => {
-        const { complete: c, pending: p } = res.data.data
-        complete.value = c
-        pending.value = p
-      })
+    getUserOrder(state, complete, pending)
 
     // 报表导出按钮
     const downloadShow = ref(false)
     const window = () => {
       downloadShow.value = true
     }
+
     // 时间组件
     const date = ref()
     let start = ''
     let end = ''
+
     // 日期变化回调
     const buttonOptional = ref(true)
     const getTime = (_, dateString) => {
@@ -214,50 +174,25 @@ export default defineComponent({
     }
 
     // 导出报表
-    // 获取所有组
     const options = ref([])
     const serverFeeGroupData = ref([])
     const group = ref()
-    axios.get('api/get_all_group/').then(res => {
-      const { allGroup } = res.data.data
-      serverFeeGroupData.value = allGroup
-      serverFeeGroupData.value.forEach(({ CorpShortName }) => {
-        options.value.push({
-          value: CorpShortName,
-          label: CorpShortName
-        })
-      })
-    })
-    // 套餐选择
+
+    // 获取所有的大组
+    getAllGroup(serverFeeGroupData, options)
+
+    // 组选择
     const handleChange = (value) => {
       group.value = value
     }
-    const exportStatement = (url) => {
-      axios({
-        method: 'get',
-        url: url,
-        responseType: 'blob',
-        params: {
-          start_time: start,
-          end_time: end,
-          group: group.value
-        }
-      }).then(res => {
-        const disposition = res.headers['content-disposition'].split('/')
-        const fileName = decodeURIComponent(disposition[disposition.length - 1])
-        fileDownload(res.data, fileName)
-        message.success(fileName + '导出成功')
-      })
-        .catch(err => {
-          if (err.response.status === 500) {
-            message.error('文件导出失败')
-          }
-        })
+
+    // 订单导出请求
+    const statement = (url) => {
+      exportStatement(url, start, end, group)
     }
 
     // 身份
     const identity = ref(state.state.groUp)
-
     return {
       visible,
       confirmLoading,
@@ -273,7 +208,7 @@ export default defineComponent({
       downloadShow,
       getTime,
       date,
-      exportStatement,
+      statement,
       state,
       identity,
       buttonOptional,
