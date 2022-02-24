@@ -1,19 +1,22 @@
 <template>
   <a-input-search placeholder="输入车牌查找" v-model:value="search" enter-button @search="onSearch(null)"/>
-  <a-divider style="margin-top: 20px" orientation="left">结果</a-divider>
-  <a-card v-if="cardShow" :loading="cardLoading" style="margin-top: 24px;">
-    <template #actions>
-      <edit-outlined key="edit" style="color: #1E90FF" @click="repairs"/>
-      <unordered-list-outlined key="info" style="color: #008000" @click="info" />
-    </template>
-    <a-card-meta :title="infoList.plate" description="点击下方按钮查看车辆详细或者报修">
-    </a-card-meta>
-  </a-card>
-  <a-divider style="margin-top: 24px" orientation="left">关联结果</a-divider>
+  <div v-if="cardShow">
+    <a-divider style="margin-top: 20px" orientation="left">结果</a-divider>
+    <a-card :loading="cardLoading" style="margin-top: 24px;">
+      <template #actions>
+        <edit-outlined key="edit" style="color: #1E90FF" @click="repairs"/>
+        <unordered-list-outlined key="info" style="color: #008000" @click="info" />
+      </template>
+      <a-card-meta :title="infoList.plate" description="点击下方按钮查看车辆详细或者报修">
+      </a-card-meta>
+    </a-card>
+    <a-divider style="margin-top: 24px" orientation="left">关联结果</a-divider>
     <span v-for="(value, i) of allPlateInfo" :key="value + i">
       <a-tag color="blue" @click="changeTag(value)"  style="margin-top: 10px">{{ value }}</a-tag>
     </span>
-  <a-empty v-if="!cardShow" description="暂无数据" style="margin-top: 60px;" />
+  </div>
+
+  <a-empty v-if="!cardShow" description="暂无数据" style="margin-top: 80px;" />
 <!--报修的对话框-->
   <div>
     <a-modal
@@ -32,7 +35,8 @@
         :column="1"
       >
         <a-descriptions-item label="车牌">{{ infoList.plate }}</a-descriptions-item>
-        <a-descriptions-item label="单位名称">{{ infoList.group }}</a-descriptions-item>
+        <a-descriptions-item label="组名称">{{ infoList.group }}</a-descriptions-item>
+        <a-descriptions-item label="单位名称">{{ infoList.company }}</a-descriptions-item>
         <a-descriptions-item label="车辆设备">{{ infoList.terminal_drive }}</a-descriptions-item>
         <a-descriptions-item label="报修原因">
           <a-space>
@@ -122,6 +126,7 @@ export default defineComponent({
       terminal_drive: '',
       phone: '',
       group: '',
+      company: '',
       rowUpdateTime: ''
     })
     // 报修提交的数据
@@ -167,6 +172,7 @@ export default defineComponent({
             infoList.terminal_drive = data.terminal_drive
             infoList.phone = data.phone
             infoList.group = data.group
+            infoList.company = data.company
             infoList.rowUpdateTime = data.rowUpdateTime
             cardShow.value = true
           }

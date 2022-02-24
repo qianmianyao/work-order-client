@@ -329,7 +329,7 @@ export default defineComponent({
           serverFeeList.value = server
           total.value = serverCount
           if (server.length === 0) {
-            message.warning('未找到当前车牌服务信息')
+            message.warning('未找到当前车牌服务信息', 1)
           }
         })
     }
@@ -415,9 +415,9 @@ export default defineComponent({
         .then(res => {
           const { message: ms } = res.data.data
           if (ms === '增加服务费组成功') {
-            message.success(ms)
+            message.success(ms, 1)
           } else if (ms === '删除服务费组成功') {
-            message.info(ms)
+            message.info(ms, 1)
           }
           options.value = []
           getServerFeeGroup()

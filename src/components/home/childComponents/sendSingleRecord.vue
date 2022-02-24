@@ -25,7 +25,7 @@
       <a-table
         size="small"
         :columns="columns"
-        :scroll="{ x: 1500 }"
+        :scroll="{ x: 1600 }"
         :data-source="dataSource"
         :row-selection="rowSelection"
         :pagination="pagination"
@@ -101,7 +101,19 @@ export default defineComponent({
         title: '车牌',
         dataIndex: 'plate',
         key: 'plate',
-        width: '6%'
+        width: '7%'
+      },
+      {
+        title: '所属组',
+        dataIndex: 'group',
+        key: 'group',
+        width: '8%'
+      },
+      {
+        title: '公司',
+        dataIndex: 'company',
+        key: 'company',
+        width: '8%'
       },
       {
         title: '报修原因',
@@ -142,12 +154,6 @@ export default defineComponent({
         dataIndex: 'driversName',
         key: 'driversName',
         width: '5%'
-      },
-      {
-        title: '公司',
-        dataIndex: 'company',
-        key: 'company',
-        width: '8%'
       },
       {
         title: '联系电话',

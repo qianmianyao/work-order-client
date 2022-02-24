@@ -1,5 +1,5 @@
 <template>
-  <a-divider orientation="left">接单列表</a-divider>
+  <a-divider orientation="left">待维修列表</a-divider>
  <MaintenanceRecord status="2" :buttonShow="true" />
 </template>
 

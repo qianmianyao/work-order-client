@@ -120,10 +120,16 @@ export default defineComponent({
         width: '7%'
       },
       {
-        title: '所属公司',
+        title: '所属组',
+        dataIndex: 'group',
+        key: 'group',
+        width: '6%'
+      },
+      {
+        title: '公司',
         dataIndex: 'company',
         key: 'company',
-        width: '6%'
+        width: '7%'
       },
       {
         title: '车主',
@@ -141,7 +147,7 @@ export default defineComponent({
         title: '维修设备',
         dataIndex: 'terminalDrive',
         key: 'terminalDrive',
-        width: '7%'
+        width: '6%'
       },
       {
         title: '终端ID',
@@ -153,7 +159,7 @@ export default defineComponent({
         title: '安装日期',
         dataIndex: 'vehicleMadeDate',
         key: 'vehicleMadeDate',
-        width: '8%'
+        width: '6%'
       },
       {
         title: '报修原因',
@@ -211,7 +217,7 @@ export default defineComponent({
     // 数据
     const dataSource = ref([])
     const login = ref(false)
-    // 待维修api
+    // 待维修列表 API
     const getOrder = () => {
       axios({
         method: 'get',

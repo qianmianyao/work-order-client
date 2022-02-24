@@ -39,22 +39,35 @@
       :ok-button-props="{ disabled: buttonOptional }"
     >
       <div>
-        <a-range-picker
-          :bordered="false"
-          v-model:value="date"
-          @change="getTime"
-          allowClear
-          size="middle"
-          inputReadOnly
-        />
-        <a-button
-          type="primary"
-          style="float: right"
-          @click="exportStatement('api/all_statement/')"
-          :disabled="buttonOptional"
-        >
-          导出全部订单
-        </a-button>
+        <a-descriptions bordered :column="1" layout="vertical" size="small">
+          <a-descriptions-item label="选择时间">
+            <a-range-picker
+              :bordered="false"
+              v-model:value="date"
+              @change="getTime"
+              allowClear
+              size="middle"
+              inputReadOnly
+            />
+          </a-descriptions-item>
+          <a-descriptions-item label="选择组(必选)">
+            <a-select
+              style="width: 180px"
+              placeholder="请选择组"
+              :options="options"
+              @change="handleChange"
+            />
+          </a-descriptions-item>
+          <a-descriptions-item label="导出方式">
+            <a-button
+              type="primary"
+              @click="exportStatement('api/all_statement/')"
+              :disabled="buttonOptional"
+            >
+              导出全部订单
+            </a-button>
+          </a-descriptions-item>
+        </a-descriptions>
       </div>
       <br/>
       <a-divider orientation="left" plain>说明</a-divider>
@@ -68,7 +81,6 @@
     <SendSingleRecord status="2" v-if="identity === 3" :buttonShow="false" :row="true"/>
 <!--    客服已经报修的订单-->
     <SendSingleRecord status="1" v-if="identity === 1" :buttonShow="false" :row="true" />
-    <a-empty v-if="identity === 6 || identity === 4" style="margin-top: 100px" />
   </div>
 </template>
 <script>
@@ -202,6 +214,24 @@ export default defineComponent({
     }
 
     // 导出报表
+    // 获取所有组
+    const options = ref([])
+    const serverFeeGroupData = ref([])
+    const group = ref()
+    axios.get('api/get_all_group/').then(res => {
+      const { allGroup } = res.data.data
+      serverFeeGroupData.value = allGroup
+      serverFeeGroupData.value.forEach(({ CorpShortName }) => {
+        options.value.push({
+          value: CorpShortName,
+          label: CorpShortName
+        })
+      })
+    })
+    // 套餐选择
+    const handleChange = (value) => {
+      group.value = value
+    }
     const exportStatement = (url) => {
       axios({
         method: 'get',
@@ -209,7 +239,8 @@ export default defineComponent({
         responseType: 'blob',
         params: {
           start_time: start,
-          end_time: end
+          end_time: end,
+          group: group.value
         }
       }).then(res => {
         const disposition = res.headers['content-disposition'].split('/')
@@ -245,7 +276,9 @@ export default defineComponent({
       exportStatement,
       state,
       identity,
-      buttonOptional
+      buttonOptional,
+      options,
+      handleChange
     }
   }
 
