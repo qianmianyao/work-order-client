@@ -12,6 +12,7 @@ import admin from '@/components/background/admin'
 import financial from '@/components/background/financial'
 import search from '@/components/home/search'
 import plateInfo from '@/components/home/childComponents/plateInfo'
+import userOnline from '@/components/home/userOnline'
 
 const routes = [
   {
@@ -21,11 +22,15 @@ const routes = [
     children: [
       {
         path: '',
-        component: my
+        component: search
       },
       {
         path: '/my',
         component: my
+      },
+      {
+        path: '/userOnline',
+        component: userOnline
       },
       {
         path: '/sendOrders',

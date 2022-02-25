@@ -135,8 +135,10 @@ export default defineComponent({
     const showModal = () => {
       visible.value = true
     }
+    // 退出登录
     const logout = () => {
       state.commit('removeToken')
+      state.commit('closeSocket', state.state.socket)
       router.push('/login')
       message.success('退出成功')
     }
