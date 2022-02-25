@@ -12,6 +12,7 @@ import admin from '@/components/background/admin'
 import financial from '@/components/background/financial'
 import search from '@/components/home/search'
 import plateInfo from '@/components/home/childComponents/plateInfo'
+import about from '@/components/home/about'
 
 const routes = [
   {
@@ -46,6 +47,10 @@ const routes = [
       {
         path: '/plate/:id',
         component: plateInfo
+      },
+      {
+        path: '/about',
+        component: about
       }
     ]
   },

@@ -147,43 +147,52 @@ export default defineComponent({
     const cardLoading = ref(false)
     // 获取车辆详情
     const onSearch = (plate) => {
-      let plateValue = search.value
-      if (plate !== null) {
-        plateValue = plate
+      if (search.value === 'eggs') {
+        router.push('/about')
+        return
       }
-      cardLoading.value = true
-      axios({
-        method: 'get',
-        url: 'api/search/',
-        headers: { Authorization: 'bearer ' + state.state.token },
-        params: { plate: plateValue }
-      })
-        .then(res => {
-          if (res.data.code === 404) {
-            message.warning(res.data.message)
-          } else if (res.data.code === 500) {
-            message.warning(res.data.message)
-          } else {
-            cardLoading.value = false
-            const { data, message } = res.data
-            allPlateInfo.value = message
-            infoList.plate = data.plate
-            infoList.name = data.name
-            infoList.terminal_drive = data.terminal_drive
-            infoList.phone = data.phone
-            infoList.group = data.group
-            infoList.company = data.company
-            infoList.rowUpdateTime = data.rowUpdateTime
-            cardShow.value = true
-          }
+      if (search.value.length < 4) {
+        message.warning('请至少输入4位字符')
+      } else {
+        let plateValue = search.value
+        if (plate !== null) {
+          plateValue = plate
+        }
+        cardLoading.value = true
+        axios({
+          method: 'get',
+          url: 'api/search/',
+          headers: { Authorization: 'bearer ' + state.state.token },
+          params: { plate: plateValue }
         })
-        .catch(err => {
-          if (err.response.status === 401) {
-            state.commit('removeToken')
-            router.push('/login')
-            message.error('登录失效，请重新登录')
-          }
-        })
+          .then(res => {
+            if (res.data.code === 404) {
+              message.warning(res.data.message)
+            } else if (res.data.code === 500) {
+              cardShow.value = false
+              message.warning(res.data.message)
+            } else {
+              cardLoading.value = false
+              const { data, message } = res.data
+              allPlateInfo.value = message
+              infoList.plate = data.plate
+              infoList.name = data.name
+              infoList.terminal_drive = data.terminal_drive
+              infoList.phone = data.phone
+              infoList.group = data.group
+              infoList.company = data.company
+              infoList.rowUpdateTime = data.rowUpdateTime
+              cardShow.value = true
+            }
+          })
+          .catch(err => {
+            if (err.response.status === 401) {
+              state.commit('removeToken')
+              router.push('/login')
+              message.error('登录失效，请重新登录')
+            }
+          })
+      }
     }
 
     // 报修对话框

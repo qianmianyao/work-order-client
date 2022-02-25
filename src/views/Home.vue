@@ -85,6 +85,8 @@ export default defineComponent({
         selectedKeys.value[0] = 'waitingRepair'
       } else if (path === '/search') {
         selectedKeys.value[0] = 'search'
+      } else if (path === '/about') {
+        selectedKeys.value[0] = 'submitOrders'
       } else {
         selectedKeys.value[0] = 'search'
       }
@@ -103,7 +105,7 @@ export default defineComponent({
     if (state.state.groUp === 1 || state.state.groUp === 6) {
       sendOrdersShow.value = true
     }
-    console.log('生活应该慢下来 https://qianmianyao.com')
+    console.log('报修页面输入 eggs 有彩蛋！！！')
     const banner = ref('欢迎使用伊爱工单系统')
 
     // 判断权限

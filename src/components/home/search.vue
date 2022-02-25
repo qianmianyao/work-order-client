@@ -34,7 +34,7 @@ import moment from 'moment'
 export default defineComponent({
   setup () {
     // 搜索栏的值
-    const search = ref()
+    const search = ref('')
     // 列表展示数据
     const data = ref()
     // 数据总数
@@ -46,9 +46,8 @@ export default defineComponent({
 
     // 获取后端的车牌报修历史数据
     const onSearch = () => {
-      console.log(search.value)
-      if (search.value === undefined || search.value === '') {
-        message.error('请输入搜索值')
+      if (search.value.length < 4) {
+        message.warning('请至少输入4位字符')
         show.value = false
       } else {
         loading.value = true
