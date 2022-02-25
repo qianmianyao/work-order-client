@@ -137,6 +137,7 @@ export default defineComponent({
     }
     // 退出登录
     const logout = () => {
+      state.commit('removeToken')
       router.push('/login')
       message.success('退出成功')
     }

@@ -1,7 +1,7 @@
 <template>
   <a-skeleton active v-if="!login"/>
   <div v-if="login">
-    <a-button type="primary" @click="start" :disabled="!hasSelected" v-if="buttonShow">结算工单</a-button>
+    <a-button type="primary" @click="start" :disabled="!hasSelected" v-if="buttonShow">完成维修</a-button>
     <a-modal
       ok-text="确认"
       cancel-text="取消"

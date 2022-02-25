@@ -26,7 +26,7 @@
         :data-source="dataSource"
         :columns="columns"
         size="small"
-        :scroll="{ x: 1000 }"
+        :scroll="{ x: 800 }"
       >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'action'">
@@ -67,6 +67,8 @@
                 </a-button>
               </template>
               <a-button type="link" @click="show(record.id)">修改</a-button>
+              <a-divider type="vertical" />
+              <a-button type="link" style="color: #F82622" @click="deleteUser(record.id)">删除</a-button>
             </a-popover>
 
           </template>
@@ -422,6 +424,21 @@ export default defineComponent({
         getAllUsers(null)
       }
     }
+    // 删除用户
+    const deleteUser = (id) => {
+      axios({
+        url: 'api/admin/delete/',
+        method: 'post',
+        headers: { Authorization: 'bearer ' + state.state.token },
+        data: qs.stringify({
+          id: id
+        })
+      })
+        .then(res => {
+          message.success(res.data.message)
+          getAllUsers(null)
+        })
+    }
     return {
       activeKey,
       registrationCode,
@@ -449,7 +466,8 @@ export default defineComponent({
       registrationShow,
       searchUser,
       searchValue,
-      empty
+      empty,
+      deleteUser
     }
   }
 
