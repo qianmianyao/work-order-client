@@ -24,10 +24,6 @@
           <router-link to="/waitingRepair" />
           待维修列表
         </a-menu-item>
-        <a-menu-item v-if="isAdmin" key="userOnline">
-          <router-link to="/userOnline" />
-          用户在线情况
-        </a-menu-item>
         <a-menu-item key="my">
           <router-link to="/my" />
           用户信息
@@ -74,9 +70,6 @@ export default defineComponent({
   },
   setup () {
     const state = useStore()
-    if (state.state.socket.readyState !== 1) {
-      state.commit('createSocket')
-    }
     // 页面刷新时顶部的标签会根据当前的路由确定位置，不会在刷新之后回到第一个
     const selectedKeys = ref(['my'])
     const { proxy } = getCurrentInstance()
@@ -92,8 +85,6 @@ export default defineComponent({
         selectedKeys.value[0] = 'waitingRepair'
       } else if (path === '/search') {
         selectedKeys.value[0] = 'search'
-      } else if (path === '/userOnline') {
-        selectedKeys.value[0] = 'userOnline'
       } else {
         selectedKeys.value[0] = 'search'
       }

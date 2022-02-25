@@ -91,7 +91,6 @@ export default defineComponent({
     // 登录事件
     const login = () => {
       loading.value = true
-      state.commit('createSocket')
       axios({
         method: 'post',
         url: 'api/user/login/',
@@ -103,11 +102,10 @@ export default defineComponent({
       })
         .then((res) => {
           loading.value = false
-          console.log(state.state.socket.readyState)
           if (res.data.code === 401) {
             message.error('账号或者密码错误')
           }
-          if (state.state.socket.readyState === 0) {
+          if (res.data.code === 200) {
             message.success('登录成功', 2)
             // eslint-disable-next-line camelcase
             const { access_token } = res.data.data
