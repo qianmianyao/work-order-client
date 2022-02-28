@@ -111,4 +111,10 @@ router.beforeEach((to, from, next) => {
   isLogin || to.path === '/login' || to.path === '/register' ? next() : next({ path: '/login' })
 })
 
+// 切换路由后自动回滚到顶部
+router.afterEach(() => {
+  document.body.scrollTop = 0
+  document.documentElement.scrollTop = 0
+})
+
 export default router
