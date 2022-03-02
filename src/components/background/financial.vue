@@ -37,7 +37,7 @@
         :pagination="pagination"
         @change="handleTableChange"
         :loading="loading"
-        :scroll="{ x: 1500 }"
+        :scroll="{ x: 1800 }"
       >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'state'">
@@ -217,7 +217,7 @@ export default defineComponent({
         title: '车牌',
         dataIndex: 'plate',
         key: 'plate',
-        width: '10%'
+        width: '9%'
       },
       {
         title: '终端型号',
@@ -229,6 +229,12 @@ export default defineComponent({
         title: '终端ID',
         dataIndex: 'terminalID',
         key: 'terminalID',
+        width: '8%'
+      },
+      {
+        title: 'sim卡号',
+        dataIndex: 'simCard',
+        key: 'simCard',
         width: '8%'
       },
       {
@@ -247,13 +253,13 @@ export default defineComponent({
         title: '联系方式',
         dataIndex: 'mobile',
         key: 'mobile',
-        width: '10%'
+        width: '8%'
       },
       {
         title: '分组',
         dataIndex: 'company',
         key: 'company',
-        width: '10%'
+        width: '8%'
       },
       {
         title: '操作人',
@@ -265,7 +271,7 @@ export default defineComponent({
         title: '到期时间',
         dataIndex: 'due_datetime',
         key: 'due_datetime',
-        width: '10%',
+        width: '8%',
         customRender: ({ text }) => {
           return text ? moment(text).format('YYYY-MM-DD') : ''
         }
@@ -280,7 +286,7 @@ export default defineComponent({
         title: '套餐',
         dataIndex: 'cost',
         key: 'cost',
-        width: '7%'
+        width: '5%'
       },
       {
         title: '实缴',
@@ -483,6 +489,10 @@ export default defineComponent({
     const plate = ref()
     // 新增服务费 api
     const addServerFee = () => {
+      if (plate.value.length !== 7) {
+        message.error('请输入正确的车牌格式')
+        return
+      }
       axios({
         method: 'post',
         url: 'api/add_server_fee/',
