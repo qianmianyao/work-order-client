@@ -57,6 +57,8 @@
           </template>
           <template v-if="column.key === 'renewal'">
             <a @click="renewalShow(record.id)">续费</a>
+            <a-divider type="vertical" />
+            <a style="color: #ADAEAE">删除</a>
           </template>
         </template>
       </a-table>
@@ -211,13 +213,13 @@ export default defineComponent({
         title: '订单号',
         dataIndex: 'id',
         key: 'id',
-        width: '6%'
+        width: '4%'
       },
       {
         title: '车牌',
         dataIndex: 'plate',
         key: 'plate',
-        width: '9%'
+        width: '7%'
       },
       {
         title: '终端型号',
@@ -489,7 +491,7 @@ export default defineComponent({
     const plate = ref()
     // 新增服务费 api
     const addServerFee = () => {
-      if (plate.value.length !== 7) {
+      if (plate.value.length < 7) {
         message.error('请输入正确的车牌格式')
         return
       }
