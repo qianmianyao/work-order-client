@@ -1,12 +1,11 @@
 <template>
   <a-layout style="min-height: 100vh">
-    <a-layout-header :style="{ position: 'fixed', zIndex: 1, width: '100%' }">
+    <a-layout-header :style="{ zIndex: 1, width: '100%' }">
       <img src="../assets/logo.png" class="logo" />
       <a-menu
         v-model:selectedKeys="selectedKeys"
         theme="dark"
         mode="horizontal"
-        :style="{ lineHeight: '64px' }"
       >
         <a-menu-item key="1">
           <router-link to="/admin/financial" />
@@ -22,7 +21,7 @@
         </a-menu-item>
       </a-menu>
     </a-layout-header>
-    <a-layout-content :style="{ padding: '0 10px', marginTop: '64px' }">
+    <a-layout-content :style="{ padding: '0 10px' }">
 <!--      面包屑导航-->
     <div>
       <a-alert
