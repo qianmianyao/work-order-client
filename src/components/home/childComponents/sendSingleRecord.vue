@@ -282,7 +282,7 @@ export default defineComponent({
     })
     axios({
       method: 'get',
-      url: 'api/user/maintain_user/'
+      url: 'api/api/v1/user/get_maintain_user_all/'
     })
       .then(res => {
         const { userList: user } = res.data.data

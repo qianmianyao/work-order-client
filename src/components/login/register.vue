@@ -131,7 +131,7 @@ export default defineComponent({
       loading.value = true
       axios({
         method: 'post',
-        url: 'api/user/register/',
+        url: 'api/api/v1/auth/register/',
         headers: { 'content-type': 'application/x-www-form-urlencoded' },
         data: qs.stringify({
           username: formState.username,

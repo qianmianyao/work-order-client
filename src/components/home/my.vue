@@ -33,7 +33,7 @@
     </a-modal>
     <a-modal
       v-model:visible="downloadShow"
-      @ok="statement('api/statement/')"
+      @ok="statement('api/api/v1/export/maintain_excel/')"
       title="报表导出"
       ok-text="导出已完成订单"
       :ok-button-props="{ disabled: buttonOptional }"
@@ -61,7 +61,7 @@
           <a-descriptions-item label="导出方式">
             <a-button
               type="primary"
-              @click="statement('api/all_statement/')"
+              @click="statement('api/api/v1/export/maintain_all_excel/')"
               :disabled="buttonOptional"
             >
               导出全部订单

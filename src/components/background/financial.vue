@@ -528,7 +528,7 @@ export default defineComponent({
       console.log(status.value, cost.value)
       axios({
         method: 'get',
-        url: 'api/statement_export/',
+        url: 'api/api/v1/export/statement_excel/',
         responseType: 'blob',
         params: {
           status: status.value,

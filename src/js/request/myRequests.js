@@ -9,7 +9,7 @@ import qs from 'qs'
 export function getUserInfo (info, login, state, router) {
   axios({
     method: 'get',
-    url: 'api/user/info/',
+    url: 'api/api/v1/user/info/',
     headers: { Authorization: 'bearer ' + state.state.token }
   })
     .then(res => {
@@ -32,7 +32,7 @@ export function getUserInfo (info, login, state, router) {
 export function getUserOrder (state, complete, pending) {
   axios({
     method: 'get',
-    url: 'api/user/order_count/',
+    url: 'api/api/v1/user/order_info/',
     headers: { Authorization: 'bearer ' + state.state.token }
   })
     .then(res => {
@@ -84,7 +84,7 @@ export function getAllGroup (serverFeeGroupData, options) {
 export function alterPassword (state, info, router, visible) {
   axios({
     method: 'post',
-    url: 'api/user/change_password/',
+    url: 'api/api/v1/user/change_password/',
     headers: { Authorization: 'bearer ' + state.state.token },
     data: qs.stringify({
       password: info.newPassword

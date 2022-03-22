@@ -93,7 +93,7 @@ export default defineComponent({
       loading.value = true
       axios({
         method: 'post',
-        url: 'api/user/login/',
+        url: 'api/api/v1/auth/login/',
         headers: { 'content-type': 'application/x-www-form-urlencoded' },
         data: qs.stringify({
           username: formState.username,

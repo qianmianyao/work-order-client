@@ -286,7 +286,7 @@ export default defineComponent({
     // 获取所有的用户
     const dataSource = ref([])
     const getAllUsers = (user) => {
-      axios.get('api/admin/get_all_users/', {
+      axios.get('api/api/v1/user/get_user_all/', {
         headers: {
           Authorization: 'bearer ' + state.state.token
         },
@@ -339,7 +339,7 @@ export default defineComponent({
     const handleChange = (value) => {
       axios({
         method: 'post',
-        url: 'api/admin/change_group/',
+        url: 'api/api/v1/user/change_group/',
         data: qs.stringify({
           username: username.value,
           group_id: value
@@ -427,7 +427,7 @@ export default defineComponent({
     // 删除用户
     const deleteUser = (id) => {
       axios({
-        url: 'api/admin/delete/',
+        url: 'api/api/v1/user/delete/',
         method: 'post',
         headers: { Authorization: 'bearer ' + state.state.token },
         data: qs.stringify({
