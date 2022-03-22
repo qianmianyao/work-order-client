@@ -69,7 +69,7 @@ export default defineComponent({
     })
     axios({
       method: 'get',
-      url: `api/vehicle_history_info/${id}`
+      url: `api/api/v1/vehicle/history_info/${id}`
     }).then(res => {
       const { code } = res.data
       if (code === 1 || code === 2) {

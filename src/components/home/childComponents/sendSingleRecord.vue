@@ -180,7 +180,7 @@ export default defineComponent({
     const getOrder = () => {
       axios({
         method: 'get',
-        url: 'api/get_order_list/',
+        url: 'api/api/v1/order/get_wait_distribute_order/',
         params: { index: 1, status: props.status }
       })
         .then(res => {
@@ -203,7 +203,7 @@ export default defineComponent({
       for (const id of states.selectedRowKeys) {
         axios({
           method: 'post',
-          url: 'api/assign_order/',
+          url: 'api/api/v1/order/assign_order/',
           headers: { Authorization: 'bearer ' + state.state.token },
           data: qs.stringify({
             work_order_id: id,
@@ -301,14 +301,14 @@ export default defineComponent({
     // 获取图片的 id
     const imgShowModal = (imgId) => {
       imgVisible.value = true
-      axios.get('api/img_list/', { params: { work_order_id: imgId } }).then(res => {
+      axios.get('api/api/v1/global/img_list/', { params: { work_order_id: imgId } }).then(res => {
         const { img_id: imgId } = res.data.data
         if (imgId.length === 0) {
           imgNull.value = true
         } else {
           for (const imgUrl of imgId) {
             imgNull.value = false
-            imgList.value.push('api/return_img/' + imgUrl.id)
+            imgList.value.push('api/api/v1/global/return_img/' + imgUrl.id)
           }
         }
       }

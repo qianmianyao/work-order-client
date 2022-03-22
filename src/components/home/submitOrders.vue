@@ -161,7 +161,7 @@ export default defineComponent({
         cardLoading.value = true
         axios({
           method: 'get',
-          url: 'api/search/',
+          url: 'api/api/v1/vehicle/search/',
           headers: { Authorization: 'bearer ' + state.state.token },
           params: { plate: plateValue }
         })
@@ -221,7 +221,7 @@ export default defineComponent({
       // 报修单提交请求
       axios({
         method: 'post',
-        url: 'api/maintain/',
+        url: 'api/api/v1/order/add_maintain_order/',
         headers: {
           Authorization: 'bearer ' + state.state.token,
           'Content-Type': 'multipart/form-data'
@@ -263,7 +263,7 @@ export default defineComponent({
       infoVisible.value = true
       axios({
         method: 'get',
-        url: 'api/vehicle_history/',
+        url: 'api/api/v1/vehicle/history/',
         headers: { Authorization: 'bearer ' + state.state.token },
         params: { plate: infoList.plate }
       })

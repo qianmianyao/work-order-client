@@ -221,7 +221,7 @@ export default defineComponent({
     const getOrder = () => {
       axios({
         method: 'get',
-        url: 'api/user/get_order/',
+        url: 'api/api/v1/order/get_wait_maintain_order/',
         headers: { Authorization: 'bearer ' + state.state.token },
         params: { index: 1, status: props.status }
       }).then((res) => {
@@ -298,7 +298,7 @@ export default defineComponent({
         })
         axios({
           method: 'post',
-          url: 'api/complete_order/',
+          url: 'api/api/v1/order/complete_order/',
           headers: { Authorization: 'bearer ' + state.state.token },
           data: formData
         })
@@ -326,7 +326,7 @@ export default defineComponent({
     // 获取图片的 id
     const imgShowModal = (imgId, completePicture) => {
       imgVisible.value = true
-      axios.get('api/img_list/', { params: { work_order_id: imgId, completePicture: completePicture } })
+      axios.get('api/api/v1/global/img_list/', { params: { work_order_id: imgId, completePicture: completePicture } })
         .then(res => {
           console.log(res)
           if (res.data.code === 404) {
@@ -338,7 +338,7 @@ export default defineComponent({
             } else {
               for (const imgUrl of imgId) {
                 imgNull.value = false
-                imgList.value.push('api/return_img/' + imgUrl.id)
+                imgList.value.push('api/api/v1/global/return_img/' + imgUrl.id)
               }
             }
           }

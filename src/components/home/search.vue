@@ -53,7 +53,7 @@ export default defineComponent({
         loading.value = true
         axios({
           method: 'get',
-          url: 'api/vehicle_history_info/',
+          url: 'api/api/v1/vehicle/history_info/',
           params: { plate: search.value.toUpperCase() }
         })
           .then(res => {

@@ -204,7 +204,7 @@ export default defineComponent({
     const getToken = (status) => {
       axios({
         method: 'get',
-        url: 'api/admin/recode/',
+        url: 'api/api/v1/global/recode/',
         headers: { Authorization: 'bearer ' + state.state.token },
         params: { status }
       })
@@ -235,7 +235,7 @@ export default defineComponent({
     const registeredSwitch = ref('')
     // 获取后台的值，是否允许注册
     const getSwitch = () => {
-      axios.get('api/switch/').then(res => {
+      axios.get('api/api/v1/global/switch/').then(res => {
         registeredSwitch.value = res.data.data.status
         if (registeredSwitch.value === '1') {
           registrationShow.value = true
@@ -247,7 +247,7 @@ export default defineComponent({
     getSwitch()
     const checked = () => {
       switchLoading.value = true
-      axios.get('api/switch/', { params: { status: registeredSwitch.value } })
+      axios.get('api/api/v1/global/switch/', { params: { status: registeredSwitch.value } })
         .then(res => {
           if (res.data.code) {
             switchLoading.value = false
@@ -311,7 +311,7 @@ export default defineComponent({
     const submit = (username) => {
       axios({
         method: 'post',
-        url: 'api/user/change_password/',
+        url: 'api/api/v1/user/change_password/',
         headers: { Authorization: 'bearer ' + state.state.token },
         data: qs.stringify({
           username: username,
@@ -394,7 +394,7 @@ export default defineComponent({
     const register = () => {
       axios({
         method: 'post',
-        url: 'api/user/register/',
+        url: 'api/api/v1/user/register/',
         data: qs.stringify({
           username: formState.username,
           password: formState.password,

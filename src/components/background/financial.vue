@@ -324,7 +324,7 @@ export default defineComponent({
     const getServerFee = (plate, index, pageSize) => {
       axios({
         method: 'get',
-        url: 'api/server_fee/',
+        url: 'api/api/v1/service/get_server_fee/',
         params: {
           index,
           plate,
@@ -386,11 +386,11 @@ export default defineComponent({
       }
     }
 
-    // 获取后台的服务套餐
+    // 获取后台的服务费套餐
     const options = ref([])
     const serverFeeGroupData = ref([])
     const getServerFeeGroup = () => {
-      axios.get('api/get_server_group/', { params: { index: 1 } }).then(res => {
+      axios.get('api/api/v1/service/get_server_fee_group/', { params: { index: 1 } }).then(res => {
         const { serverFeeGroup } = res.data.data
         serverFeeGroupData.value = serverFeeGroup
         serverFeeGroup.forEach(({ cost, groupName, key }) => {
@@ -414,7 +414,7 @@ export default defineComponent({
     const addOrDelete = (id) => {
       axios({
         method: 'post',
-        url: 'api/add_server_group/',
+        url: 'api/api/v1/service/add_server_fee_group/',
         headers: { Authorization: 'bearer ' + state.state.token },
         data: qs.stringify({
           group_name: formState.groupName,
@@ -463,7 +463,7 @@ export default defineComponent({
     const renewal = () => {
       axios({
         method: 'post',
-        url: 'api/alter_server_fee/',
+        url: 'api/api/v1/service/alter_server_fee/',
         headers: { Authorization: 'bearer ' + state.state.token },
         data: qs.stringify({
           id: renewalId.value,
@@ -497,7 +497,7 @@ export default defineComponent({
       }
       axios({
         method: 'post',
-        url: 'api/add_server_fee/',
+        url: 'api/api/v1/service/add_server_fee/',
         headers: { Authorization: 'bearer ' + state.state.token },
         data: qs.stringify({
           plate: plate.value,
