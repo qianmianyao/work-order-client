@@ -10,7 +10,6 @@
       v-model:visible="visible"
       title="分配订单"
       @ok="handleOk"
-      width="50%"
       ok-text="分配给他"
       cancelText="取消"
     >

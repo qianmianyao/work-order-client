@@ -8,13 +8,9 @@
         mode="horizontal"
         :style="{ lineHeight: '64px' }"
       >
-        <a-menu-item key="search">
-          <router-link to="/search" />
-          订单搜索
-        </a-menu-item>
         <a-menu-item v-if="sendOrdersShow" key="submitOrders">
           <router-link to="/submitOrders" />
-          报修
+          车辆报修
         </a-menu-item>
         <a-menu-item v-if="orderListShow" key="sendOrders">
           <router-link to="/sendOrders" />
@@ -26,7 +22,11 @@
         </a-menu-item>
         <a-menu-item key="my">
           <router-link to="/my" />
-          用户信息
+          报修查询
+        </a-menu-item>
+        <a-menu-item key="search">
+          <router-link to="/search" />
+          维修总结
         </a-menu-item>
         <a-menu-item v-if="isAdmin">
           <router-link to="/admin" />
@@ -88,7 +88,7 @@ export default defineComponent({
       } else if (path === '/about') {
         selectedKeys.value[0] = 'submitOrders'
       } else {
-        selectedKeys.value[0] = 'search'
+        selectedKeys.value[0] = 'my'
       }
     }
     get()
