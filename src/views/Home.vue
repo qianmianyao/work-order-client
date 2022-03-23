@@ -102,7 +102,7 @@ export default defineComponent({
     if (state.state.groUp === 2 || state.state.groUp === 6) {
       waitingRepairShow.value = true
     }
-    if (state.state.groUp === 1 || state.state.groUp === 6) {
+    if (state.state.groUp === 1 || state.state.groUp === 6 || state.state.groUp === 3) {
       sendOrdersShow.value = true
     }
     console.log('报修页面输入 eggs 有彩蛋！！！')

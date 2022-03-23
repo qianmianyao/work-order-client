@@ -80,6 +80,13 @@ export function getAllGroup (serverFeeGroupData, options) {
   })
 }
 
+// TODO 获取所有公司
+export function getAllCompany () {
+  axios.get('api/api/v1/vehicle/get_all_company/').then(res => {
+    console.log(res.data)
+  })
+}
+
 // 修改密码
 export function alterPassword (state, info, router, visible) {
   axios({

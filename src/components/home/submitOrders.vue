@@ -204,7 +204,7 @@ export default defineComponent({
     }
     const repairsVisible = ref(false)
     const repairs = () => {
-      if (state.state.groUp === 1 || state.state.groUp === 6) {
+      if (state.state.groUp === 1 || state.state.groUp === 6 || state.state.groUp === 3) {
         repairsVisible.value = true
       } else {
         message.warning('您没有权限报修')
@@ -287,8 +287,8 @@ export default defineComponent({
         label: '不导航'
       },
       {
-        value: '无线故障',
-        label: '无线故障'
+        value: '天线故障',
+        label: '天线故障'
       },
       {
         value: 'SD卡故障',

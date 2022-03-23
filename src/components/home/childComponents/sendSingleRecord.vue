@@ -5,6 +5,11 @@
     <a-button type="primary" @click="showModal" :disabled="!hasSelected" v-if="buttonShow">
       分配维修人员
     </a-button>
+    <a-input-search
+      v-if="buttonShow"
+      style="float: right; width: 200px"
+      placeholder="查找订单(暂时不可用)"
+    />
 <!--    派单对话框-->
     <a-modal
       v-model:visible="visible"
@@ -24,7 +29,7 @@
       <a-table
         size="small"
         :columns="columns"
-        :scroll="{ x: 1600 }"
+        :scroll="{ x: 1800 }"
         :data-source="dataSource"
         :row-selection="rowSelection"
         :pagination="pagination"
@@ -87,55 +92,46 @@ export default defineComponent({
       {
         title: '订单状态',
         dataIndex: 'status',
-        key: 'status',
-        width: '6%'
+        key: 'status'
       },
       {
         title: 'ID',
         dataIndex: 'key',
-        key: 'key',
-        width: '3%'
+        key: 'key'
       },
       {
         title: '车牌',
         dataIndex: 'plate',
-        key: 'plate',
-        width: '7%'
+        key: 'plate'
       },
       {
         title: '所属组',
         dataIndex: 'group',
-        key: 'group',
-        width: '8%'
+        key: 'group'
       },
       {
         title: '公司',
         dataIndex: 'company',
-        key: 'company',
-        width: '8%'
+        key: 'company'
       },
       {
         title: '报修原因',
         dataIndex: 'cause',
-        key: 'cause',
-        width: '6%'
+        key: 'cause'
       },
       {
         title: '详细描述',
         dataIndex: 'describe',
-        key: 'describe',
-        width: '8%'
+        key: 'describe'
       },
       {
         title: '详情图片',
-        key: 'img',
-        width: '8%'
+        key: 'img'
       },
       {
         title: '终端型号',
         dataIndex: 'terminalDrive',
-        key: 'terminalDrive',
-        width: '7%'
+        key: 'terminalDrive'
       },
       {
         title: '终端ID',
@@ -145,31 +141,26 @@ export default defineComponent({
       {
         title: '安装日期',
         dataIndex: 'vehicleMadeDate',
-        key: 'vehicleMadeDate',
-        width: '8%'
+        key: 'vehicleMadeDate'
       },
       {
         title: '车主',
         dataIndex: 'driversName',
-        key: 'driversName',
-        width: '5%'
+        key: 'driversName'
       },
       {
         title: '联系电话',
         dataIndex: 'mobile',
-        key: 'mobile',
-        width: '8%'
+        key: 'mobile'
       },
       {
         title: '报修人',
         dataIndex: 'username',
-        key: 'username',
-        width: '5%'
+        key: 'username'
       },
       {
         title: '报修时间',
         key: 'submitOrderTime',
-        width: '10%',
         customRender: ({ text }) => {
           return text ? moment(text).format('YYYY-MM-DD') : ''
         }
@@ -220,6 +211,8 @@ export default defineComponent({
               state.commit('removeToken')
               router.push('/login')
               message.error('登录失效，请重新登录')
+            } else if (err.response.status === 422) {
+              message.error('请填写派单说明')
             }
           })
       }
@@ -251,8 +244,8 @@ export default defineComponent({
       const index = page.current
       axios({
         method: 'get',
-        url: 'api/get_order_list/',
-        params: { index: index, status: 1 }
+        url: 'api/api/v1/order/get_wait_distribute_order/',
+        params: { index: index, status: props.status }
       })
         .then(res => {
           loading.value = false

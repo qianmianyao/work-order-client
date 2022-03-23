@@ -1,5 +1,6 @@
 <template>
   <a-input-search placeholder="输入车牌查找历史信息" v-model:value="search" enter-button @search="onSearch"/>
+  <p v-if="!show" style="color: #DC143C">这里可以查询历史订单，请注意，只能查询已经完成的订单</p>
   <a-empty v-if="!show" style="padding-top: 80px" />
   <div style="margin: 20px 0 10px 10px">
 <!--    列表组件-->
@@ -85,7 +86,6 @@ export default defineComponent({
     const pushPlate = (plate) => {
       router.push({ path: `/plate/${plate}` })
     }
-
     return {
       search,
       onSearch,

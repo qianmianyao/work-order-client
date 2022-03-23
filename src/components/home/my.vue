@@ -1,7 +1,7 @@
 <template>
   <a-skeleton v-if="!login" active/>
   <div v-if="login">
-    <a-divider orientation="left">个人设置</a-divider>
+    <a-divider orientation="left">身份信息</a-divider>
     <a-card>
       <!--    下部的图标-->
       <template #actions>
@@ -50,12 +50,18 @@
               inputReadOnly
             />
           </a-descriptions-item>
-          <a-descriptions-item label="选择组(必选)">
+          <a-descriptions-item label="选择组(可选)">
             <a-select
               style="width: 180px"
               placeholder="请选择组"
               :options="options"
               @change="handleChange"
+            />
+          </a-descriptions-item>
+          <a-descriptions-item label="选择公司(可选)">
+            <a-select
+              style="width: 180px"
+              placeholder="请选择公司"
             />
           </a-descriptions-item>
           <a-descriptions-item label="导出方式">
@@ -73,7 +79,8 @@
       <a-divider orientation="left" plain>说明</a-divider>
       <info-circle-outlined style="color: #FFA500; margin-top: 20px"/>
       请注意，底部的导出只能导出<span style="color: red">选定日期内</span>售后已经完成的数据，右侧的导出可以导出<span style="color: red">选定日期内</span>所有报修的数据(包含: 已提交，已派单，已完成)
-      ，注意选定日期需要加 1， 如 14 号到 16 号的数据，选择日期请选择 14 号至 17 号
+      ，注意选定日期需要加 1， 如 14 号到 16 号的数据，选择日期请选择 14 号至 17 号。
+      <span style="color: #DC143C">请注意，如果需要导出大组所有的报修信息，选择分组即可，如果需要导出某个公司的分组信息，只选择公司即可</span>
     </a-modal>
 <!--    维修用户已完成的订单-->
     <maintenance-record status="3" v-if="identity === 2 || identity === 6" :buttonShow="false" />
@@ -96,7 +103,8 @@ import {
   getUserOrder,
   exportStatement,
   getAllGroup,
-  alterPassword
+  alterPassword,
+  getAllCompany
 } from '@/js/request/myRequests'
 
 export default defineComponent({
@@ -191,7 +199,7 @@ export default defineComponent({
     const statement = (url) => {
       exportStatement(url, start, end, group)
     }
-
+    getAllCompany()
     // 身份
     const identity = ref(state.state.groUp)
     return {
