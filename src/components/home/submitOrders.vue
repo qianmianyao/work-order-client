@@ -27,40 +27,44 @@
       cancel-text="取消"
       @ok="repairsOk"
     >
-      <!--报修提交组件-->
-      <a-descriptions
-        title="车辆信息"
-        layout="vertical"
-        bordered
-        :column="1"
-      >
-        <a-descriptions-item label="车牌">{{ infoList.plate }}</a-descriptions-item>
-        <a-descriptions-item label="组名称">{{ infoList.group }}</a-descriptions-item>
-        <a-descriptions-item label="单位名称">{{ infoList.company }}</a-descriptions-item>
-        <a-descriptions-item label="车辆设备">{{ infoList.terminal_drive }}</a-descriptions-item>
-        <a-descriptions-item label="报修原因">
-          <a-space>
-            <a-select
-              placeholder="选择报修原因"
-              :options="cause"
-              @change="handleChange"
-            />
-          </a-space>
-        </a-descriptions-item>
-        <a-descriptions-item label="报修详情描述">
-          <a-textarea v-model:value="repairForm.describe" placeholder="请输入车辆故障的具体原因以及故障所在地" :rows="4" />
-        </a-descriptions-item>
-        <a-descriptions-item label="详情图片">
-          <!--图片上传组件-->
-          <a-upload-dragger :file-list="fileList" :remove="handleRemove" :before-upload="beforeUpload">
-            <p class="ant-upload-drag-icon" style="margin-top: 12px">
-              <inbox-outlined/>
-            </p>
-            <p class="ant-upload-text">上传需要维修车辆的相关照片</p>
-            <p class="ant-upload-hint" style="margin-bottom: 12px">支持多张图片上传</p>
-          </a-upload-dragger>
-        </a-descriptions-item>
-      </a-descriptions>
+      <a-collapse v-model:activeKey="activeKey" ghost>
+        <template #expandIcon="{ isActive }">
+          <caret-right-outlined :rotate="isActive ? 90 : 0" />
+        </template>
+        <a-collapse-panel key="1" header="车辆详情信息">
+          <a-descriptions :column="1" size="small">
+            <a-descriptions-item label="车牌">{{ infoList.plate }}</a-descriptions-item>
+            <a-descriptions-item label="组名称">{{ infoList.group }}</a-descriptions-item>
+            <a-descriptions-item label="单位名称">{{ infoList.company }}</a-descriptions-item>
+            <a-descriptions-item label="车辆设备">{{ infoList.terminal_drive }}</a-descriptions-item>
+          </a-descriptions>
+        </a-collapse-panel>
+        <a-collapse-panel key="2" header="报修操作">
+          <a-descriptions :column="1" size="small" layout="vertical">
+            <a-descriptions-item label="报修原因">
+              <a-space>
+                <a-select
+                  placeholder="选择报修原因"
+                  :options="cause"
+                  @change="handleChange"
+                />
+              </a-space>
+            </a-descriptions-item>
+            <a-descriptions-item label="报修详情描述">
+              <a-textarea v-model:value="repairForm.describe" placeholder="请输入车辆故障的具体原因以及故障所在地" :rows="4" />
+            </a-descriptions-item>
+            <a-descriptions-item label="报修图片上传">
+              <!--图片上传组件-->
+              <a-upload :file-list="fileList" :remove="handleRemove" :before-upload="beforeUpload">
+                <a-button style="width: 200px">
+                  <upload-outlined></upload-outlined>
+                  上传图片
+                </a-button>
+              </a-upload>
+            </a-descriptions-item>
+          </a-descriptions>
+        </a-collapse-panel>
+      </a-collapse>
     </a-modal>
   </div>
 <!--车辆历史维修记录对话框-->
@@ -94,13 +98,14 @@
 <script>
 import moment from 'moment'
 import {
-  InboxOutlined,
+  UploadOutlined,
   BarsOutlined,
   EditOutlined,
   UnorderedListOutlined,
   AlertOutlined,
   UserOutlined,
-  ClockCircleOutlined
+  ClockCircleOutlined,
+  CaretRightOutlined
 } from '@ant-design/icons-vue'
 import { defineComponent, ref, reactive } from 'vue'
 import { useStore } from 'vuex'
@@ -109,13 +114,14 @@ import { useRouter } from 'vue-router'
 import { info, submitOrder, searchPlate } from '@/js/request/submitRequests'
 export default defineComponent({
   components: {
-    InboxOutlined,
     BarsOutlined,
     EditOutlined,
     UnorderedListOutlined,
     AlertOutlined,
     UserOutlined,
-    ClockCircleOutlined
+    ClockCircleOutlined,
+    CaretRightOutlined,
+    UploadOutlined
   },
   setup () {
     const search = ref('')
@@ -262,6 +268,7 @@ export default defineComponent({
     const handleChange = value => {
       repairForm.cause = value
     }
+    const activeKey = ref(['1'])
     return {
       onSearch,
       search,
@@ -284,7 +291,8 @@ export default defineComponent({
       handleRemove,
       allPlateInfo,
       changeTag,
-      cardLoading
+      cardLoading,
+      activeKey
     }
   }
 })
