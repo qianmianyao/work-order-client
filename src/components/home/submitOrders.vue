@@ -5,7 +5,7 @@
     <a-card :loading="cardLoading" style="margin-top: 24px;">
       <template #actions>
         <edit-outlined key="edit" style="color: #1E90FF" @click="repairs"/>
-        <unordered-list-outlined key="info" style="color: #008000" @click="info" />
+        <unordered-list-outlined key="info" style="color: #008000" @click="historyInfo" />
       </template>
       <a-card-meta :title="infoList.plate" description="点击下方按钮查看车辆详细或者报修">
       </a-card-meta>
@@ -104,9 +104,9 @@ import {
 } from '@ant-design/icons-vue'
 import { defineComponent, ref, reactive } from 'vue'
 import { useStore } from 'vuex'
-import axios from 'axios'
 import { message } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
+import { info, submitOrder, searchPlate } from '@/js/request/submitRequests'
 export default defineComponent({
   components: {
     InboxOutlined,
@@ -159,39 +159,7 @@ export default defineComponent({
           plateValue = plate
         }
         cardLoading.value = true
-        axios({
-          method: 'get',
-          url: 'api/api/v1/vehicle/search/',
-          headers: { Authorization: 'bearer ' + state.state.token },
-          params: { plate: plateValue }
-        })
-          .then(res => {
-            if (res.data.code === 404) {
-              message.warning(res.data.message)
-            } else if (res.data.code === 500) {
-              cardShow.value = false
-              message.warning(res.data.message)
-            } else {
-              cardLoading.value = false
-              const { data, message } = res.data
-              allPlateInfo.value = message
-              infoList.plate = data.plate
-              infoList.name = data.name
-              infoList.terminal_drive = data.terminal_drive
-              infoList.phone = data.phone
-              infoList.group = data.group
-              infoList.company = data.company
-              infoList.rowUpdateTime = data.rowUpdateTime
-              cardShow.value = true
-            }
-          })
-          .catch(err => {
-            if (err.response.status === 401) {
-              state.commit('removeToken')
-              router.push('/login')
-              message.error('登录失效，请重新登录')
-            }
-          })
+        searchPlate(plateValue, cardShow, cardLoading, allPlateInfo, infoList, state, router)
       }
     }
 
@@ -219,32 +187,7 @@ export default defineComponent({
         formData.append('file', file)
       })
       // 报修单提交请求
-      axios({
-        method: 'post',
-        url: 'api/api/v1/order/add_maintain_order/',
-        headers: {
-          Authorization: 'bearer ' + state.state.token,
-          'Content-Type': 'multipart/form-data'
-        },
-        data: formData
-      })
-        .then(res => {
-          confirmLoading.value = true
-          if (res.data.code === 200) {
-            confirmLoading.value = false
-            repairsVisible.value = false
-            message.success(res.data.message, 2)
-            repairForm.describe = ''
-            fileList.value = []
-          }
-        })
-        .catch(err => {
-          if (err.response.status === 401) {
-            state.commit('removeToken')
-            router.push('/login')
-            message.error('登录失效，请重新登录')
-          }
-        })
+      submitOrder(formData, confirmLoading, repairsVisible, repairForm, fileList, state, router)
     }
 
     // 删除图片
@@ -259,17 +202,8 @@ export default defineComponent({
     const vehicleHistory = ref()
     const infoVisible = ref(false)
     // 获取历史报修记录
-    const info = () => {
-      infoVisible.value = true
-      axios({
-        method: 'get',
-        url: 'api/api/v1/vehicle/history/',
-        headers: { Authorization: 'bearer ' + state.state.token },
-        params: { plate: infoList.plate }
-      })
-        .then(res => {
-          vehicleHistory.value = res.data.data.history
-        })
+    const historyInfo = () => {
+      info(infoVisible, infoList, vehicleHistory, state)
     }
 
     const infoOk = () => {
@@ -338,7 +272,7 @@ export default defineComponent({
       repairs,
       repairsOk,
       confirmLoading,
-      info,
+      historyInfo,
       infoOk,
       cause,
       handleChange,
