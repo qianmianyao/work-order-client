@@ -2,11 +2,6 @@
   <a-skeleton active v-if="!login"/>
   <div v-if="login">
     <a-button type="primary" @click="start" :disabled="!hasSelected" v-if="buttonShow">完成维修</a-button>
-    <a-input-search
-      v-if="buttonShow"
-      style="float: right; width: 200px"
-      placeholder="查找订单(暂时不可用)"
-    />
     <a-modal
       ok-text="确认"
       cancel-text="取消"

@@ -291,7 +291,7 @@ export default defineComponent({
           Authorization: 'bearer ' + state.state.token
         },
         params: {
-          user: user
+          username: user
         }
       })
         .then(res => {

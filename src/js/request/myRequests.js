@@ -80,11 +80,25 @@ export function getAllGroup (serverFeeGroupData, options) {
   })
 }
 
-// TODO 获取所有公司
-export function getAllCompany () {
-  axios.get('api/api/v1/vehicle/get_all_company/').then(res => {
-    console.log(res.data)
+// TODO 获取所有组
+export function getAllGroupName (val, groupDataAll, groupData) {
+  axios({
+    method: 'get',
+    url: 'api/api/v1/vehicle/get_all_group_name/',
+    params: {
+      group_name: val
+    }
   })
+    .then(res => {
+      const { allGroup } = res.data.data
+      groupDataAll.value = allGroup
+      groupDataAll.value.forEach(({ CorpCode, CorpShortName }) => {
+        groupData.value.push({
+          value: CorpCode,
+          label: CorpShortName
+        })
+      })
+    })
 }
 
 // 修改密码

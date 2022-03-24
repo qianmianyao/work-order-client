@@ -29,7 +29,7 @@
     >
       <p>修改密码</p>
       <a-input-password v-model:value="info.newPassword" placeholder="输入内容" />
-<!--报表导出-->
+    <!--报表导出-->
     </a-modal>
     <a-modal
       v-model:visible="downloadShow"
@@ -50,20 +50,23 @@
               inputReadOnly
             />
           </a-descriptions-item>
-          <a-descriptions-item label="选择组(可选)">
+          <!--选择分组-->
+          <a-descriptions-item label="选择组">
             <a-select
+              show-search
+              v-model:value="groupValue"
               style="width: 180px"
-              placeholder="请选择组"
-              :options="options"
-              @change="handleChange"
+              placeholder="输入关键词获取公司"
+              :default-active-first-option="false"
+              :show-arrow="true"
+              :filter-option="false"
+              :not-found-content="null"
+              :options="groupData"
+              @search="groupSearch"
+              @change="groupChange"
             />
           </a-descriptions-item>
-          <a-descriptions-item label="选择公司(可选)">
-            <a-select
-              style="width: 180px"
-              placeholder="请选择公司"
-            />
-          </a-descriptions-item>
+          <!--选择分组-->
           <a-descriptions-item label="导出方式">
             <a-button
               type="primary"
@@ -102,9 +105,8 @@ import {
   getUserInfo,
   getUserOrder,
   exportStatement,
-  getAllGroup,
   alterPassword,
-  getAllCompany
+  getAllGroupName
 } from '@/js/request/myRequests'
 
 export default defineComponent({
@@ -183,23 +185,27 @@ export default defineComponent({
     }
 
     // 导出报表
-    const options = ref([])
-    const serverFeeGroupData = ref([])
     const group = ref()
-
-    // 获取所有的大组
-    getAllGroup(serverFeeGroupData, options)
-
-    // 组选择
-    const handleChange = (value) => {
-      group.value = value
+    // 模糊查询所有组
+    const groupValue = ref()
+    const groupData = ref([])
+    const groupDataAll = ref([])
+    const groupSearch = val => {
+      groupData.value = []
+      if (val !== '') {
+        getAllGroupName(val, groupDataAll, groupData)
+      }
+    }
+    const groupChange = val => {
+      groupValue.value = val
+      getAllGroupName(val, groupDataAll, groupData)
+      group.value = groupValue.value
     }
 
     // 订单导出请求
     const statement = (url) => {
       exportStatement(url, start, end, group)
     }
-    getAllCompany()
     // 身份
     const identity = ref(state.state.groUp)
     return {
@@ -221,8 +227,10 @@ export default defineComponent({
       state,
       identity,
       buttonOptional,
-      options,
-      handleChange
+      groupData,
+      groupSearch,
+      groupValue,
+      groupChange
     }
   }
 

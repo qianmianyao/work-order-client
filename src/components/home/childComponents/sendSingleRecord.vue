@@ -8,7 +8,10 @@
     <a-input-search
       v-if="buttonShow"
       style="float: right; width: 200px"
-      placeholder="查找订单(暂时不可用)"
+      v-model:value="searchValue"
+      @search="search"
+      @change="empty"
+      placeholder="查找订单"
     />
 <!--    派单对话框-->
     <a-modal
@@ -168,11 +171,11 @@ export default defineComponent({
     ]
     // 获取派单列表
     const dataSource = ref([])
-    const getOrder = () => {
+    const getOrder = (plate) => {
       axios({
         method: 'get',
         url: 'api/api/v1/order/get_wait_distribute_order/',
-        params: { index: 1, status: props.status }
+        params: { index: 1, status: props.status, plate: plate }
       })
         .then(res => {
           const { sendOrder, pageTotal } = res.data.data
@@ -181,7 +184,17 @@ export default defineComponent({
           login.value = true
         })
     }
-    getOrder()
+    getOrder(null)
+    // 搜索单个车牌
+    const searchValue = ref()
+    const search = () => {
+      getOrder(searchValue.value)
+    }
+    const empty = () => {
+      if (searchValue.value === '') {
+        getOrder(null)
+      }
+    }
     // 分配订单
     const states = reactive({
       selectedRowKeys: []
@@ -337,7 +350,10 @@ export default defineComponent({
       imgHandleOk,
       explain,
       imgList,
-      infoModal
+      infoModal,
+      searchValue,
+      search,
+      empty
     }
   }
 })
