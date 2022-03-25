@@ -190,7 +190,7 @@ export default defineComponent({
     // 判断是否显示此页面
     const demo = ref(false)
     const globalVisible = ref(true)
-    axios.get('api/switch/').then(res => {
+    axios.get('api/api/v1/global/switch/').then(res => {
       if (res.data.data.status === '0') {
         globalVisible.value = false
       } else {

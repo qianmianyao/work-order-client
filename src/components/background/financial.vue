@@ -58,7 +58,7 @@
           <template v-if="column.key === 'renewal'">
             <a @click="renewalShow(record.id)">续费</a>
             <a-divider type="vertical" />
-            <a style="color: #ADAEAE">删除</a>
+            <a style="color: #F82721" @click="deleteServerFee(record.id)">删除</a>
           </template>
         </template>
       </a-table>
@@ -548,6 +548,19 @@ export default defineComponent({
     }
     // 状态选择
     const status = ref()
+    const deleteServerFee = (id) => {
+      axios({
+        method: 'post',
+        url: 'api/api/v1/service/delete_server_fee/',
+        data: qs.stringify({
+          id: id
+        })
+      })
+        .then(res => {
+          getServerFee(null, 1, 10)
+          message.success(res.data.message)
+        })
+    }
     return {
       columns,
       activeKey,
@@ -583,7 +596,8 @@ export default defineComponent({
       statementHandleOk,
       statementExport,
       statementTitle,
-      status
+      status,
+      deleteServerFee
     }
   }
 })

@@ -35,7 +35,7 @@
       v-model:visible="downloadShow"
       @ok="statement('api/api/v1/export/maintain_excel/')"
       title="报表导出"
-      ok-text="导出已完成订单"
+      ok-text="导出已完成订单(完整)"
       :ok-button-props="{ disabled: buttonOptional }"
     >
       <div>
@@ -70,11 +70,25 @@
           <a-descriptions-item label="导出方式">
             <a-button
               type="primary"
-              @click="statement('api/api/v1/export/all_excel/')"
+              @click="statement('api/api/v1/export/simple_all_excel/')"
               :disabled="buttonOptional"
             >
-              导出全部订单
+              导出全部订单(简洁)
             </a-button>
+            <br>
+            <a-button
+              type="primary"
+              style="margin-top: 10px"
+              :disabled="buttonOptional"
+              @click="statement('api/api/v1/export/all_excel/')"
+            >导出全部订单(完整)</a-button>
+            <br>
+            <a-button
+              type="primary"
+              style="margin-top: 10px"
+              :disabled="buttonOptional"
+              @click="statement('api/api/v1/export/simple_maintain_excel/')"
+            >导出已完成订单(简洁)</a-button>
           </a-descriptions-item>
         </a-descriptions>
       </div>
