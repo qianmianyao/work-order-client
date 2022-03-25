@@ -394,7 +394,7 @@ export default defineComponent({
     const register = () => {
       axios({
         method: 'post',
-        url: 'api/api/v1/user/register/',
+        url: 'api/api/v1/auth/register/',
         data: qs.stringify({
           username: formState.username,
           password: formState.password,
