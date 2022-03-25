@@ -70,7 +70,7 @@
           <a-descriptions-item label="导出方式">
             <a-button
               type="primary"
-              @click="statement('api/api/v1/export/maintain_all_excel/')"
+              @click="statement('api/api/v1/export/all_excel/')"
               :disabled="buttonOptional"
             >
               导出全部订单
@@ -83,7 +83,6 @@
       <info-circle-outlined style="color: #FFA500; margin-top: 20px"/>
       请注意，底部的导出只能导出<span style="color: red">选定日期内</span>售后已经完成的数据，右侧的导出可以导出<span style="color: red">选定日期内</span>所有报修的数据(包含: 已提交，已派单，已完成)
       ，注意选定日期需要加 1， 如 14 号到 16 号的数据，选择日期请选择 14 号至 17 号。
-      <span style="color: #DC143C">请注意，如果需要导出大组所有的报修信息，选择分组即可，如果需要导出某个公司的分组信息，只选择公司即可</span>
     </a-modal>
 <!--    维修用户已完成的订单-->
     <maintenance-record status="3" v-if="identity === 2 || identity === 6" :buttonShow="false" />
@@ -199,12 +198,13 @@ export default defineComponent({
     const groupChange = val => {
       groupValue.value = val
       getAllGroupName(val, groupDataAll, groupData)
-      group.value = groupValue.value
+      group.value = groupValue.value + '%'
     }
 
     // 订单导出请求
     const statement = (url) => {
       exportStatement(url, start, end, group)
+      console.log(group.value)
     }
     // 身份
     const identity = ref(state.state.groUp)

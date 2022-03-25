@@ -40,6 +40,10 @@
     <a-timeline>
       <a-timeline-item color="green">
         <template #dot><clock-circle-outlined style="font-size: 16px" /></template>
+        完美支持分组导出 Version 1.0.7-update 2022-03-25
+      </a-timeline-item>
+      <a-timeline-item color="green">
+        <template #dot><clock-circle-outlined style="font-size: 16px" /></template>
         修改部分界面 Version 1.0.6-update 2022-03-22
       </a-timeline-item>
       <a-timeline-item color="green">

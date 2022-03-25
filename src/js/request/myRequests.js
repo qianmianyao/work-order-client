@@ -66,20 +66,6 @@ export function exportStatement (url, start, end, group) {
     })
 }
 
-// 获取所有大组
-export function getAllGroup (serverFeeGroupData, options) {
-  axios.get('api/api/v1/vehicle/get_all_group/').then(res => {
-    const { allGroup } = res.data.data
-    serverFeeGroupData.value = allGroup
-    serverFeeGroupData.value.forEach(({ CorpShortName }) => {
-      options.value.push({
-        value: CorpShortName,
-        label: CorpShortName
-      })
-    })
-  })
-}
-
 // TODO 获取所有组
 export function getAllGroupName (val, groupDataAll, groupData) {
   axios({
