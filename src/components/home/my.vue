@@ -29,6 +29,8 @@
     >
       <p>修改密码</p>
       <a-input-password v-model:value="info.newPassword" placeholder="输入内容" />
+      <p style="margin-top: 20px">添加手机号</p>
+      <a-input placeholder="输入手机号"></a-input>
     <!--报表导出-->
     </a-modal>
     <a-modal
