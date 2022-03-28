@@ -74,7 +74,10 @@
           </template>
         </template>
       </a-table>
-
+    </a-collapse-panel>
+    <a-collapse-panel key="3" header="全局通知">
+      <a-textarea v-model:value="notice" :rows="4" placeholder="输入请不要超过 200" :maxlength="200" />
+      <a-button @click="setNotice" type="primary" style="margin-top: 20px">通知</a-button>
     </a-collapse-panel>
     <a-collapse-panel key="2" header="注册权限设置">
       是否开启注册
@@ -193,7 +196,7 @@ export default defineComponent({
     const router = useRouter()
     const state = useStore()
     // 折叠框
-    const activeKey = ref(['1', '2'])
+    const activeKey = ref(['1', '2', '3'])
 
     // 全局验证码模块是否显示
     const registrationShow = ref(false)
@@ -439,6 +442,22 @@ export default defineComponent({
           getAllUsers(null)
         })
     }
+
+    // 设置通知
+    const notice = ref('')
+    const setNotice = () => {
+      axios({
+        method: 'post',
+        url: 'api/api/v1/global/set_notice/',
+        data: qs.stringify({
+          content: notice.value
+        })
+      })
+        .then(res => {
+          message.success(res.data.message)
+          notice.value = ''
+        })
+    }
     return {
       activeKey,
       registrationCode,
@@ -467,7 +486,9 @@ export default defineComponent({
       searchUser,
       searchValue,
       empty,
-      deleteUser
+      deleteUser,
+      notice,
+      setNotice
     }
   }
 

@@ -62,8 +62,11 @@
 
 <script>
 import { defineComponent, ref, getCurrentInstance } from 'vue'
+import { notification } from 'ant-design-vue'
 import { useStore } from 'vuex'
 import { CopyrightCircleOutlined } from '@ant-design/icons-vue'
+import axios from 'axios'
+import moment from 'moment'
 export default defineComponent({
   components: {
     CopyrightCircleOutlined
@@ -114,6 +117,30 @@ export default defineComponent({
     state.state.groUp === 5 ||
     state.state.groUp === 6
       ? isAdmin.value = true : isAdmin.value = false
+
+    // 全局通知
+    const globalNotice = (message, update) => {
+      notification.open({
+        message: '通知' + ' ' + update,
+        description: message,
+        duration: 0,
+        onClose: () => {
+          console.log('关闭')
+        }
+      })
+    }
+
+    // 获取后台通知内容，如果和本地一致就不提示
+    axios.get('api/api/v1/global/get_notice/').then(res => {
+      const { key, update: date } = res.data.data.notice
+      const update = moment(date).format('YYYY-MM-DD HH:mm:ss')
+      const localNotice = localStorage.getItem('notice')
+      if (key !== localNotice) {
+        localStorage.setItem('notice', key)
+        globalNotice(key, update)
+      }
+    })
+
     return {
       selectedKeys,
       banner,
@@ -132,9 +159,6 @@ export default defineComponent({
   width: 48px;
   height: 32px;
   margin: 16px 24px 16px 0;
-}
-.ant-back-top {
-  bottom: 150px;
 }
 #components-back-top-demo-custom .ant-back-top-inner {
   height: 40px;
