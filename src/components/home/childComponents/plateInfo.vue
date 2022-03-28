@@ -100,14 +100,14 @@ export default defineComponent({
     // 获取图片的 id
     const imgShowModal = (imgId, completePicture) => {
       imgVisible.value = true
-      axios.get('api/img_list/', { params: { work_order_id: imgId, completePicture: completePicture } }).then(res => {
+      axios.get('api/api/v1/global/img_list/', { params: { work_order_id: imgId, completePicture: completePicture } }).then(res => {
         const { img_id: imgId } = res.data.data
         if (imgId.length === 0) {
           imgNull.value = true
         } else {
           for (const imgUrl of imgId) {
             imgNull.value = false
-            imgList.value.push('api/return_img/' + imgUrl.id)
+            imgList.value.push('api/api/v1/global/return_img/' + imgUrl.id)
           }
         }
       }

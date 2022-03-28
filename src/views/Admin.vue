@@ -60,7 +60,7 @@ export default defineComponent({
       selectedKeys.value[0] = '3'
     }
     // 横幅
-    const banner = ref('当前版本 Version 1.0.7-update') // repair: 修复 update: 更新 refactoring: 重构
+    const banner = ref('当前版本 Version 1.0.8-update') // repair: 修复 update: 更新 refactoring: 重构
     // 分组展示
     const show = ref(false)
     const state = useStore()

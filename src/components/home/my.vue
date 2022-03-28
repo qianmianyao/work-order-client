@@ -30,7 +30,9 @@
       <p>修改密码</p>
       <a-input-password v-model:value="info.newPassword" placeholder="输入内容" />
       <p style="margin-top: 20px">添加手机号</p>
-      <a-input placeholder="输入手机号"></a-input>
+      <a-input v-model:value="mobile" placeholder="输入手机号"></a-input>
+      <a-divider orientation="left" plain>说明</a-divider>
+      <p>如果需要使用钉钉机器人提醒，请添加<span style="color: red">注册钉钉的手机号</span></p>
     <!--报表导出-->
     </a-modal>
     <a-modal
@@ -121,7 +123,8 @@ import {
   getUserOrder,
   exportStatement,
   alterPassword,
-  getAllGroupName
+  getAllGroupName,
+  setMobile
 } from '@/js/request/myRequests'
 
 export default defineComponent({
@@ -167,9 +170,13 @@ export default defineComponent({
       message.success('退出成功')
     }
 
+    // 添加手机号
+    const mobile = ref()
+
     // 修改密码
     const handleOk = () => {
       alterPassword(state, info, router, visible)
+      setMobile(state, mobile, visible)
     }
 
     // 获取用户信息请求
@@ -224,6 +231,7 @@ export default defineComponent({
     }
     // 身份
     const identity = ref(state.state.groUp)
+
     return {
       visible,
       confirmLoading,
@@ -246,7 +254,8 @@ export default defineComponent({
       groupData,
       groupSearch,
       groupValue,
-      groupChange
+      groupChange,
+      mobile
     }
   }
 

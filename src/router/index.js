@@ -22,7 +22,7 @@ const routes = [
     children: [
       {
         path: '',
-        component: search
+        component: my
       },
       {
         path: '/my',

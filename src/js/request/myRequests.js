@@ -66,7 +66,7 @@ export function exportStatement (url, start, end, group) {
     })
 }
 
-// TODO 获取所有组
+// 获取所有组
 export function getAllGroupName (val, groupDataAll, groupData) {
   axios({
     method: 'get',
@@ -89,6 +89,10 @@ export function getAllGroupName (val, groupDataAll, groupData) {
 
 // 修改密码
 export function alterPassword (state, info, router, visible) {
+  if (info.newPassword === '') {
+    visible.value = false
+    return
+  }
   axios({
     method: 'post',
     url: 'api/api/v1/user/change_password/',
@@ -109,6 +113,29 @@ export function alterPassword (state, info, router, visible) {
         state.commit('removeToken')
         router.push('/login')
         message.error('登录失效，请重新登录')
+      }
+    })
+  visible.value = false
+}
+
+// 添加手机号
+export function setMobile (state, mobile, visible) {
+  if (mobile.value === '') {
+    visible.value = false
+    return
+  }
+  axios({
+    method: 'post',
+    url: 'api/api/v1/user/set_mobile/',
+    headers: { Authorization: 'bearer ' + state.state.token },
+    data: qs.stringify({
+      mobile: mobile.value
+    })
+  })
+    .then(res => {
+      if (res.data.code === 200) {
+        message.success('手机号更新成功')
+        mobile.value = ''
       }
     })
   visible.value = false
